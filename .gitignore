@@ -2,3 +2,5 @@
 
 **/.elasticbeanstalk/*
 **/__pycache__/**
+
+**/*.env
