@@ -1,9 +1,9 @@
 from django.http import HttpResponse
 
 
-def health():
+def health(_req):
     return HttpResponse("OK", status=200)
 
 
-def index():
+def index(_req):
     return HttpResponse("Hey! Welcome to Furbaby!", status=200)
