@@ -1,0 +1,8 @@
+[MASTER]
+jobs=4
+
+[BASIC]
+good-names=furbaby
+
+[pre-commit-hook]
+disable=E0401, C0301
