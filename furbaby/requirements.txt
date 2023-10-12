@@ -1,5 +1,6 @@
 asgiref==3.7.2
 astroid==2.15.8
+backports.zoneinfo==0.2.1
 black==23.9.1
 click==8.1.7
 dill==0.3.7
@@ -20,6 +21,7 @@ pylint-django==2.5.3
 pylint-plugin-utils==0.8.2
 python-dotenv==1.0.0
 sqlparse==0.4.4
+tomli==2.0.1
 tomlkit==0.12.1
-typing_extensions==4.8.0
+typing-extensions==4.8.0
 wrapt==1.15.0
