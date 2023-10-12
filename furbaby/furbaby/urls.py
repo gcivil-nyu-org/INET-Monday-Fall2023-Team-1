@@ -17,13 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from . import settings
+from . import settings, views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", views.index),
+    path("health/", views.health),  # TODO: this should come from the `heartbeat` lib
 ]
 
 if "heartbeat" in settings.INSTALLED_APPS:
     from heartbeat.urls import urlpatterns as heartbeat_urls
 
-    urlpatterns += [path(r"^heartbeat/", include(heartbeat_urls))]
+    urlpatterns += [path(r"heartbeat/", include(heartbeat_urls))]
