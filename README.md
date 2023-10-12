@@ -72,3 +72,8 @@ $ chmod +x ./.git/hooks/pre-commit
 ```
 
 - start making your commits! ✌️
+
+### Django Superuser Info
+
+- username: `furbaby-admin`
+- password: ask me (@kolharsam)
