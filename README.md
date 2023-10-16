@@ -78,6 +78,41 @@ $ chmod +x ./.git/hooks/pre-commit
 - username: `furbaby-admin`
 - password: ask me (@kolharsam)
 
+### How to create manual migrations
+
+- Activate your virtual environment &amp; head into the `furbaby` directory (if you were in the root directory of the repo).
+- Run the following command to create the migration file under the `api/migrations/` directory.
+
+```sh
+
+$ python manage.py makemigrations api --name "<migration_name>" --empty
+
+```
+
+- It's going to create a file that looks something like this:
+
+```python
+
+from django.db import migrations
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('api', 'previous_name_001.py'),
+        ('api', 'previous_name_002.py'),
+        # ....
+        # INSERT ALL THE MIGRATION FILES THAT CAME BEFORE THIS CURRENT ONE
+    ]
+
+    operations = [
+        migrations.RunSQL('INSERT YOUR SQL HERE')
+    ]
+
+```
+
+- Preferrably use the `sql` directory to store all SQL.
+
 ### DB Diagram
 
 ![DB Diagram](./img/db-diagram.png)
