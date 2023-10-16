@@ -1,5 +1,7 @@
 # Team Project repo
 
+**PLEASE USE PYTHON 3.8 ONLY**
+
 ### Connect with Postgres on RDS
 
 Ask me for the password. (@kolharsam)
