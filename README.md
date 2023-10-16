@@ -77,3 +77,7 @@ $ chmod +x ./.git/hooks/pre-commit
 
 - username: `furbaby-admin`
 - password: ask me (@kolharsam)
+
+### DB Diagram
+
+![DB Diagram](./img/db-diagram.png)
