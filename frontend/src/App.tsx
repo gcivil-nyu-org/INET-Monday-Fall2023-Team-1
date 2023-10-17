@@ -47,7 +47,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-function Profile() {
+const App = () => {
   return (
     <>
       <div className="min-h-full">
@@ -211,6 +211,4 @@ function Profile() {
   )
 }
 
-export default function App() {
-  return (<Profile />)
-}
+export default App;
