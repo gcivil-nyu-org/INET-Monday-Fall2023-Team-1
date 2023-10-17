@@ -28,4 +28,5 @@ jobs:
     - name: Run Tests
       run: |
         cd furbaby
+        export AWS_RDS_DATABASE_PASSWORD="dummy-password"
         python manage.py test
