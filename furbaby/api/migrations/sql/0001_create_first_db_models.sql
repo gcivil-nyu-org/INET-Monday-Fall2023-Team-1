@@ -16,7 +16,7 @@ CREATE TABLE users (
     contact text not null,
     date_of_birth date not null,
     experience text,
-    qualifications text,
+    qualifications text
 );
 
 CREATE TABLE locations (
@@ -25,7 +25,7 @@ CREATE TABLE locations (
     "address" text not null,
     city text check (city = 'new york'),
     country text check (country = 'united states'),
-    default_location boolean default FALSE,
+    default_location boolean default FALSE
 );
 
 CREATE TABLE pets (
@@ -39,7 +39,7 @@ CREATE TABLE pets (
     "weight" text not null,
     picures text[],
     chip_number text,
-    health_requirements text,
+    health_requirements text
 );
 
 CREATE TYPE job_status AS ENUM (
@@ -57,10 +57,10 @@ CREATE TABLE jobs (
     pet_id uuid references pets (id),
     user_id uuid references users (id),
     "status" job_status not null,
-    pay not null,
+    pay numeric not null,
     "start" timestamptz not null,
     "end" timestamptz not null,
-    location_id uuid references locations (id),
+    location_id uuid references locations (id)
 );
 
 CREATE TYPE application_status AS ENUM (
@@ -73,5 +73,5 @@ CREATE TABLE applications (
     job_id uuid references jobs (id),
     user_id uuid references users (id),
     "status" application_status not null,
-    details jsonb,
+    details jsonb
 );
