@@ -2,10 +2,34 @@
 
 from django.db import migrations
 
-migration_script = open("./sql/0001_create_first_db_models.sql").read().strip()
-
 
 class Migration(migrations.Migration):
     dependencies = []
 
-    operations = [migrations.RunSQL(migration_script)]
+    operations = [
+        migrations.RunSQL(
+            """
+        CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+        CREATE TYPE user_feature_access_type AS ENUM (
+            'sitter',
+            'owner'
+        );
+
+        CREATE TYPE job_status AS ENUM (
+            'open',
+            'job_acceptance_pending',
+            'acceptance_complete',
+            'job_ongoing',
+            'job_complete',
+            'cancelled',
+            'removed'
+        );
+
+        CREATE TYPE application_status AS ENUM (
+            'rejected',
+            'accepted'
+        );
+    """
+        )
+    ]
