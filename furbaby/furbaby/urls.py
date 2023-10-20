@@ -21,7 +21,7 @@ from . import settings, views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.index),
+    path("", include("api.urls")),
     path("health/", views.health),  # TODO: this should come from the `heartbeat` lib
 ]
 
