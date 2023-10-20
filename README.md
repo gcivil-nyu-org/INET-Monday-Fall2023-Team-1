@@ -12,7 +12,11 @@ $ psql --host=awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw
 
 ```
 
-##### Command to connect to a database locally (you can use the docker-compose file in the docker folder)
+make sure you have the `postgresql@14` suite of tools installed.
+
+Or you could use tools like PopSQL and/or pgAdmin.
+
+### Command to connect to a database locally (you can use the docker-compose file in the docker folder)
 
 ```sh
 
@@ -24,9 +28,22 @@ $ docker compose -f "docker/pg-local.docker-compose.yml" down # to stop the db
 
 ```
 
-make sure you have the `postgresql@14` suite of tools installed.
 
-Or you could use tools like PopSQL and/or pgAdmin.
+### How to run the app locally
+
+```sh
+
+$ python manage.py runserver --settings=furbaby.local_settings
+
+```
+
+### How to work locally when doing any migrations
+
+```sh
+
+$ python manage.py migrate --database=local --settings=furbaby.local_settings
+
+```
 
 ### Running the app & deploying.
 
@@ -114,9 +131,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('api', 'previous_name_001.py'),
-        ('api', 'previous_name_002.py'),
-        # ....
-        # INSERT ALL THE MIGRATION FILES THAT CAME BEFORE THIS CURRENT ONE
+        # NOTE: INSERT THE MIGRATION FILES THAT CAME BEFORE THIS CURRENT ONE
     ]
 
     operations = [
@@ -126,6 +141,14 @@ class Migration(migrations.Migration):
 ```
 
 - Preferrably use the `sql` directory to store all SQL.
+
+### How to see the SQL generated for any migration that you create
+
+```sh
+
+$ python manage.py sqlmigrate --database=local --settings=furbaby.local_settings api "<full_name_of_migration>"
+
+```
 
 ### DB Diagram
 
