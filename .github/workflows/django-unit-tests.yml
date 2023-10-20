@@ -29,4 +29,5 @@ jobs:
       run: |
         cd furbaby
         export AWS_RDS_DATABASE_PASSWORD="dummy-password"
+        export DJANGO_SECRET_KEY="dummy-secret-key"
         python manage.py test
