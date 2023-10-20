@@ -12,6 +12,18 @@ $ psql --host=awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw
 
 ```
 
+##### Command to connect to a database locally (you can use the docker-compose file in the docker folder)
+
+```sh
+
+$ docker compose -f "docker/pg-local.docker-compose.yml" up -d # to start the postgres db
+
+$ psql --host=localhost --port=5432 --username=postgres --password --dbname=postgres # password is also "postgres"
+
+$ docker compose -f "docker/pg-local.docker-compose.yml" down # to stop the db
+
+```
+
 make sure you have the `postgresql@14` suite of tools installed.
 
 Or you could use tools like PopSQL and/or pgAdmin.
