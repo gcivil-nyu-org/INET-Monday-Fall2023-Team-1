@@ -24,10 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+SECRET_KEY = "django-insecure-5ic&%!xeaw@-lpvb6tfd)k0i(-t@$^ttrf)7sz=8)d#uzh)bgo"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -84,16 +84,16 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "default": {},
+    "local": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ebdb",
-        "USER": "root",
-        "PASSWORD": os.environ["AWS_RDS_DATABASE_PASSWORD"],
-        "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "localhost",
         "PORT": "5432",
-    }
+    },
 }
-
 
 AUTH_USER_MODEL = "api.Users"
 
