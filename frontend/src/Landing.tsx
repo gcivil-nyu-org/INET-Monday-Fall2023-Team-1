@@ -28,7 +28,7 @@ export default function Landing() {
                         </button>
                     </div>
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <Link to="/signup" className="text-sm font-semibold leading-6 text-gray-900">
+                        <Link to="/login" className="text-sm font-semibold leading-6 text-gray-900">
                             Log in <span aria-hidden="true">&rarr;</span>
                         </Link>
                     </div>
@@ -98,7 +98,7 @@ export default function Landing() {
                             Welcome to FurBaby
                         </h1>
                         <p className="mt-6 text-lg leading-8 text-gray-600">
-                            We can place more random text here. We can place more random text here. We can place more random text here.
+                            Our easy-to-use app makes it simple to book a pet sitter, track your pet's care, and stay connected with your sitter
                         </p>
                         <div className="mt-10 flex items-center justify-center">
                             <Link
