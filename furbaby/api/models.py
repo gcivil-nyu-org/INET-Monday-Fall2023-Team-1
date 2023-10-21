@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import AbstractUser
 
-# from django.contrib.auth.hashers import make_password use this while storing use passwords
+# from django.contrib.auth.hashers import make_password - note: use this while storing use passwords
 import uuid
 
 """
@@ -55,14 +55,6 @@ class Users(AbstractUser):
     def __str__(self):
         return self.email
 
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             name="nyu_email_check",
-    #             check=models.Q(email__like="%@nyu.edu"),
-    #         ),
-    #     ]
-
 
 """
 
@@ -91,8 +83,8 @@ class Locations(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=("address", "city", "country"),
-                name="address_city_country_constraint",
+                fields=("address", "city", "country", "user_id"),
+                name="address_city_country_user_id_constraint",
             )
         ]
 
