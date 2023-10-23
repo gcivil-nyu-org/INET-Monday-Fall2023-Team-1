@@ -29,6 +29,11 @@ CREATE TABLE users (
 """
 
 
+class ChoiceEnum(models.TextChoices):
+    PET_SITTER = "Pet Sitter"
+    PET_OWNER = "Pet Owner"
+
+
 class Users(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.TextField(max_length=200, null=False, editable=True, unique=True)
@@ -36,12 +41,8 @@ class Users(AbstractUser):
     first_name = models.TextField(null=False, editable=True)
     last_name = models.TextField(null=False, editable=True)
     user_type = ArrayField(
-        models.TextField(null=True, blank=True),
-        blank=True,
-        size=2,
-        null=False,
-        editable=True,
-    )
+        models.CharField(max_length=20, choices=ChoiceEnum.choices), size=2
+    )  # Define choices here
     profile_picture = models.TextField(editable=True)
     date_of_birth = models.DateField(editable=False)
     experience = models.TextField(editable=True)
@@ -133,9 +134,7 @@ class Pets(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=("name", "owner_id"), name="name_owner_id_constraint"
-            )
+            models.UniqueConstraint(fields=("name", "owner_id"), name="name_owner_id_constraint")
         ]
 
 
@@ -220,7 +219,5 @@ class Applications(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=("user_id", "job_id"), name="user_id_job_id_constraint"
-            )
+            models.UniqueConstraint(fields=("user_id", "job_id"), name="user_id_job_id_constraint")
         ]
