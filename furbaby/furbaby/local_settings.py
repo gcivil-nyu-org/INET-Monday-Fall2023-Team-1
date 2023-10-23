@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -96,6 +97,7 @@ DATABASES = {
 
 AUTH_USER_MODEL = "api.Users"
 
+AUTHENTICATION_BACKENDS = ["api.auth_backends.EmailBackend"]
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
