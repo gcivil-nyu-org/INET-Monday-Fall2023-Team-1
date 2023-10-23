@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from "./auth";
 import ForgotPassword from './ForgotPassword';
 
 const App = () => {
-  const authContext = useAuth();
+  const authContext = useAuth()
 
   return (
     <AuthProvider>

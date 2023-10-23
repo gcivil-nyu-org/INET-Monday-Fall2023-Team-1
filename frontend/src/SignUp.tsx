@@ -1,5 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FurBabyLogo from "./FurbabyLogo";
+import { useEffect, useState } from "react";
+import { API_HOST } from "./Constants";
+import toast from "react-hot-toast";
 
 type SignUpProps = {
     op: 'login' | 'signup';
@@ -7,6 +10,66 @@ type SignUpProps = {
 
 const SignUp = (props: SignUpProps) => {
     const opText = props.op === 'login' ? 'Sign In' : 'Create an account';
+
+    const { pathname } = useLocation()
+    const [email, updateEmail] = useState('');
+    const [password, updatePassword] = useState('');
+    const [isPetSitter, updateIsPetSitter] = useState(false);
+    const [isPetOwner, updateIsPetOwner] = useState(false);
+
+    useEffect(() => {
+        if (pathname === '/login') {
+            updateEmail('');
+            updatePassword('');
+        } else if (pathname === '/signup') {
+            updateEmail('');
+            updatePassword('');
+            updateIsPetOwner(false);
+            updateIsPetSitter(false);
+        }
+    }, [pathname]);
+
+    // console.log({ email, password, isPetSitter, isPetOwner });
+
+    const onClickSubmit = async () => {
+        let requestBody: any = {};
+        if (pathname === '/signup') {
+            let userTypes = [];
+            if (isPetOwner) {
+                userTypes.push('Pet Owner');
+            }
+            if (isPetSitter) {
+                userTypes.push('Pet Sitter');
+            }
+            requestBody = {
+                "email": email,
+                "username": email,
+                password,
+                "date_of_birth": "1990-10-09", // TODO: fix this later
+                "user_type": userTypes,
+            };
+        } else {
+            requestBody = {
+                email,
+                password,
+            };
+        }
+
+        const response = await fetch(`${API_HOST}/register`, {
+            method: 'POST',
+            body: requestBody,
+            headers: {
+                'Content-Type': 'application/json',
+                // 'X-CSRFToken': '',
+            },
+        })
+
+        const responseData = await response.json();
+
+        toast.success('Registration complete!');
+
+        console.log(responseData);
+    };
 
     return (
         <>
@@ -32,6 +95,8 @@ const SignUp = (props: SignUpProps) => {
                                     type="email"
                                     autoComplete="email"
                                     required
+                                    value={email}
+                                    onChange={e => updateEmail(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
@@ -56,6 +121,8 @@ const SignUp = (props: SignUpProps) => {
                                     type="password"
                                     autoComplete="current-password"
                                     required
+                                    value={password}
+                                    onChange={e => updatePassword(e.target.value)}
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                 />
                             </div>
@@ -72,6 +139,8 @@ const SignUp = (props: SignUpProps) => {
                                                     id="pet-sitter"
                                                     name="pet-sitter"
                                                     type="checkbox"
+                                                    checked={isPetSitter}
+                                                    onChange={e => updateIsPetSitter(e.target.checked)}
                                                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                                 />
                                             </div>
@@ -88,6 +157,8 @@ const SignUp = (props: SignUpProps) => {
                                                     id="pet-owner"
                                                     name="pet-owner"
                                                     type="checkbox"
+                                                    checked={isPetOwner}
+                                                    onChange={e => updateIsPetOwner(e.target.checked)}
                                                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                                                 />
                                             </div>
@@ -104,7 +175,8 @@ const SignUp = (props: SignUpProps) => {
 
                         <div>
                             <button
-                                type="submit"
+                                // type="submit" # TODO: enable this for enter
+                                onClick={onClickSubmit}
                                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                             >
                                 Sign&nbsp;{props.op === 'login' ? 'in' : 'up'}
