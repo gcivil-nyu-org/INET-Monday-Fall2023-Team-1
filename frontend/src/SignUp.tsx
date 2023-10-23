@@ -62,6 +62,7 @@ const SignUp = (props: SignUpProps) => {
                 'Content-Type': 'application/json',
                 // 'X-CSRFToken': '',
             },
+            credentials: 'include',
         })
 
         const responseData = await response.json();
