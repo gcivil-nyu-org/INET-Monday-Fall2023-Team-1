@@ -21,9 +21,7 @@ class UserLoginView(APIView):
             password = serializer.validated_data["password"]
             email_backend = EmailBackend()
             user = email_backend.authenticate(request, email=email, password=password)
-            print(user)
             if user is not None:
-                print(f"User found: {user.username}")
                 login(request, user)
                 return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
             else:
