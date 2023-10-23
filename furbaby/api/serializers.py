@@ -12,12 +12,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = Users
         fields = [
             "email",
+            "username",
             "password",
-            "first_name",
-            "last_name",
-            "experience",
             "date_of_birth",
-            "qualifications",
             "user_type",
         ]
 
@@ -40,3 +37,4 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+    
