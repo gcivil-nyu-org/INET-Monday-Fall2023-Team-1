@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0008_alter_users_user_type'),
-        ('api', '0008_remove_locations_address_city_country_constraint_and_more'),
+        ("api", "0008_alter_users_user_type"),
+        ("api", "0008_remove_locations_address_city_country_constraint_and_more"),
     ]
 
-    operations = [
-    ]
+    operations = []

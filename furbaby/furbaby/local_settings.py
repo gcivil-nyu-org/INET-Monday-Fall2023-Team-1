@@ -47,9 +47,13 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "heartbeat",
     "api",
+    "rest_framework",
+    "drf_standardized_errors",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -84,8 +88,7 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {},
-    "local": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",
@@ -96,6 +99,13 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = "api.Users"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+}
 
 AUTHENTICATION_BACKENDS = ["api.auth_backends.EmailBackend"]
 # Password validation
@@ -148,4 +158,28 @@ HEARTBEAT = {
         "heartbeat.checkers.python",
         "heartbeat.checkers.database",
     ],
+}
+
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+]
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
+CORS_ALLOW_CREDENTIALS = True
+# PROD endpoint for frontend: https://inet-monday-fall2023-team-1.vercel.app/
+
+# PROD ONLY
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+
+# NOTE: comment this in case you need to need
+# to see the complete error locally for more
+# context and error data
+DRF_STANDARDIZED_ERRORS = {
+    "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True,
 }

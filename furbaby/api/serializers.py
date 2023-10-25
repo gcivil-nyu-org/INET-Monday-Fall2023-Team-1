@@ -4,17 +4,23 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    user_type = serializers.ListField(child=serializers.CharField(max_length=20), write_only=True)
-    date_of_birth = serializers.DateField()
+class RegistrationSerializer(serializers.ModelSerializer):
+    user_type = serializers.ListField(
+        child=serializers.RegexField(
+            max_length=20,
+            regex="^(sitter|owner)$",
+        ),
+        write_only=True,
+        allow_empty=False,
+    )
+    password = serializers.CharField(min_length=6, write_only=True, trim_whitespace=True)
+    email = serializers.EmailField(allow_blank=False, trim_whitespace=True)
 
     class Meta:
         model = Users
         fields = [
             "email",
-            "username",
             "password",
-            "date_of_birth",
             "user_type",
         ]
 
@@ -22,11 +28,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user_type = data.get("user_type", [])
         email = data.get("email", "")
 
-        if "Pet Sitter" in user_type and not email.endswith("nyu.edu"):
+        if "sitter" in user_type and not email.endswith("nyu.edu"):
             raise ValidationError("Pet sitters must have a nyu.edu email")
         return data
 
     def create(self, validated_data):
+        # save username with value of email
+        validated_data["username"] = validated_data["email"]
         # Hash the password
         validated_data["password"] = make_password(validated_data["password"])
 
@@ -36,5 +44,4 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField()
-    
+    password = serializers.CharField(min_length=6, write_only=True)
