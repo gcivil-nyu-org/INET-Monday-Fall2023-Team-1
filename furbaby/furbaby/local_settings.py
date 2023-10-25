@@ -168,6 +168,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://*.vercel.app",
     "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -183,3 +186,12 @@ CORS_ALLOW_CREDENTIALS = True
 DRF_STANDARDIZED_ERRORS = {
     "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
+]
