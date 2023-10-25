@@ -7,6 +7,18 @@ import Home from './Home';
 import { AuthProvider, useAuth } from "./auth";
 import ForgotPassword from './ForgotPassword';
 
+const ProtectedRoute = ({ children }: React.PropsWithChildren<{}>) => {
+  const authContext = useAuth();
+
+  if (authContext?.isCookiePresent && !authContext.isCookiePresent()) {
+    return (
+      <Navigate to='/' replace />
+    );
+  }
+
+  return (<>{children}</>);
+};
+
 const App = () => {
   const authContext = useAuth()
 
@@ -26,18 +38,6 @@ const App = () => {
       </Routes>
     </AuthProvider>
   );
-};
-
-const ProtectedRoute = ({ children }: React.PropsWithChildren<{}>) => {
-  const authContext = useAuth();
-
-  if (!authContext?.token) {
-    return (
-      <Navigate to='/' replace />
-    );
-  }
-
-  return (<>{children}</>);
 };
 
 export default App;

@@ -1,8 +1,8 @@
 import React from "react";
 
 export type AuthCtx = {
-    token: string | null;
-    onLogin: () => void;
+    isCookiePresent: () => boolean;
+    onLogin: (username: string, password: string) => void;
     onLogout: () => void;
 };
 

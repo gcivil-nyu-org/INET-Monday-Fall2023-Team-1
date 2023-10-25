@@ -1,9 +1,9 @@
-import { Link, useLocation } from "react-router-dom";
-import FurBabyLogo from "./FurbabyLogo";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-// import { API_HOST } from "./Constants";
 import axios from "axios";
-// import toast from "react-hot-toast";
+import toast from "react-hot-toast";
+
+import FurBabyLogo from "./FurbabyLogo";
 
 type SignUpProps = {
     op: 'login' | 'signup';
@@ -11,6 +11,7 @@ type SignUpProps = {
 
 const SignUp = (props: SignUpProps) => {
     const opText = props.op === 'login' ? 'Sign In' : 'Create an account';
+    const navigate = useNavigate();
 
     const { pathname } = useLocation()
     const [email, updateEmail] = useState('');
@@ -18,16 +19,15 @@ const SignUp = (props: SignUpProps) => {
     const [isPetSitter, updateIsPetSitter] = useState(false);
     const [isPetOwner, updateIsPetOwner] = useState(false);
 
+    const resetStates = () => {
+        updateEmail('');
+        updatePassword('');
+        updateIsPetOwner(false);
+        updateIsPetSitter(false);
+    };
+
     useEffect(() => {
-        if (pathname === '/login') {
-            updateEmail('');
-            updatePassword('');
-        } else if (pathname === '/signup') {
-            updateEmail('');
-            updatePassword('');
-            updateIsPetOwner(false);
-            updateIsPetSitter(false);
-        }
+        resetStates();
     }, [pathname]);
 
     // console.log({ email, password, isPetSitter, isPetOwner });
@@ -54,25 +54,41 @@ const SignUp = (props: SignUpProps) => {
             };
         }
 
-        const data = JSON.stringify(requestBody);
-
-        let config = {
-            method: 'post',
+        axios.post('/register', JSON.stringify(requestBody), {
             maxBodyLength: Infinity,
-            url: 'http://localhost:8000/register',
             headers: {
                 'Content-Type': 'application/json'
             },
-            data,
-        };
+        }).then((response) => {
+            if (pathname === '/signup') {
+                if (response.status === 201) {
+                    toast.success(
+                        `An account has been created for ${response.data?.data?.email ?? ''}. Redirecting to login page...`
+                    );
+                    resetStates();
+                    navigate('/');
+                }
+            } else if (pathname === '/login') {
+                if (response.status === 200) {
+                    toast.success(
+                        `Redirecting to home page...`
+                    );
+                    resetStates();
+                    navigate('/home');
+                }
+            }
 
-        axios(config)
-            .then((response) => {
-                console.log(JSON.stringify(response.data));
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+        }).catch((error) => {
+            toast.error(
+                <div>
+                    <details>
+                        <summary>Failed to create an account.</summary>
+                        {JSON.stringify(error)}
+                    </details>
+                </div>
+            );
+            console.log(error);
+        });
     };
 
     return (
