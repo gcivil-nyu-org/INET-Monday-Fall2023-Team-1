@@ -1,8 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import FurBabyLogo from "./FurbabyLogo";
 import { useEffect, useState } from "react";
-import { API_HOST } from "./Constants";
-import toast from "react-hot-toast";
+// import { API_HOST } from "./Constants";
+import axios from "axios";
+// import toast from "react-hot-toast";
 
 type SignUpProps = {
     op: 'login' | 'signup';
@@ -31,21 +32,19 @@ const SignUp = (props: SignUpProps) => {
 
     // console.log({ email, password, isPetSitter, isPetOwner });
 
-    const onClickSubmit = async () => {
+    const onClickSubmit = () => {
         let requestBody: any = {};
         if (pathname === '/signup') {
             let userTypes = [];
             if (isPetOwner) {
-                userTypes.push('Pet Owner');
+                userTypes.push('owner');
             }
             if (isPetSitter) {
-                userTypes.push('Pet Sitter');
+                userTypes.push('sitter');
             }
             requestBody = {
                 "email": email,
-                "username": email,
                 password,
-                "date_of_birth": "1990-10-09", // TODO: fix this later
                 "user_type": userTypes,
             };
         } else {
@@ -55,21 +54,25 @@ const SignUp = (props: SignUpProps) => {
             };
         }
 
-        const response = await fetch(`${API_HOST}/register`, {
-            method: 'POST',
-            body: requestBody,
+        const data = JSON.stringify(requestBody);
+
+        let config = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: 'http://localhost:8000/register',
             headers: {
-                'Content-Type': 'application/json',
-                // 'X-CSRFToken': '',
+                'Content-Type': 'application/json'
             },
-            credentials: 'include',
-        })
+            data,
+        };
 
-        const responseData = await response.json();
-
-        toast.success('Registration complete!');
-
-        console.log(responseData);
+        axios(config)
+            .then((response) => {
+                console.log(JSON.stringify(response.data));
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     return (
@@ -84,7 +87,7 @@ const SignUp = (props: SignUpProps) => {
                 </div>
 
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                    <form className="space-y-6" action="#" method="POST">
+                    <div className="space-y-6">
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                                 Email address
@@ -183,7 +186,7 @@ const SignUp = (props: SignUpProps) => {
                                 Sign&nbsp;{props.op === 'login' ? 'in' : 'up'}
                             </button>
                         </div>
-                    </form >
+                    </div >
 
                     <p className="mt-10 text-center text-sm text-gray-500">
                         {props.op === 'login' ? 'Not a ' : 'Already a '}member?{' '}
