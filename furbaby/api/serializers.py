@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Users
+from .models import Users,Pets
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth import get_user_model
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     user_type = serializers.ListField(child=serializers.CharField(max_length=20), write_only=True)
@@ -37,4 +37,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
-    
+
+class PetSerializer(serializers.ModelSerializer):
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
+
+    class Meta:
+        model = Pets
+        exclude = ()  
