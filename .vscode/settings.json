@@ -1,7 +1,19 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "python.formatting.provider": "black",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true,
+        }
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true,
+        }
+    },
 }

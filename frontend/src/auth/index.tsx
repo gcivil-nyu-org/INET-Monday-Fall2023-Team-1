@@ -1,6 +1,3 @@
-import AuthProvider, { AuthContext } from './AuthProvider';
+import AuthProvider, { AuthContext } from "./AuthProvider";
 
-export {
-    AuthProvider,
-    AuthContext
-};
+export { AuthContext, AuthProvider };
