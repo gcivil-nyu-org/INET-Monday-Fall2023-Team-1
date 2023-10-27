@@ -15,8 +15,8 @@ export interface AuthCtx {
   onLogout: () => void;
   passwordReset: {
     onPasswordResetInit: (email: string) => void;
-    onPasswordResetConfirmToken: (token: string) => void;
-    onPasswordResetChangePassword: (password: string, token: string) => void;
+    onPasswordResetConfirmToken: (token: string) => Promise<boolean>;
+    onPasswordResetChangePassword: (password: string, token: string) => Promise<boolean>;
   };
   authenticatedUser: {
     checkAuthentication: () => void;
@@ -32,7 +32,6 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(cookie);
     if (cookie?.csrftoken) {
       updateAuthCookieState(cookie);
     }
@@ -178,7 +177,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
   };
 
   const handleForgotPasswordConfirmToken = (token: string) => {
-    axios
+    return axios
       .post(
         API_ROUTES.AUTH.FORGOT_PASSWORD.VERIFY_TOKEN,
         JSON.stringify({
@@ -190,8 +189,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("Your link has been validated successfully");
+          toast.success("Your password was validated successfully!");
+          return true;
         }
+        return false;
       })
       .catch((err) => {
         notify({
@@ -204,12 +205,13 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
+        navigate(ROUTES.LOGIN, { replace: true });
+        return false;
       });
   };
 
   const handleForgotPasswordChangePassword = (password: string, token: string) => {
-    axios
+    return axios
       .post(
         API_ROUTES.AUTH.FORGOT_PASSWORD.CONFIRM_NEW_PASSWORD,
         JSON.stringify({
@@ -222,8 +224,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("Your link has been validated successfully");
+          toast.success("Your password has been updated successfully");
+          return true;
         }
+        return false;
       })
       .catch((err) => {
         notify({
@@ -237,6 +241,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           ),
         });
         navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
+        return false;
       });
   };
 

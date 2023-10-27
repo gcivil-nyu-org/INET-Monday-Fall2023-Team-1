@@ -1,10 +1,10 @@
-import React, { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import React, { Fragment } from "react";
 
+import { AuthCtx } from "./auth/AuthProvider";
 import FurBabyLogo from "./FurbabyLogo";
 import { classNames } from "./utils";
-import { AuthCtx } from "./auth/AuthProvider";
 
 const user = {
   name: "Tom Cook",
@@ -26,6 +26,7 @@ type HomeProps = {
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const userNavigation = React.useMemo(
     () => [
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       { name: "Your Profile", onClick: () => {} },
       {
         name: "Sign out",

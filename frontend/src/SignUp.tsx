@@ -1,8 +1,9 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import FurBabyLogo from "./FurbabyLogo";
 import { ROUTES } from "./constants";
+import FurBabyLogo from "./FurbabyLogo";
+import { validateEmail } from "./utils";
 
 type SignUpProps = {
   op: "login" | "signup";
@@ -34,10 +35,9 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
 
   const enableButton = useMemo(() => {
     const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
-    const disableSignUpButton =
-      trimmedEmail.length && trimmedPassword.length && (isPetOwner || isPetSitter);
-    const disableLoginButton = trimmedEmail.length && trimmedPassword.length;
+    const validatedEmail = validateEmail(trimmedEmail);
+    const disableSignUpButton = password.length && (isPetOwner || isPetSitter) && validatedEmail;
+    const disableLoginButton = password.length && validatedEmail;
 
     if (op === "signup") {
       return disableSignUpButton;
@@ -46,9 +46,10 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
   }, [email, password, isPetOwner, isPetSitter, op]);
 
   const onClickSubmit = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let requestBody: any = {};
     if (pathname === "/signup") {
-      let userTypes = [];
+      const userTypes = [];
       if (isPetOwner) {
         userTypes.push("owner");
       }
@@ -162,7 +163,7 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
                           Pet Sitter
                         </label>
                         <p className="text-gray-500">
-                          You can sit any pet in NYC as long as you're a student at NYU
+                          You can sit any pet in NYC as long as you are a student at NYU
                         </p>
                       </div>
                     </div>

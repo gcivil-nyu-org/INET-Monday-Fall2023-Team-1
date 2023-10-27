@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import FurBabyLogo from "./FurbabyLogo";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
+import FurBabyLogo from "./FurbabyLogo";
 
 export default function Landing() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -94,8 +95,8 @@ export default function Landing() {
               Welcome to FurBaby
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
-              Our easy-to-use app makes it simple to book a pet sitter, track your pet's care, and
-              stay connected with your sitter
+              Our easy-to-use app makes it simple to book a pet sitter, track your pet&apos;s care,
+              and stay connected with your sitter
             </p>
             <div className="mt-10 flex items-center justify-center">
               <Link

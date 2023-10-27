@@ -1,15 +1,15 @@
 import React, { useContext } from "react";
+import { CookiesProvider } from "react-cookie";
 import { Navigate, Route, Routes } from "react-router-dom";
 
-import Landing from "./Landing";
-import SignUp from "./SignUp";
-import NotFound from "./NotFound";
-import Home from "./Home";
 import { AuthContext, AuthProvider } from "./auth";
 import ForgotPassword from "./ForgotPassword";
-import { CookiesProvider } from "react-cookie";
+import Home from "./Home";
+import Landing from "./Landing";
+import NotFound from "./NotFound";
+import SignUp from "./SignUp";
 
-const ProtectedRoute = ({ children }: React.PropsWithChildren<{}>) => {
+const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
   const authContext = useContext(AuthContext);
 
   if (authContext?.isCookiePresent && !authContext.isCookiePresent()) {
@@ -33,7 +33,10 @@ const AppRouter = () => {
         path="signup"
         element={<SignUp op="signup" onLogin={onLogin} onRegister={onRegister} />}
       />
-      <Route path="forgot-password" element={<ForgotPassword resetPasswordHandlers={passwordReset} />} />
+      <Route
+        path="forgot-password"
+        element={<ForgotPassword resetPasswordHandlers={passwordReset} />}
+      />
       <Route
         path="home"
         element={

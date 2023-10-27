@@ -1,6 +1,6 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import React from "react";
 import toast from "react-hot-toast";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import { classNames } from "./utils";
 

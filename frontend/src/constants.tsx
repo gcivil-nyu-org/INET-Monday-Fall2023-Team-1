@@ -25,9 +25,9 @@ export const API_ROUTES = {
     SESSION: "auth/session",
     WHOAMI: "auth/whoami",
     FORGOT_PASSWORD: {
-      INIT_RESET_PASSWORD: "auth/password_reset",
-      VERIFY_TOKEN: "auth/password_reset/validate_token",
-      CONFIRM_NEW_PASSWORD: "auth/password_reset/confirm",
+      INIT_RESET_PASSWORD: "auth/password_reset/",
+      VERIFY_TOKEN: "auth/password_reset/validate_token/",
+      CONFIRM_NEW_PASSWORD: "auth/password_reset/confirm/",
     },
   },
   HOME: "/",
