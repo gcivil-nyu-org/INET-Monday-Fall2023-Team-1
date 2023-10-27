@@ -14,7 +14,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
+
 load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -47,9 +50,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "heartbeat",
     "api",
+    "rest_framework",
+    "drf_standardized_errors",
+    "corsheaders",
+    "django_rest_passwordreset",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -84,8 +92,7 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {},
-    "local": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "postgres",
         "USER": "postgres",
@@ -97,6 +104,14 @@ DATABASES = {
 
 AUTH_USER_MODEL = "api.Users"
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+}
+
+AUTHENTICATION_BACKENDS = ["api.auth_backends.EmailBackend"]
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -148,3 +163,53 @@ HEARTBEAT = {
         "heartbeat.checkers.database",
     ],
 }
+
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
+]
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
+CORS_ALLOW_CREDENTIALS = True
+# PROD endpoint for frontend: https://inet-monday-fall2023-team-1.vercel.app/
+
+# PROD ONLY
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+
+# NOTE: comment this in case you need to need
+# to see the complete error locally for more
+# context and error data
+DRF_STANDARDIZED_ERRORS = {
+    "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True,
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
+]
+
+# Email Backend Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
+EMAIL_HOST = (
+    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
+)
+EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN = "test.com"
