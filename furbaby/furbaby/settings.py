@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
+    "*.vercel.app",
 ]
 
 
@@ -177,6 +178,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
     "http://*.elasticbeanstalk.com",
+    "https://*.vercel.app",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -197,6 +199,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
     "http://*.elasticbeanstalk.com",
+    "https://*.vercel.app",
 ]
 
 # Email Backend Configuration
