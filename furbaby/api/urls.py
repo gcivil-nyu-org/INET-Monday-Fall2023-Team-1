@@ -16,7 +16,7 @@ urlpatterns = [
     path("auth/session", views.session_view, name="user-session-view"),
     path("auth/whoami", views.whoami_view, name="user-whoami"),
     path(
-        "auth/password_reset",
+        "auth/password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),
     ),
 ]
