@@ -33,7 +33,7 @@ const AppRouter = () => {
         path="signup"
         element={<SignUp op="signup" onLogin={onLogin} onRegister={onRegister} />}
       />
-      <Route path="forgot" element={<ForgotPassword resetPasswordHandlers={passwordReset} />} />
+      <Route path="forgot-password" element={<ForgotPassword resetPasswordHandlers={passwordReset} />} />
       <Route
         path="home"
         element={

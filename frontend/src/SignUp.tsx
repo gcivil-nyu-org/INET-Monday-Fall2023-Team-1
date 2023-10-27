@@ -117,7 +117,7 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
                 {op === "login" && (
                   <div className="text-sm">
                     <Link
-                      to="/forgot"
+                      to={ROUTES.FORGOT_PASSWORD}
                       className="font-semibold text-indigo-600 hover:text-indigo-500"
                     >
                       Forgot password?
