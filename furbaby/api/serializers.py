@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users,Pets
+from .models import Users,Pets,Locations
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
@@ -37,6 +37,32 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Locations
+        fields = [
+            "user",
+            "address",
+            "city",
+            "country",
+        ]
+ 
+        
+class UserProfileEditSerializer(serializers.ModelSerializer):
+    location = LocationSerializer(many=True, read_only=True)
+    class Meta:
+        model = Users
+        fields = [
+            "first_name",
+            "last_name",
+            "date_of_birth",
+            "user_type",
+            "experience",
+            "qualifications",
+            "location", 
+        ]
+
 
 class PetSerializer(serializers.ModelSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault()) 

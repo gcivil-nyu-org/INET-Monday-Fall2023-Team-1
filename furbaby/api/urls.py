@@ -8,13 +8,14 @@ import uuid
 
 from . import views
 from .views import UserRegistrationView
-from .views import UserLoginView,PetListCreateView,PetRetrieveUpdateDeleteView
+from .views import UserLoginView,PetListCreateView,PetRetrieveUpdateDeleteView,UserProfileEditView
 
 
 urlpatterns = [
     path("", views.index, name="index"),
     path("register/", UserRegistrationView.as_view(), name="user-registration"),
     path("login/", UserLoginView.as_view(), name="user-login"),
+    path('edit/', UserProfileEditView.as_view(), name='edit'),
     path('pets/', PetListCreateView.as_view(), name='pet-list-create'),
     path('pets/<uuid:pk>/', PetRetrieveUpdateDeleteView.as_view(), name='pet-retrieve-update-delete'),
     

@@ -1,10 +1,11 @@
 from django.http import HttpResponse
-from rest_framework.generics import CreateAPIView,RetrieveAPIView,RetrieveUpdateAPIView,ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.generics import CreateAPIView,ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import login
-from .serializers import UserRegistrationSerializer, UserLoginSerializer,PetSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer,UserProfileEditSerializer,PetSerializer,LocationSerializer
+from rest_framework.exceptions import ValidationError 
 from api.auth_backends import EmailBackend
 from rest_framework.permissions import IsAuthenticated
 from .models import Pets,Locations
@@ -32,10 +33,60 @@ class UserLoginView(APIView):
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UserProfileEditView(RetrieveUpdateDestroyAPIView):
+    serializer_class = UserProfileEditSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+    
+    def perform_update(self, serializer):
+        location_data = self.request.data.get("location", [])
+        
+        for location_item in location_data:
+            location_id = location_item.get("id")
+            user_id = self.request.user.id
+
+            # Check if a location with the same user_id already exists
+            existing_location = Locations.objects.filter(user=user_id).first()
+            is_pet_owner = 'Pet Owner' in serializer.validated_data.get('user_type', [])
+
+            if is_pet_owner:
+                # Check if the location is not in New York City
+                if location_item.get("city") != "New York City":
+                    raise ValidationError("Pet owners must have a location in New York")  # Use ValidationError from rest_framework.exceptions
+            
+            location_id = location_item.get("id")
+
+            if location_id:
+                # Update existing location
+                location = Locations.objects.get(id=location_id, user=user_id)
+                location_serializer = LocationSerializer(location, data=location_item, partial=True)
+            else:
+                if existing_location:
+                    # Update existing location with the provided data
+                    location_serializer = LocationSerializer(existing_location, data=location_item, partial=True)
+                else:
+                    # Create a new location
+                    location_item["user"] = user_id 
+                    location_serializer = LocationSerializer(data=location_item)
+
+            if location_serializer.is_valid():
+                location_serializer.save()
+            else:
+                raise serializers.ValidationError(location_serializer.errors)
+
+        # Continue with the user profile update
+        serializer.save()
+
 class PetListCreateView(ListCreateAPIView):
     queryset = Pets.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Filter pets based on the user's ID
+        return Pets.objects.filter(owner_id=self.request.user.id)
 
     def create(self, request, *args, **kwargs):
         # Set the owner to the authenticated user
@@ -49,5 +100,3 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     
 def index(req):
     return HttpResponse("Hello, world", status=200)
-
-
