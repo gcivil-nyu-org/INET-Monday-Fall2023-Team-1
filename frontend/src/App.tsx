@@ -1,42 +1,52 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+
 import Landing from './Landing';
 import SignUp from './SignUp';
 import NotFound from './NotFound';
 import Home from './Home';
-import { AuthProvider, useAuth } from "./auth";
+import { AuthContext, AuthProvider } from "./auth";
 import ForgotPassword from './ForgotPassword';
+import { CookiesProvider } from 'react-cookie';
 
 const ProtectedRoute = ({ children }: React.PropsWithChildren<{}>) => {
-  const authContext = useAuth();
+  const authContext = useContext(AuthContext);
 
   if (authContext?.isCookiePresent && !authContext.isCookiePresent()) {
     return (
-      <Navigate to='/' replace />
+      <Navigate to='/login' replace />
     );
   }
 
   return (<>{children}</>);
 };
 
-const App = () => {
-  const authContext = useAuth()
+const AppRouter = () => {
+  const { onLogin, onRegister, passwordReset, ...rest } = useContext(AuthContext);
 
   return (
-    <AuthProvider>
-      <Routes>
-        <Route index element={<Landing />} />
-        <Route path='login' element={<SignUp op='login' />} />
-        <Route path='signup' element={<SignUp op='signup' />} />
-        <Route path="forgot" element={<ForgotPassword />} />
-        <Route path='home' element={
-          <ProtectedRoute>
-            <Home authContext={authContext} />
-          </ProtectedRoute>
-        } />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AuthProvider>
+    <Routes>
+      <Route index element={<Landing />} />
+      <Route path='login' element={<SignUp op='login' onLogin={onLogin} onRegister={onRegister} />} />
+      <Route path='signup' element={<SignUp op='signup' onLogin={onLogin} onRegister={onRegister} />} />
+      <Route path="forgot" element={<ForgotPassword resetPasswordHandlers={passwordReset} />} />
+      <Route path='home' element={
+        <ProtectedRoute>
+          <Home authContext={{ onLogin, onRegister, passwordReset, ...rest }} />
+        </ProtectedRoute>
+      } />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+const App = () => {
+  return (
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </CookiesProvider>
   );
 };
 

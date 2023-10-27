@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 from dotenv import load_dotenv
+
+os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
 
 load_dotenv()
 
@@ -50,6 +53,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_standardized_errors",
     "corsheaders",
+    "django_rest_passwordreset",
 ]
 
 MIDDLEWARE = [
@@ -195,3 +199,17 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://*.elasticbeanstalk.com",
 ]
+
+# Email Backend Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
+EMAIL_HOST = (
+    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
+)
+EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+
+SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_DOMAIN = "test.com"

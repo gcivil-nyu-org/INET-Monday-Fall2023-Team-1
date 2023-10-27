@@ -1,16 +1,18 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
+import { useEffect, useMemo, useState } from "react";
 
 import FurBabyLogo from "./FurbabyLogo";
+import { ROUTES } from "./constants";
 
 type SignUpProps = {
     op: 'login' | 'signup';
+    onLogin: (email: string, password: string) => void;
+    onRegister: (email: string, password: string, userTypes: ("owner" | "sitter")[]) => void;
 };
 
-const SignUp = (props: SignUpProps) => {
-    const opText = props.op === 'login' ? 'Sign In' : 'Create an account';
+const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
+    const opText = op === 'login' ? 'Sign In' : 'Create an account';
+
     const navigate = useNavigate();
 
     const { pathname } = useLocation()
@@ -30,7 +32,17 @@ const SignUp = (props: SignUpProps) => {
         resetStates();
     }, [pathname]);
 
-    // console.log({ email, password, isPetSitter, isPetOwner });
+    const enableButton = useMemo(() => {
+        const trimmedEmail = email.trim()
+        const trimmedPassword = password.trim()
+        const disableSignUpButton = trimmedEmail.length && trimmedPassword.length && (isPetOwner || isPetSitter);
+        const disableLoginButton = trimmedEmail.length && trimmedPassword.length;
+
+        if (op === 'signup') {
+            return disableSignUpButton;
+        }
+        return disableLoginButton;
+    }, [email, password, isPetOwner, isPetSitter, op]);
 
     const onClickSubmit = () => {
         let requestBody: any = {};
@@ -54,49 +66,20 @@ const SignUp = (props: SignUpProps) => {
             };
         }
 
-        axios.post('/register', JSON.stringify(requestBody), {
-            maxBodyLength: Infinity,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        }).then((response) => {
-            if (pathname === '/signup') {
-                if (response.status === 201) {
-                    toast.success(
-                        `An account has been created for ${response.data?.data?.email ?? ''}. Redirecting to login page...`
-                    );
-                    resetStates();
-                    navigate('/');
-                }
-            } else if (pathname === '/login') {
-                if (response.status === 200) {
-                    toast.success(
-                        `Redirecting to home page...`
-                    );
-                    resetStates();
-                    navigate('/home');
-                }
-            }
-
-        }).catch((error) => {
-            toast.error(
-                <div>
-                    <details>
-                        <summary>Failed to create an account.</summary>
-                        {JSON.stringify(error)}
-                    </details>
-                </div>
-            );
-            console.log(error);
-        });
+        if (pathname === '/signup') {
+            onRegister(requestBody.email, requestBody.password, requestBody.userTypes);
+        } else if (pathname === '/login') {
+            onLogin(requestBody.email, requestBody.password);
+        }
     };
 
     return (
         <>
             <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-                    <FurBabyLogo className="mx-auto h-10 w-auto"
-                    />
+                    <div className="hover:cursor-pointer" onClick={() => navigate(ROUTES.ROOT)}>
+                        <FurBabyLogo className="mx-auto h-10 w-auto " />
+                    </div>
                     <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
                         {opText}
                     </h2>
@@ -127,7 +110,7 @@ const SignUp = (props: SignUpProps) => {
                                 <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
                                     Password
                                 </label>
-                                {props.op === 'login' &&
+                                {op === 'login' &&
                                     <div className="text-sm">
                                         <Link to="/forgot" className="font-semibold text-indigo-600 hover:text-indigo-500">
                                             Forgot password?
@@ -148,7 +131,7 @@ const SignUp = (props: SignUpProps) => {
                             </div>
                         </div>
 
-                        {props.op === 'signup' &&
+                        {op === 'signup' &&
                             <div className="mt-10 space-y-10">
                                 <fieldset>
                                     <legend className="text-sm font-semibold leading-6 text-gray-900">User Type Preferrence</legend>
@@ -197,17 +180,18 @@ const SignUp = (props: SignUpProps) => {
                             <button
                                 // type="submit" # TODO: enable this for enter
                                 onClick={onClickSubmit}
-                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                disabled={!enableButton}
+                                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-slate-300 disabled:cursor-not-allowed"
                             >
-                                Sign&nbsp;{props.op === 'login' ? 'in' : 'up'}
+                                Sign&nbsp;{op === 'login' ? 'in' : 'up'}
                             </button>
                         </div>
                     </div >
 
                     <p className="mt-10 text-center text-sm text-gray-500">
-                        {props.op === 'login' ? 'Not a ' : 'Already a '}member?{' '}
-                        <Link to={props.op === 'login' ? '/signup' : '/login'} className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-                            Sign&nbsp;{props.op !== 'login' ? 'in' : 'up'}&nbsp;here
+                        {op === 'login' ? 'Not a ' : 'Already a '}member?{' '}
+                        <Link to={op === 'login' ? '/signup' : '/login'} className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                            Sign&nbsp;{op !== 'login' ? 'in' : 'up'}&nbsp;here
                         </Link>
                     </p>
                 </div >

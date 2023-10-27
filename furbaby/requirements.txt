@@ -21,6 +21,7 @@ distlib==0.3.7
 Django==4.0
 django-cors-headers==4.2.0
 django-heartbeat==2.2.0
+django-rest-passwordreset==1.3.0
 djangorestframework==3.14.0
 docopt==0.6.2
 drf-standardized-errors==0.12.5

@@ -19,9 +19,13 @@ class EmailBackend(ModelBackend):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    def get_user(self, user_id):
+    def get_user_info(self, request, email=None, **kwargs):
         User = get_user_model()
         try:
-            return User.objects.get(pk=user_id)
+            user = User.objects.get(email=email, username=email)
+            return user
         except User.DoesNotExist:
-            return None
+            return json_response(
+                data={"error": "user not found", "email": email},
+                status=status.HTTP_404_NOT_FOUND,
+            )

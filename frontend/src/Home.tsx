@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+
 import FurBabyLogo from './FurbabyLogo'
-import { AuthCtx } from './auth/context'
+import { classNames } from './utils'
+import { AuthCtx } from './auth/AuthProvider'
 
 const user = {
     name: 'Tom Cook',
@@ -10,28 +12,29 @@ const user = {
     imageUrl:
         'https://randomuser.me/api/portraits/lego/1.jpg',
 }
+
 const navigation = [
     { name: 'Dashboard', href: '#', current: true },
-    { name: 'Team', href: '#', current: false },
-    { name: 'Projects', href: '#', current: false },
-    { name: 'Calendar', href: '#', current: false },
-    { name: 'Reports', href: '#', current: false },
-]
-const userNavigation = [
-    { name: 'Your Profile', href: '#' },
-    { name: 'Settings', href: '#' },
-    { name: 'Sign out', href: '#' },
+    { name: 'Tab 2', href: '#', current: false },
+    { name: 'Tab 3', href: '#', current: false },
+    { name: 'Tab 4', href: '#', current: false }
 ]
 
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(' ')
-}
 
 type HomeProps = {
-    authContext: AuthCtx | null;
+    authContext: AuthCtx;
 };
 
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
+    const userNavigation = React.useMemo(() => [
+        { name: 'Your Profile', onClick: () => { } },
+        {
+            name: 'Sign out', onClick: () => {
+                props.authContext.onLogout();
+            }
+        },
+    ], [props]);
+
     return (
         <>
             <div className="min-h-full">
@@ -97,15 +100,15 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                                                         {userNavigation.map((item) => (
                                                             <Menu.Item key={item.name}>
                                                                 {({ active }) => (
-                                                                    <a
-                                                                        href={item.href}
+                                                                    <div
+                                                                        onClick={item.onClick}
                                                                         className={classNames(
                                                                             active ? 'bg-gray-100' : '',
                                                                             'block px-4 py-2 text-sm text-gray-700'
                                                                         )}
                                                                     >
                                                                         {item.name}
-                                                                    </a>
+                                                                    </div>
                                                                 )}
                                                             </Menu.Item>
                                                         ))}
@@ -168,8 +171,8 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                                         {userNavigation.map((item) => (
                                             <Disclosure.Button
                                                 key={item.name}
-                                                as="a"
-                                                href={item.href}
+                                                as="div"
+                                                onClick={item.onClick}
                                                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                                             >
                                                 {item.name}
