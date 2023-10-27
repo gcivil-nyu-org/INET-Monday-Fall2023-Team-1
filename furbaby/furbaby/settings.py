@@ -192,7 +192,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
-    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com/",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
 ]
 
 # Email Backend Configuration
