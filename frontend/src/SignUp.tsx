@@ -57,9 +57,9 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
         userTypes.push("sitter");
       }
       requestBody = {
-        email: email,
+        email,
         password,
-        userTypes: userTypes,
+        userTypes,
       };
     } else {
       requestBody = {
@@ -69,9 +69,9 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
     }
 
     if (pathname === "/signup") {
-      onRegister(requestBody.email, requestBody.password, requestBody.userTypes);
+      onRegister(requestBody.email.trim(), requestBody.password, requestBody.userTypes);
     } else if (pathname === "/login") {
-      onLogin(requestBody.email, requestBody.password);
+      onLogin(requestBody.email.trim(), requestBody.password);
     }
   };
 
