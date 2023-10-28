@@ -59,7 +59,7 @@ const SignUp = ({ op, onLogin, onRegister }: SignUpProps) => {
       requestBody = {
         email: email,
         password,
-        user_type: userTypes,
+        user_types: userTypes,
       };
     } else {
       requestBody = {
