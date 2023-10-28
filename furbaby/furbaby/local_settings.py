@@ -167,10 +167,12 @@ CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "https://inet-monday-fall2023-team-1.vercel.app",
     "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
     "https://furbabyapi.net",
 ]
@@ -191,10 +193,12 @@ DRF_STANDARDIZED_ERRORS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://inet-monday-fall2023-team-1.vercel.app",
     "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
     "https://furbabyapi.net",
 ]
