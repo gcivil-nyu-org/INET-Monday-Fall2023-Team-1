@@ -8,6 +8,7 @@ axios.defaults.baseURL = API_HOST;
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.headers.post["Content-Type"] = "application/json";
+axios.defaults.withCredentials = true;
 
 export const ROUTES = {
   ROOT: "/",
