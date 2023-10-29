@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import AbstractUser
 
-# from django.contrib.auth.hashers import make_password use this while storing use passwords
 import uuid
 
 """
@@ -29,40 +28,30 @@ CREATE TABLE users (
 """
 
 
-class ChoiceEnum(models.TextChoices):
-    PET_SITTER = "Pet Sitter"
-    PET_OWNER = "Pet Owner"
+class UserTypes(models.TextChoices):
+    PET_SITTER = "sitter"
+    PET_OWNER = "owner"
 
 
 class Users(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.TextField(max_length=200, null=False, editable=True, unique=True)
     password = models.TextField(null=False, editable=True)
-    first_name = models.TextField(null=False, editable=True)
-    last_name = models.TextField(null=False, editable=True)
-    user_type = ArrayField(
-        models.CharField(max_length=20, choices=ChoiceEnum.choices), size=2
-    )  # Define choices here
-    profile_picture = models.TextField(editable=True)
-    date_of_birth = models.DateField(editable=False)
-    experience = models.TextField(editable=True)
-    qualifications = models.TextField(editable=True)
+    first_name = models.TextField(null=True, editable=True)
+    last_name = models.TextField(null=True, editable=True)
+    user_type = ArrayField(models.TextField(max_length=20, choices=UserTypes.choices), size=2)
+    profile_picture = models.TextField(editable=True, null=True)
+    date_of_birth = models.DateField(editable=False, null=True)
+    experience = models.TextField(editable=True, null=True)
+    qualifications = models.TextField(editable=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = [email, password, first_name, last_name, date_of_birth]
+    REQUIRED_FIELDS = ["password", "user_type"]
 
     def __str__(self):
         return self.email
-
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             name="nyu_email_check",
-    #             check=models.Q(email__like="%@nyu.edu"),
-    #         ),
-    #     ]
 
 
 """
@@ -92,8 +81,8 @@ class Locations(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=("address", "city", "country"),
-                name="address_city_country_constraint",
+                fields=("address", "city", "country", "user_id"),
+                name="address_city_country_user_id_constraint",
             )
         ]
 

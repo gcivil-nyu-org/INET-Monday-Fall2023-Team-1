@@ -19,10 +19,12 @@ defusedxml==0.7.1
 dill==0.3.7
 distlib==0.3.7
 Django==4.0
-django-cors-headers==4.3.0
+django-cors-headers==4.2.0
 django-heartbeat==2.2.0
+django-rest-passwordreset==1.3.0
 djangorestframework==3.14.0
 docopt==0.6.2
+drf-standardized-errors==0.12.5
 exceptiongroup==1.1.3
 fastjsonschema==2.16.2
 filelock==3.12.4
@@ -35,8 +37,8 @@ isort==5.12.0
 Jinja2==3.1.2
 jmespath==1.0.1
 jsonschema==4.17.3
-jupyter_client==8.0.2
-jupyter_core==5.2.0
+jupyter-client==8.0.2
+jupyter-core==5.2.0
 jupyterlab-pygments==0.2.2
 lazy-object-proxy==1.9.0
 MarkupSafe==2.1.2
@@ -49,8 +51,9 @@ nbformat==5.7.3
 packaging==23.2
 pandocfilters==1.5.0
 pathspec==0.10.1
+pgsanity==0.2.9
 Pillow==10.1.0
-pkgutil_resolve_name==1.3.10
+pkgutil-resolve-name==1.3.10
 platformdirs==3.11.0
 pluggy==1.3.0
 psutil==5.9.5
@@ -80,7 +83,7 @@ tomli==2.0.1
 tomlkit==0.12.1
 tornado==6.2
 traitlets==5.9.0
-typing_extensions==4.8.0
+typing-extensions==4.8.0
 urllib3==1.26.17
 virtualenv==20.24.5
 wcwidth==0.1.9

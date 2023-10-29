@@ -1,21 +1,26 @@
-from django.urls import path
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.auth.models import AbstractUser
-
-# from django.contrib.auth.hashers import make_password use this while storing use passwords
-import uuid
+from django.urls import path, include
 
 from . import views
 from .views import UserRegistrationView
 from .views import UserLoginView,PetListCreateView,PetRetrieveUpdateDeleteView
 
+# csrf
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("register/", UserRegistrationView.as_view(), name="user-registration"),
-    path("login/", UserLoginView.as_view(), name="user-login"),
+    path(
+        "auth/register",
+        views.UserRegistrationView.as_view(),
+        name="user-registration",
+    ),
+    path("auth/login", views.UserLoginView.as_view(), name="user-login"),
+    path("auth/logout", views.logout_view, name="user-logout"),
+    path("auth/session", views.session_view, name="user-session-view"),
+    path("auth/whoami", views.whoami_view, name="user-whoami"),
+    path(
+        "auth/password_reset/",
+        include("django_rest_passwordreset.urls", namespace="password_reset"),
+    ),
     path('pets/', PetListCreateView.as_view(), name='pet-list-create'),
     path('pets/<uuid:pk>/', PetRetrieveUpdateDeleteView.as_view(), name='pet-retrieve-update-delete'),
-    
 ]
