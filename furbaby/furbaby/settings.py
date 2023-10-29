@@ -216,14 +216,11 @@ EMAIL_HOST = (
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
 
-GIT_COMMIT_SHORT_HASH = os.environ.get(
-    "GIT_COMMIT_SHORT_HASH",
-    subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
-    .decode("ascii")
-    .strip(),
-)
+GIT_COMMIT_SHORT_HASH = os.environ.get("GIT_COMMIT_SHORT_HASH", "")
 
-GIT_COMMIT_HASH = os.environ.get(
-    "GIT_COMMIT_HASH",
-    (subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()),
-)
+# # subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+#     .decode("ascii")
+#     .strip()
+GIT_COMMIT_HASH = os.environ.get("GIT_COMMIT_HASH", "")
+
+# (subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()),
