@@ -9,7 +9,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 from .utils import json_response
 from api.auth_backends import EmailBackend
-from .serializers import RegistrationSerializer, UserLoginSerializer
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegistrationSerializer, UserLoginSerializer, PetSerializer,UserProfileEditSerializer,LocationSerializer
+from .models import Pets,Locations
+from rest_framework.exceptions import ValidationError
 
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
