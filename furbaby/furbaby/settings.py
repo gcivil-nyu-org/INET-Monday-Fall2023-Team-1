@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-import subprocess
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
 os.environ.setdefault(
