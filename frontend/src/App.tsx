@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { CookiesProvider } from "react-cookie";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AuthContext, AuthProvider } from "./auth";
@@ -52,11 +51,9 @@ const AppRouter = () => {
 
 const App = () => {
   return (
-    <CookiesProvider defaultSetOptions={{ path: "/" }}>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
-    </CookiesProvider>
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   );
 };
 

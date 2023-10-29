@@ -1,7 +1,7 @@
+import useCookies from "@js-smart/react-cookie-service";
 import ReactJson from "@microlink/react-json-view";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { useCookies } from "react-cookie";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -27,13 +27,15 @@ export interface AuthCtx {
 const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
 
 const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
-  const [authCookie, updateAuthCookieState] = React.useState<object | null>(null);
-  const [cookie] = useCookies(["csrftoken", "sessionid"]);
+  const [authCookie, updateAuthCookieState] = React.useState<string>("");
+
+  const { getAllCookies } = useCookies();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (cookie?.csrftoken) {
-      updateAuthCookieState(cookie);
+    const allCookies = getAllCookies();
+    if (allCookies["csrftoken"]?.length) {
+      updateAuthCookieState(allCookies["csrftoken"]);
     }
   }, []);
 
@@ -94,8 +96,11 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          updateAuthCookieState(cookie);
+          const allCookies = getAllCookies();
+          updateAuthCookieState(allCookies["csrftoken"] ?? "");
+
           toast.success("Logged in!");
+
           navigate(ROUTES.HOME);
         }
       })
@@ -121,7 +126,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthCookieState(null);
+          updateAuthCookieState("");
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
         }
@@ -231,7 +236,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .catch((err) => {
         notify({
-          title: "Failed to validate token...",
+          title: "Failed to validate password...",
           type: "error",
           children: (
             <details>
@@ -246,7 +251,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
   };
 
   const isCookiePresent = () => {
-    return authCookie !== null;
+    return Boolean(authCookie.length);
   };
 
   const handleWhoami = () => {
@@ -271,7 +276,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthCookieState(null);
+        updateAuthCookieState("");
         navigate(ROUTES.LOGIN);
       });
   };
@@ -298,7 +303,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthCookieState(null);
+        updateAuthCookieState("");
         navigate(ROUTES.LOGIN);
       });
   };
