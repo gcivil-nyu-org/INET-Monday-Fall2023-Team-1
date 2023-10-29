@@ -5,7 +5,6 @@ from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.conf import settings
 
 from .utils import json_response
@@ -66,7 +65,6 @@ class UserLoginView(APIView):
         return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@ensure_csrf_cookie
 def logout_view(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -79,7 +77,6 @@ def logout_view(request):
     )
 
 
-@ensure_csrf_cookie
 def session_view(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -89,7 +86,6 @@ def session_view(request):
     return json_response({"isAuthenticated": True})
 
 
-@ensure_csrf_cookie
 def whoami_view(request):
     if not request.user.is_authenticated:
         return json_response(

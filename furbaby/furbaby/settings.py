@@ -164,8 +164,8 @@ HEARTBEAT = {
     "auth": {"username": "furbaby-api", "password": os.environ["DJANGO_SECRET_KEY"]},
 }
 
-CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_DOMAIN = ".furbabyapi.net"
 SESSION_COOKIE_DOMAIN = ".furbabyapi.net"
