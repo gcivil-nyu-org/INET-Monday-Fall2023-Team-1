@@ -162,11 +162,11 @@ HEARTBEAT = {
     "auth": {"username": "furbaby-api", "password": "password"},
 }
 
-CSRF_COOKIE_SAMESITE = "Strict"
-SESSION_COOKIE_SAMESITE = "Strict"
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = False
-# CSRF_COOKIE_DOMAIN = ".furbabyapi.net"
-# SESSION_COOKIE_DOMAIN = ".furbabyapi.net"
+CSRF_COOKIE_DOMAIN = "localhost"
+SESSION_COOKIE_DOMAIN = "localhost"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -216,9 +216,6 @@ EMAIL_HOST = (
 )
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
-
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_DOMAIN = "test.com"
 
 GIT_COMMIT_SHORT_HASH = (
     subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])

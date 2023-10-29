@@ -21,6 +21,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []
+
     serializer_class = RegistrationSerializer
 
     def get_exception_handler(self):
@@ -60,9 +61,11 @@ class UserLoginView(APIView):
             else:
                 return json_response(
                     data={"message": "Invalid credentials"},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-        return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return json_response(
+            data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 def logout_view(request):
