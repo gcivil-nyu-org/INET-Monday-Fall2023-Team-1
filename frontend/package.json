@@ -5,7 +5,6 @@
   "dependencies": {
     "@headlessui/react": "1.7.17",
     "@heroicons/react": "2.0.18",
-    "@js-smart/react-cookie-service": "^2.3.0",
     "@microlink/react-json-view": "1.23.0",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "13.4.0",

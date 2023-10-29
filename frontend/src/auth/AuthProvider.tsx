@@ -1,4 +1,3 @@
-import useCookies from "@js-smart/react-cookie-service";
 import ReactJson from "@microlink/react-json-view";
 import axios from "axios";
 import React, { useEffect } from "react";
@@ -9,7 +8,7 @@ import { API_ROUTES, ROUTES } from "../constants";
 import notify from "../Notify";
 
 export interface AuthCtx {
-  isCookiePresent: () => boolean;
+  isAuthenticated: boolean;
   onRegister: (email: string, password: string, userTypes: ("sitter" | "owner")[]) => void;
   onLogin: (email: string, password: string) => void;
   onLogout: () => void;
@@ -18,8 +17,8 @@ export interface AuthCtx {
     onPasswordResetConfirmToken: (token: string) => Promise<boolean>;
     onPasswordResetChangePassword: (password: string, token: string) => Promise<boolean>;
   };
-  authenticatedUser: {
-    checkAuthentication: () => void;
+  authenticatedUserChecks: {
+    checkAuthenticationState: (withToast?: boolean, withRedirect?: boolean) => void;
     checkUserInfo: () => void;
   };
 }
@@ -27,16 +26,11 @@ export interface AuthCtx {
 const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
 
 const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
-  const [authCookie, updateAuthCookieState] = React.useState<string>("");
-
-  const { getAllCookies } = useCookies();
+  const [authState, updateAuthState] = React.useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const allCookies = getAllCookies();
-    if (allCookies["csrftoken"]?.length) {
-      updateAuthCookieState(allCookies["csrftoken"]);
-    }
+    handleSession(false);
   }, []);
 
   const handleRegister = (email: string, password: string, userTypes: ("sitter" | "owner")[]) => {
@@ -49,6 +43,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           user_types: userTypes,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
           headers: {
             "Content-Type": "application/json",
@@ -92,15 +87,13 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       )
       .then((response) => {
         if (response.status === 200) {
-          const allCookies = getAllCookies();
-          updateAuthCookieState(allCookies["csrftoken"] ?? "");
-
+          updateAuthState(true);
           toast.success("Logged in!");
-
           navigate(ROUTES.HOME);
         }
       })
@@ -126,7 +119,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthCookieState("");
+          updateAuthState(false);
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
         }
@@ -158,6 +151,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           email,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -189,6 +183,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           token,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -224,6 +219,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           token,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -250,10 +246,6 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       });
   };
 
-  const isCookiePresent = () => {
-    return Boolean(authCookie.length);
-  };
-
   const handleWhoami = () => {
     axios
       .post(API_ROUTES.AUTH.WHOAMI, undefined, {
@@ -276,12 +268,12 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthCookieState("");
+        updateAuthState(false);
         navigate(ROUTES.LOGIN);
       });
   };
 
-  const handleSession = () => {
+  const handleSession = (withToast = false, withRedirect = false) => {
     axios
       .post(API_ROUTES.AUTH.SESSION, undefined, {
         withCredentials: true,
@@ -289,27 +281,34 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("user session is authenticated and active");
+          updateAuthState(true);
+          if (withToast) {
+            toast.success("user session is authenticated and active");
+          }
         }
       })
       .catch((err) => {
-        notify({
-          title: "Failed to validate session",
-          type: "error",
-          children: (
-            <details>
-              <summary>View Error Information</summary>
-              <ReactJson src={err?.response?.data} collapsed enableClipboard={false} />
-            </details>
-          ),
-        });
-        updateAuthCookieState("");
-        navigate(ROUTES.LOGIN);
+        if (withToast) {
+          notify({
+            title: "Failed to validate session",
+            type: "error",
+            children: (
+              <details>
+                <summary>View Error Information</summary>
+                <ReactJson src={err?.response?.data} collapsed enableClipboard={false} />
+              </details>
+            ),
+          });
+        }
+        if (withRedirect) {
+          navigate(ROUTES.LOGIN);
+        }
+        updateAuthState(false);
       });
   };
 
   const contextValue = {
-    isCookiePresent,
+    isAuthenticated: authState,
     onRegister: handleRegister,
     onLogin: handleLogin,
     onLogout: handleLogout,
@@ -318,9 +317,9 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       onPasswordResetConfirmToken: handleForgotPasswordConfirmToken,
       onPasswordResetChangePassword: handleForgotPasswordChangePassword,
     },
-    authenticatedUser: {
+    authenticatedUserChecks: {
       checkUserInfo: handleWhoami,
-      checkAuthentication: handleSession,
+      checkAuthenticationState: handleSession,
     },
   };
 
