@@ -167,8 +167,8 @@ HEARTBEAT = {
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_DOMAIN = ".furbabyapi.net"
-SESSION_COOKIE_DOMAIN = ".furbabyapi.net"
+CSRF_COOKIE_DOMAIN = "furbabyapi.net"
+SESSION_COOKIE_DOMAIN = "furbabyapi.net"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -178,8 +178,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
     "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
-    "http://*.elasticbeanstalk.com",
-    "https://*.furbabyapi.net",
+    "https://ui.furbabyapi.net",
+    "https://furbabyapi.net",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -202,7 +202,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
-    "https://*.furbabyapi.net",
+    "https://ui.furbabyapi.net",
+    "https://furbabyapi.net",
 ]
 
 # Email Backend Configuration
