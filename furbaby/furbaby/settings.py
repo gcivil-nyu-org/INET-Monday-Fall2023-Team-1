@@ -14,6 +14,11 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+# NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
+os.environ.setdefault(
+    "FORGOT_PASSWORD_HOST", "https://inet-monday-fall2023-team-1.vercel.app"
+)
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,9 +52,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "heartbeat",
     "api",
+    "rest_framework",
+    "drf_standardized_errors",
+    "corsheaders",
+    "django_rest_passwordreset",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -94,6 +104,12 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
+}
 
 AUTH_USER_MODEL = "api.Users"
 
@@ -149,3 +165,47 @@ HEARTBEAT = {
         "heartbeat.checkers.database",
     ],
 }
+
+CSRF_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
+]
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
+CORS_ALLOW_CREDENTIALS = True
+# PROD endpoint for frontend: https://inet-monday-fall2023-team-1.vercel.app/
+
+# PROD ONLY
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+DRF_STANDARDIZED_ERRORS = {
+    "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True,
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://*.vercel.app",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://*.elasticbeanstalk.com",
+]
+
+# Email Backend Configuration
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
+EMAIL_HOST = (
+    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
+)
+EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
+EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
