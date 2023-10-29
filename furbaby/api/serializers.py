@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users
+from .models import Users,Pets
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
