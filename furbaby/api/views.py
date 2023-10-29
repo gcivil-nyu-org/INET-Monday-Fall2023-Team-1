@@ -6,11 +6,13 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from .utils import json_response
 from api.auth_backends import EmailBackend
-from .serializers import RegistrationSerializer, UserLoginSerializer
-
+from .serializers import RegistrationSerializer, UserLoginSerializer, PetSerializer
+from .models import Pets
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
