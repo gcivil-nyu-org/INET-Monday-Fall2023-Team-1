@@ -1,11 +1,12 @@
 import os
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf import settings
 
 from .utils import json_response
 from api.auth_backends import EmailBackend
@@ -14,7 +15,6 @@ from .serializers import RegistrationSerializer, UserLoginSerializer
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -100,7 +100,17 @@ def whoami_view(request):
 
 
 def index(req):
-    return HttpResponse("Hello, world", status=200)
+    return JsonResponse(
+        {
+            "version": {
+                "short_hash": getattr(
+                    settings, "GIT_COMMIT_SHORT_HASH", "default-00000"
+                ),
+                "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
+            }
+        },
+        status=200,
+    )
 
 
 @receiver(reset_password_token_created)

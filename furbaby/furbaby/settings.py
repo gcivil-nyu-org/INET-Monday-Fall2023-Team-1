@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import subprocess
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
 os.environ.setdefault(
@@ -160,13 +161,14 @@ HEARTBEAT = {
         "heartbeat.checkers.python",
         "heartbeat.checkers.database",
     ],
+    "auth": {"username": "furbaby-api", "password": os.environ["DJANGO_SECRET_KEY"]},
 }
 
-CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "None"
+CSRF_COOKIE_SAMESITE = "Strict"
+SESSION_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_DOMAIN = "inet-monday-fall2023-team-1.vercel.app"
-SESSION_COOKIE_DOMAIN = "inet-monday-fall2023-team-1.vercel.app"
+CSRF_COOKIE_DOMAIN = ".furbabyapi.net"
+SESSION_COOKIE_DOMAIN = ".furbabyapi.net"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -177,7 +179,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
-    "https://furbabyapi.net",
+    "https://*.furbabyapi.net",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -200,7 +202,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
-    "https://furbabyapi.net",
+    "https://*.furbabyapi.net",
 ]
 
 # Email Backend Configuration
@@ -213,3 +215,13 @@ EMAIL_HOST = (
 )
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+
+GIT_COMMIT_SHORT_HASH = (
+    subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+    .decode("ascii")
+    .strip()
+)
+
+GIT_COMMIT_HASH = (
+    subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+)
