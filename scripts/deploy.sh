@@ -1,9 +1,14 @@
 #!/bin/sh
 
 ROOT_DIR=$(git rev-parse --show-toplevel)
-export GIT_COMMIT_SHORT_HASH=$(git rev-parse --short HEAD)
-export GIT_COMMIT_HASH=$(git rev-parse HEAD)
+GIT_COMMIT_SHORT_HASH=$(git rev-parse --short HEAD)
+GIT_COMMIT_HASH=$(git rev-parse HEAD)
 
-cd $ROOT_DIR/furbaby
+cd $ROOT_DIR/furbaby/furbaby
 
-eb deploy
+sed -i "s/GIT_COMMIT_SHORT_HASH=.*/GIT_COMMIT_SHORT_HASH=$GIT_COMMIT_SHORT_HASH/g" .env
+sed -i "s/GIT_COMMIT_HASH=.*/GIT_COMMIT_HASH=$GIT_COMMIT_HASH/g" .env
+
+# cd $ROOT_DIR/furbaby
+
+# eb deploy
