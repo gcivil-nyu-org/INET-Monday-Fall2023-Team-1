@@ -102,7 +102,7 @@ def whoami_view(request):
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
 
-@api_view(["GET", "OPTIONS", "PUT", "PATCH"])
+@api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
 def user_view(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -115,6 +115,9 @@ def user_view(request):
 
     if request.method in ["PUT", "PATCH"]:
         return __update_user_info__(request)
+
+    if request.method == "DELETE":
+        return email_backend.delete_user(request, request.user.email)
 
     return json_response(
         {"error": "incorrect request method supplied"},

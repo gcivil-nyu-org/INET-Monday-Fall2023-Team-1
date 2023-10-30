@@ -51,6 +51,21 @@ class EmailBackend(ModelBackend):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+    def delete_user(self, request, email=None, **kwargs):
+        User = get_user_model()
+        try:
+            user = User.objects.get(email=email, username=email)
+            user.delete()
+            return json_response(
+                {"message": "User deleted successfully"},
+                status.HTTP_200_OK,
+            )
+        except User.DoesNotExist:
+            return json_response(
+                data={"error": "user not found", "email": email},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
     def update_user_info(self, request, email=None, **kwargs):
         User = get_user_model()
         try:
