@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+import subprocess
+
+from pathlib import Path
 from dotenv import load_dotenv
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
@@ -32,12 +34,7 @@ SECRET_KEY = "django-insecure-5ic&%!xeaw@-lpvb6tfd)k0i(-t@$^ttrf)7sz=8)d#uzh)bgo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
-]
-
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -162,19 +159,25 @@ HEARTBEAT = {
         "heartbeat.checkers.python",
         "heartbeat.checkers.database",
     ],
+    "auth": {"username": "furbaby-api", "password": "password"},
 }
 
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_DOMAIN = "localhost"
+SESSION_COOKIE_DOMAIN = "localhost"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "http://*.vercel.app",
+    "https://inet-monday-fall2023-team-1.vercel.app",
+    "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
+    "https://*.furbabyapi.net",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -193,11 +196,14 @@ DRF_STANDARDIZED_ERRORS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://*.vercel.app",
+    "https://inet-monday-fall2023-team-1.vercel.app",
+    "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
+    "https://*.furbabyapi.net",
 ]
 
 # Email Backend Configuration
@@ -205,11 +211,12 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
-EMAIL_HOST = (
-    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
-)
+EMAIL_HOST = "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
 
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_DOMAIN = "test.com"
+GIT_COMMIT_SHORT_HASH = (
+    subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+)
+
+GIT_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()

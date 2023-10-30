@@ -1,11 +1,11 @@
 import os
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.conf import settings
 
 from .utils import json_response
 from api.auth_backends import EmailBackend
@@ -14,7 +14,6 @@ from .serializers import RegistrationSerializer, UserLoginSerializer
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -22,6 +21,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []
+
     serializer_class = RegistrationSerializer
 
     def get_exception_handler(self):
@@ -31,9 +31,7 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            return json_response(
-                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         return json_response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -61,12 +59,11 @@ class UserLoginView(APIView):
             else:
                 return json_response(
                     data={"message": "Invalid credentials"},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
-        return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
-@ensure_csrf_cookie
 def logout_view(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -74,39 +71,37 @@ def logout_view(request):
         )
 
     logout(request)
-    return json_response(
-        {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
-    )
+    return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 
-@ensure_csrf_cookie
 def session_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"isAuthenticated": True})
 
 
-@ensure_csrf_cookie
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
 
 def index(req):
-    return HttpResponse("Hello, world", status=200)
+    return JsonResponse(
+        {
+            "version": {
+                "short_hash": getattr(settings, "GIT_COMMIT_SHORT_HASH", "default-00000"),
+                "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
+            }
+        },
+        status=200,
+    )
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(
-    sender, instance, reset_password_token, *args, **kwargs
-):
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -129,9 +124,7 @@ def password_reset_token_created(
 
     # render email text
     email_html_message = render_to_string("email/password_reset_email.html", context)
-    email_plaintext_message = render_to_string(
-        "email/password_reset_email.txt", context
-    )
+    email_plaintext_message = render_to_string("email/password_reset_email.txt", context)
 
     msg = EmailMultiAlternatives(
         # title:

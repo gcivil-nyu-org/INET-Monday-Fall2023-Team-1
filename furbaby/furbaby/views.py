@@ -1,9 +1,5 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 
-def health(req):
-    return HttpResponse("OK", status=200)
-
-
-def index(req):
-    return HttpResponse("Hey! Welcome to Furbaby!", status=200)
+def health(_req):
+    return JsonResponse({"status": "OK"}, status=200)

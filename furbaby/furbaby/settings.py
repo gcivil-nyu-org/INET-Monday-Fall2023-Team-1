@@ -34,11 +34,7 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
-]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -164,19 +160,25 @@ HEARTBEAT = {
         "heartbeat.checkers.python",
         "heartbeat.checkers.database",
     ],
+    "auth": {"username": "furbaby-api", "password": os.environ["DJANGO_SECRET_KEY"]},
 }
 
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_DOMAIN = "furbabyapi.net"
+SESSION_COOKIE_DOMAIN = "furbabyapi.net"
 SESSION_COOKIE_HTTPONLY = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "http://*.vercel.app",
+    "https://inet-monday-fall2023-team-1.vercel.app",
+    "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
-    "http://*.elasticbeanstalk.com",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
+    "https://ui.furbabyapi.net",
+    "https://furbabyapi.net",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 CORS_ALLOW_CREDENTIALS = True
@@ -192,11 +194,15 @@ DRF_STANDARDIZED_ERRORS = {
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://*.vercel.app",
+    "https://inet-monday-fall2023-team-1.vercel.app",
+    "https://*.vercel.app",
     "http://localhost:8000",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:8000",
+    "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com",
     "http://*.elasticbeanstalk.com",
+    "https://ui.furbabyapi.net",
+    "https://furbabyapi.net",
 ]
 
 # Email Backend Configuration
@@ -209,3 +215,12 @@ EMAIL_HOST = (
 )
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+
+GIT_COMMIT_SHORT_HASH = os.environ.get("GIT_COMMIT_SHORT_HASH", "")
+
+# # subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+#     .decode("ascii")
+#     .strip()
+GIT_COMMIT_HASH = os.environ.get("GIT_COMMIT_HASH", "")
+
+# (subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()),

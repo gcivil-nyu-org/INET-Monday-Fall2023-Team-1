@@ -1,8 +1,8 @@
-import React, { useContext } from "react";
-import { CookiesProvider } from "react-cookie";
-import { Navigate, Route, Routes } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
 import { AuthContext, AuthProvider } from "./auth";
+import { ROUTES } from "./constants";
 import ForgotPassword from "./ForgotPassword";
 import Home from "./Home";
 import Landing from "./Landing";
@@ -12,7 +12,7 @@ import SignUp from "./SignUp";
 const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
   const authContext = useContext(AuthContext);
 
-  if (authContext?.isCookiePresent && !authContext.isCookiePresent()) {
+  if (!authContext.isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
@@ -20,7 +20,14 @@ const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
 };
 
 const AppRouter = () => {
-  const { onLogin, onRegister, passwordReset, ...rest } = useContext(AuthContext);
+  const { onLogin, onRegister, passwordReset, isAuthenticated, ...rest } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(ROUTES.HOME, { replace: true });
+    }
+  }, [isAuthenticated]);
 
   return (
     <Routes>
@@ -41,7 +48,7 @@ const AppRouter = () => {
         path="home"
         element={
           <ProtectedRoute>
-            <Home authContext={{ onLogin, onRegister, passwordReset, ...rest }} />
+            <Home authContext={{ onLogin, onRegister, passwordReset, isAuthenticated, ...rest }} />
           </ProtectedRoute>
         }
       />
@@ -52,11 +59,9 @@ const AppRouter = () => {
 
 const App = () => {
   return (
-    <CookiesProvider defaultSetOptions={{ path: "/" }}>
-      <AuthProvider>
-        <AppRouter />
-      </AuthProvider>
-    </CookiesProvider>
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
   );
 };
 

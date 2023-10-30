@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const PROD_API_HOST = "http://furbaby-prod-pr.eba-f3mkhigp.us-east-1.elasticbeanstalk.com";
+const PROD_API_HOST = "https://furbabyapi.net";
 const LOCAL_API_HOST = "http://localhost:8000";
 const API_HOST = process.env.NODE_ENV === "development" ? LOCAL_API_HOST : PROD_API_HOST;
 
@@ -8,6 +8,7 @@ axios.defaults.baseURL = API_HOST;
 axios.defaults.xsrfHeaderName = "X-CSRFToken";
 axios.defaults.xsrfCookieName = "csrftoken";
 axios.defaults.headers.post["Content-Type"] = "application/json";
+axios.defaults.withCredentials = true;
 
 export const ROUTES = {
   ROOT: "/",
