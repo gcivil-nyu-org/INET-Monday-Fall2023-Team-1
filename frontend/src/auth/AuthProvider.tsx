@@ -26,6 +26,7 @@ export interface AuthCtx {
     checkAuthenticationState: (withToast?: boolean, withRedirect?: boolean) => void;
     checkUserInfo: () => void;
   };
+  onDeleteUser: () => Promise<unknown>;
 }
 
 const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
@@ -335,6 +336,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       });
   };
 
+  const handleDeleteUser = () => {
+    return axios.delete(API_ROUTES.USER.USER_ROOT);
+  };
+
   const contextValue: AuthCtx = {
     authenticationState: authState,
     onRegister: handleRegister,
@@ -349,6 +354,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       checkUserInfo: handleWhoami,
       checkAuthenticationState: handleSession,
     },
+    onDeleteUser: handleDeleteUser,
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

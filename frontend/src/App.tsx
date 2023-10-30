@@ -75,6 +75,16 @@ const AppRouter = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="settings"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

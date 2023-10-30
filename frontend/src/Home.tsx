@@ -7,6 +7,7 @@ import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
 import Profile from "./Profile";
+import Settings from "./Settings";
 import { classNames } from "./utils";
 
 const user = {
@@ -38,6 +39,12 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
         },
       },
       {
+        name: "Settings",
+        onClick: () => {
+          navigate(ROUTES.PROTECTED_ROUTES.SETTINGS);
+        },
+      },
+      {
         name: "Sign out",
         onClick: () => {
           props.authContext.onLogout();
@@ -52,6 +59,8 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
       return "Dashboard";
     } else if (pathname === ROUTES.PROTECTED_ROUTES.PROFILE) {
       return "Profile";
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
+      return "Settings";
     }
     return "Default";
   }, [pathname]);
@@ -63,6 +72,13 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
       return (
         <Profile
           handleLogout={props.authContext.authenticatedUserChecks.checkAuthenticationState}
+          userAuthState={props.authContext.authenticationState}
+        />
+      );
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
+      return (
+        <Settings
+          handleDeleteUser={props.authContext.onDeleteUser}
           userAuthState={props.authContext.authenticationState}
         />
       );

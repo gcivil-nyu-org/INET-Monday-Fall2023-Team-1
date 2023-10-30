@@ -18,6 +18,7 @@ export const ROUTES = {
   PROTECTED_ROUTES: {
     HOME: "/home",
     PROFILE: "/profile",
+    SETTINGS: "/settings",
   },
 } as const;
 
