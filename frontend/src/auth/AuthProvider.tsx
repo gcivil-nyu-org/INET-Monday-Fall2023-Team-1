@@ -7,8 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { API_ROUTES, ROUTES } from "../constants";
 import notify from "../Notify";
 
+interface AuthenticationState {
+  isSessionSet: boolean;
+  sessionCheckLoading: boolean;
+}
+
 export interface AuthCtx {
-  isAuthenticated: boolean;
+  authenticationState: AuthenticationState;
   onRegister: (email: string, password: string, userTypes: ("sitter" | "owner")[]) => void;
   onLogin: (email: string, password: string) => void;
   onLogout: () => void;
@@ -26,7 +31,10 @@ export interface AuthCtx {
 const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
 
 const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
-  const [authState, updateAuthState] = React.useState<boolean>(false);
+  const [authState, updateAuthState] = React.useState<AuthenticationState>({
+    isSessionSet: false,
+    sessionCheckLoading: false,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +48,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
         JSON.stringify({
           email,
           password,
-          user_types: userTypes,
+          user_type: userTypes,
         }),
         {
           withCredentials: true,
@@ -92,9 +100,12 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          updateAuthState(true);
+          updateAuthState({
+            isSessionSet: true,
+            sessionCheckLoading: false,
+          });
           toast.success("Logged in!");
-          navigate(ROUTES.HOME);
+          navigate(ROUTES.PROTECTED_ROUTES.HOME);
         }
       })
       .catch((error) => {
@@ -119,7 +130,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthState(false);
+          updateAuthState({
+            isSessionSet: false,
+            sessionCheckLoading: false,
+          });
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
         }
@@ -268,12 +282,20 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthState(false);
+        updateAuthState({
+          isSessionSet: false,
+          sessionCheckLoading: false,
+        });
         navigate(ROUTES.LOGIN);
       });
   };
 
   const handleSession = (withToast = false, withRedirect = false) => {
+    updateAuthState({
+      isSessionSet: false,
+      sessionCheckLoading: true,
+    });
+
     axios
       .post(API_ROUTES.AUTH.SESSION, undefined, {
         withCredentials: true,
@@ -281,7 +303,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthState(true);
+          updateAuthState({
+            isSessionSet: true,
+            sessionCheckLoading: false,
+          });
           if (withToast) {
             toast.success("user session is authenticated and active");
           }
@@ -303,12 +328,15 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
         if (withRedirect) {
           navigate(ROUTES.LOGIN);
         }
-        updateAuthState(false);
+        updateAuthState({
+          isSessionSet: false,
+          sessionCheckLoading: false,
+        });
       });
   };
 
-  const contextValue = {
-    isAuthenticated: authState,
+  const contextValue: AuthCtx = {
+    authenticationState: authState,
     onRegister: handleRegister,
     onLogin: handleLogin,
     onLogout: handleLogout,

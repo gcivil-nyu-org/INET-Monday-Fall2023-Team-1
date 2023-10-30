@@ -15,7 +15,10 @@ export const ROUTES = {
   SIGN_UP: "/signup",
   LOGIN: "/login",
   FORGOT_PASSWORD: "/forgot-password",
-  HOME: "/home",
+  PROTECTED_ROUTES: {
+    HOME: "/home",
+    PROFILE: "/profile",
+  },
 } as const;
 
 export const API_ROUTES = {
@@ -32,4 +35,7 @@ export const API_ROUTES = {
     },
   },
   HOME: "/",
+  USER: {
+    USER_ROOT: "api/user",
+  },
 } as const;

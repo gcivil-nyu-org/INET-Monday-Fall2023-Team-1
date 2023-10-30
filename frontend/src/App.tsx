@@ -1,18 +1,19 @@
 import React, { useContext, useEffect } from "react";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import { AuthContext, AuthProvider } from "./auth";
 import { ROUTES } from "./constants";
 import ForgotPassword from "./ForgotPassword";
 import Home from "./Home";
 import Landing from "./Landing";
+import Loading from "./Loading";
 import NotFound from "./NotFound";
 import SignUp from "./SignUp";
 
 const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
-  const authContext = useContext(AuthContext);
+  const { authenticationState } = useContext(AuthContext);
 
-  if (!authContext.isAuthenticated) {
+  if (!authenticationState.isSessionSet) {
     return <Navigate to="/login" replace />;
   }
 
@@ -20,14 +21,24 @@ const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
 };
 
 const AppRouter = () => {
-  const { onLogin, onRegister, passwordReset, isAuthenticated, ...rest } = useContext(AuthContext);
+  const { onLogin, onRegister, passwordReset, authenticationState, ...rest } =
+    useContext(AuthContext);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(ROUTES.HOME, { replace: true });
+    if (authenticationState.isSessionSet) {
+      if (Object.values(ROUTES.PROTECTED_ROUTES).find((route) => route === pathname)) {
+        navigate(pathname, { replace: true });
+      } else {
+        navigate(ROUTES.PROTECTED_ROUTES.HOME, { replace: true });
+      }
     }
-  }, [isAuthenticated]);
+  }, [authenticationState.isSessionSet]);
+
+  if (authenticationState.sessionCheckLoading && !authenticationState.isSessionSet) {
+    return <Loading />;
+  }
 
   return (
     <Routes>
@@ -48,7 +59,19 @@ const AppRouter = () => {
         path="home"
         element={
           <ProtectedRoute>
-            <Home authContext={{ onLogin, onRegister, passwordReset, isAuthenticated, ...rest }} />
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="profile"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
           </ProtectedRoute>
         }
       />
