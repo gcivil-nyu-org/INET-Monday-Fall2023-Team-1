@@ -1,6 +1,4 @@
 // import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/outline";
-import "react-day-picker/dist/style.css";
-
 import { Tab } from "@headlessui/react";
 // import { PaperClipIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
