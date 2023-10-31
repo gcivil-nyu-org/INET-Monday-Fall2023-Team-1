@@ -15,9 +15,7 @@ import os
 from dotenv import load_dotenv
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
-os.environ.setdefault(
-    "FORGOT_PASSWORD_HOST", "https://inet-monday-fall2023-team-1.vercel.app"
-)
+os.environ.setdefault("FORGOT_PASSWORD_HOST", "https://ui.furbaby.net")
 
 load_dotenv()
 
