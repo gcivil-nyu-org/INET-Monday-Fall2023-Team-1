@@ -1,4 +1,8 @@
-# Team Project repo
+# FurBaby - Team 1 Project
+
+[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=develop)
+
+
 
 **PLEASE USE PYTHON 3.8 ONLY**
 

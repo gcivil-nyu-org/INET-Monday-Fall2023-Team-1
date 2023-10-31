@@ -8,3 +8,7 @@
 **/*.DS_STORE
 
 **/.vercel
+
+**/.coveralls.yml
+
+**/*.coverage
