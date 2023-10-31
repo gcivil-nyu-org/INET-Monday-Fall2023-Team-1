@@ -30,17 +30,18 @@ jobs:
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         region: "us-east-1"
         app: "project-team-1-furbaby"
-        env: "furbaby-prod-pr"
+        env: "furbaby-develop"
         bucket_name: "elasticbeanstalk-us-east-1-994011800090"
         on:
-          branch: develop
+          # branch: develop
+          all_branches: true
 
       - provider: elasticbeanstalk
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         region: "us-east-1"
         app: "project-team-1-furbaby"
-        env: "furbaby-prod-pr-new"
+        env: "furbaby-master"
         bucket_name: "elasticbeanstalk-us-east-1-994011800090"
         on:
           branch: master

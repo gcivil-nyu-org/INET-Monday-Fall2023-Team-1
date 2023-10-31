@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// Also available:
+// https://develop.furbabyapi.net
+// https://ms.furbabyapi.net
 const PROD_API_HOST = "https://furbabyapi.net";
 const LOCAL_API_HOST = "http://localhost:8000";
 const API_HOST = process.env.NODE_ENV === "development" ? LOCAL_API_HOST : PROD_API_HOST;
