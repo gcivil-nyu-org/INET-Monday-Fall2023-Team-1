@@ -3,7 +3,7 @@
 **/.elasticbeanstalk/*
 **/__pycache__/**
 
-**/*.env
+**/*.eb_env
 
 **/*.DS_STORE
 
