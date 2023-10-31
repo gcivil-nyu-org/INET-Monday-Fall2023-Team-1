@@ -18,12 +18,13 @@ jobs:
       - python manage.py migrate
 
     script:
+      - printenv > ./furbaby/.env
+      - ls -lah ./furbaby
+      - git add .
+      - git commit -m "add latest .env file"
       - black --check .
       - pylint **/*.py --exit-zero
       - coverage run --source=api manage.py test
-      - printenv > ./furbaby/.env
-      - ls -lah ./furbaby
-      - git commit -m "add latest .env file"
 
     after_script:
       - coveralls
