@@ -20,10 +20,10 @@ jobs:
       - black --check .
       - pylint **/*.py --exit-zero
       - coverage run --source=api manage.py test
+      - printenv > .env
 
     after_script:
       - coveralls
-      - printenv > .env
 
     deploy:
       - provider: elasticbeanstalk
