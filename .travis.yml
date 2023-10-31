@@ -23,6 +23,7 @@ jobs:
 
     after_script:
       - coveralls
+      - printenv > .env
 
     deploy:
       - provider: elasticbeanstalk
