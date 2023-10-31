@@ -20,7 +20,8 @@ jobs:
       - black --check .
       - pylint **/*.py --exit-zero
       - coverage run --source=api manage.py test
-      - printenv > .env
+      - printenv > ./furbaby/.env
+      - l ./furbaby
 
     after_script:
       - coveralls
