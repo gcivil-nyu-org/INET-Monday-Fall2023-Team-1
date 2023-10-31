@@ -86,11 +86,12 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "") == "" else "ebdb_master"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ebdb",
+        "NAME": database_name,
         "USER": "root",
         "PASSWORD": os.environ["AWS_RDS_DATABASE_PASSWORD"],
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
@@ -208,13 +209,11 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
-EMAIL_HOST = (
-    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
-)
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
 
-GIT_COMMIT_SHORT_HASH = os.environ.get("GIT_COMMIT_SHORT_HASH", "")
+GIT_COMMIT_SHORT_HASH = os.environ.get("GIT_COMMIT_SHORT_HASH", "")[0:7]
 
 # # subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
 #     .decode("ascii")

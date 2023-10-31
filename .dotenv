@@ -1,2 +1,0 @@
-AWS_RDS_DATABASE_PASSWORD=dummy-password
-DJANGO_SECRET_KEY=dummy-secret-key
