@@ -1,8 +1,12 @@
 # FurBaby - Team 1 Project
 
-[![Coverage Status](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=develop)
+[![Coverage Status | Develop](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=develop)
 
-[![Build Status](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
+[![Build Status | Develop](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
+
+[![Coverage Status | Master](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=master)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=master)
+
+[![Build Status | Master](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
 
 **PLEASE USE PYTHON 3.8 ONLY**
 
