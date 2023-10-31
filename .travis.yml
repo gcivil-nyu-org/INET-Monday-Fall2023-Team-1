@@ -10,6 +10,8 @@ jobs:
       - cd furbaby && pip install -r requirements.txt
       - export GIT_COMMIT_SHORT_HASH=$(git rev-parse --short HEAD)
       - export GIT_COMMIT_HASH=$(git rev-parse HEAD)
+      - echo $GIT_COMMIT_HASH
+      - echo $GIT_COMMIT_SHORT_HASH
 
     before_script:
       - python manage.py migrate
