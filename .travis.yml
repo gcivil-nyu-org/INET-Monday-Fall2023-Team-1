@@ -1,5 +1,6 @@
 language: python
 os: linux
+dist: focal
 
 python:
   - 3.8
@@ -27,33 +28,23 @@ jobs:
       - coveralls
 
     deploy:
+      skip_cleanup: true
       - provider: elasticbeanstalk
-        # edge: true
-        # cleanup: false
-        skip_cleanup: true
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         region: "us-east-1"
         app: "project-team-1-furbaby"
         env: "develop-furbaby"
-        bucket_name: "elasticbeanstalk-us-east-1-994011800090"
-        # wait_until_deployed: true
-        # wait_until_deployed_timeout: 1200
+        bucket: "elasticbeanstalk-us-east-1-994011800090"
         on:
-          # branch: develop
           all_branches: true
 
       - provider: elasticbeanstalk
-        # edge: true
-        skip_cleanup: true
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
-        # cleanup: false
         region: "us-east-1"
         app: "project-team-1-furbaby"
         env: "furbaby-master"
-        bucket_name: "elasticbeanstalk-us-east-1-994011800090"
-        # wait_until_deployed: true
-        # wait_until_deployed_timeout: 1200
+        bucket: "elasticbeanstalk-us-east-1-994011800090"
         on:
           branch: master
