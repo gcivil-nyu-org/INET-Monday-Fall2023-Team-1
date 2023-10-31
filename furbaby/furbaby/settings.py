@@ -86,7 +86,9 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "") == "" else "ebdb_master"
+database_name = (
+    "ebdb" if os.environ.get("TRAVIS_BRANCH", "") != "master" else "ebdb_master"
+)
 
 DATABASES = {
     "default": {
