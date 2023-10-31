@@ -1,9 +1,13 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { AuthCtx } from "./auth/AuthProvider";
+import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
+import Profile from "./Profile";
+import Settings from "./Settings";
 import { classNames } from "./utils";
 
 const user = {
@@ -14,9 +18,8 @@ const user = {
 
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
-  { name: "Tab 2", href: "#", current: false },
-  { name: "Tab 3", href: "#", current: false },
-  { name: "Tab 4", href: "#", current: false },
+  { name: "Job Feed", href: "#", current: false },
+  { name: "Pet Profiles", href: "#", current: false },
 ];
 
 type HomeProps = {
@@ -24,10 +27,23 @@ type HomeProps = {
 };
 
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
   const userNavigation = React.useMemo(
     () => [
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      { name: "Your Profile", onClick: () => {} },
+      {
+        name: "Profile",
+        onClick: () => {
+          navigate(ROUTES.PROTECTED_ROUTES.PROFILE);
+        },
+      },
+      {
+        name: "Settings",
+        onClick: () => {
+          navigate(ROUTES.PROTECTED_ROUTES.SETTINGS);
+        },
+      },
       {
         name: "Sign out",
         onClick: () => {
@@ -37,6 +53,38 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     ],
     [props]
   );
+
+  const pageHeader = useMemo(() => {
+    if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
+      return "Dashboard";
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.PROFILE) {
+      return "Profile";
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
+      return "Settings";
+    }
+    return "Default";
+  }, [pathname]);
+
+  const pageContent = useMemo(() => {
+    if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
+      return <></>;
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.PROFILE) {
+      return (
+        <Profile
+          handleLogout={props.authContext.authenticatedUserChecks.checkAuthenticationState}
+          userAuthState={props.authContext.authenticationState}
+        />
+      );
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
+      return (
+        <Settings
+          handleDeleteUser={props.authContext.onDeleteUser}
+          userAuthState={props.authContext.authenticationState}
+        />
+      );
+    }
+    return "Nothing here to display";
+  }, [pathname]);
 
   return (
     <>
@@ -196,11 +244,11 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
 
         <header className="bg-white shadow">
           <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900">{pageHeader}</h1>
           </div>
         </header>
         <main>
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">{/* Your content */}</div>
+          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">{pageContent}</div>
         </main>
       </div>
     </>
