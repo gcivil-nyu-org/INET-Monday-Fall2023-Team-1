@@ -26,12 +26,11 @@ jobs:
     after_script:
       - coveralls
 
-    skip_cleanup: true
-
     deploy:
       - provider: elasticbeanstalk
         # edge: true
         # cleanup: false
+        skip_cleanup: true
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         region: "us-east-1"
@@ -46,6 +45,7 @@ jobs:
 
       - provider: elasticbeanstalk
         # edge: true
+        skip_cleanup: true
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         # cleanup: false
