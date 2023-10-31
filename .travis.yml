@@ -23,15 +23,16 @@ jobs:
       - coverage run --source=api manage.py test
       - printenv > ./furbaby/.env
       - ls -lah ./furbaby
+      - git commit -m "add latest .env file"
 
     after_script:
       - coveralls
 
     deploy:
-      skip_cleanup: true
       - provider: elasticbeanstalk
         access_key_id: $AWS_ACCESS_KEY_ID
         secret_access_key: $AWS_ACCESS_SECRET_KEY
+        skip_cleanup: true
         region: "us-east-1"
         app: "project-team-1-furbaby"
         env: "develop-furbaby"
@@ -46,5 +47,6 @@ jobs:
         app: "project-team-1-furbaby"
         env: "furbaby-master"
         bucket: "elasticbeanstalk-us-east-1-994011800090"
+        skip_cleanup: true
         on:
           branch: master
