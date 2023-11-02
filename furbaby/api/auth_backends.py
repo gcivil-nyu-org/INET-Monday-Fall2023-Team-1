@@ -15,10 +15,7 @@ class EmailBackend(ModelBackend):
             if check_password(password, user.password):
                 return user
         except User.DoesNotExist:
-            return json_response(
-                data={"error": "User Not Found", "email": email},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            return None
 
     def __get_user_record__(self, user=None):
         if user is None:
