@@ -1,6 +1,15 @@
 import axios from "axios";
 
-const PROD_API_HOST = "https://furbabyapi.net";
+const getProdAPIHost = () => {
+  const vercelCommitRef = process.env["VERCEL_GIT_COMMIT_REF"]?.toLowerCase();
+  if ("master" === vercelCommitRef) {
+    return "https://production.furbabyapi.net";
+  }
+
+  return "https://staging.furbabyapi.net";
+};
+
+const PROD_API_HOST = getProdAPIHost();
 const LOCAL_API_HOST = "http://localhost:8000";
 const API_HOST = process.env.NODE_ENV === "development" ? LOCAL_API_HOST : PROD_API_HOST;
 

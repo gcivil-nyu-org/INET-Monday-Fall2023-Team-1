@@ -59,8 +59,8 @@ class UserLoginView(APIView):
                 )
             else:
                 return json_response(
-                    data={"message": "Invalid credentials"},
-                    status=status.HTTP_400_BAD_REQUEST,
+                    data={"message": "User is not found"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
         return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 

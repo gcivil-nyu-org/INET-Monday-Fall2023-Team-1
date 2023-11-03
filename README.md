@@ -1,12 +1,20 @@
 # FurBaby - Team 1 Project
 
+#### Develop Branch
+
 [![Coverage Status | Develop](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=develop)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=develop)
 
 [![Build Status | Develop](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
 
+- https://staging.furbabyapi.net/
+
+#### Master Branch
+
 [![Coverage Status | Master](https://coveralls.io/repos/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1/badge.svg?branch=master)](https://coveralls.io/github/gcivil-nyu-org/INET-Monday-Fall2023-Team-1?branch=master)
 
 [![Build Status | Master](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
+
+- https://production.furbabyapi.net/
 
 **PLEASE USE PYTHON 3.8 ONLY**
 

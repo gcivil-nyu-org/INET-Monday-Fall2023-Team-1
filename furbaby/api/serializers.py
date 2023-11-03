@@ -13,7 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         write_only=True,
         allow_empty=False,
     )
-    password = serializers.CharField(min_length=6, write_only=True, trim_whitespace=True)
+    password = serializers.CharField(min_length=8, write_only=True, trim_whitespace=True)
     email = serializers.EmailField(allow_blank=False, trim_whitespace=True)
 
     class Meta:
@@ -44,4 +44,4 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(min_length=6, write_only=True)
+    password = serializers.CharField(min_length=8, write_only=True)
