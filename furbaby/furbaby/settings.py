@@ -16,8 +16,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+def get_password_reset_host():
+    if os.environ.get("TRAVIS_BRANCH", "").lower() == "master":
+        return "https://ui.furbabyapi.net"
+    return "https://staging-ui.furbabyapi.net"
+
+
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
-os.environ.setdefault("FORGOT_PASSWORD_HOST", "https://ui.furbaby.net")
+os.environ.setdefault("FORGOT_PASSWORD_HOST", get_password_reset_host())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -86,7 +93,7 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "") != "master" else "ebdb_master"
+database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "ebdb_master"
 
 DATABASES = {
     "default": {
