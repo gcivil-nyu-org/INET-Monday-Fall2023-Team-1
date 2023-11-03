@@ -13,9 +13,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         write_only=True,
         allow_empty=False,
     )
-    password = serializers.CharField(
-        min_length=8, write_only=True, trim_whitespace=True
-    )
+    password = serializers.CharField(min_length=8, write_only=True, trim_whitespace=True)
     email = serializers.EmailField(allow_blank=False, trim_whitespace=True)
 
     class Meta:
@@ -80,12 +78,7 @@ class UserLocationSerializer(serializers.Serializer):
         if city not in cities_allowed_list:
             raise ValidationError("Users must be located in New York City/NYC")
         if country not in countries_allowed_list:
-            raise ValidationError(
-                "Users must be located in the United States of America/USA"
-            )
-        if data.get("default_location", True):
-        # If the user is setting a default location, set all other locations to false
-            Locations.objects.filter(user_id=data.get("user").id).update(default_location=False)
+            raise ValidationError("Users must be located in the United States of America/USA")
         return data
 
     def create(self, validated_data):
