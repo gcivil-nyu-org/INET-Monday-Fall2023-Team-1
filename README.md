@@ -6,7 +6,7 @@
 
 [![Build Status | Develop](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=develop)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
 
-- https://develop.furbabyapi.net/
+- https://staging.furbabyapi.net/
 
 #### Master Branch
 
@@ -14,7 +14,7 @@
 
 [![Build Status | Master](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1.svg?branch=master)](https://app.travis-ci.com/gcivil-nyu-org/INET-Monday-Fall2023-Team-1)
 
-- https://ms.furbabyapi.net/
+- https://production.furbabyapi.net/
 
 **PLEASE USE PYTHON 3.8 ONLY**
 
