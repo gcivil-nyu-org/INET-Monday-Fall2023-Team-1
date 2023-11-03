@@ -40,7 +40,7 @@ jobs:
         env: "staging"
         bucket: "elasticbeanstalk-us-east-1-994011800090"
         on:
-          all_branches: true
+          branch: develop
 
       - provider: elasticbeanstalk
         access_key_id: $AWS_ACCESS_KEY_ID
