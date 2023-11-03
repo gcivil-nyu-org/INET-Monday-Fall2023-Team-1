@@ -14,10 +14,17 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
-# NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
-os.environ.setdefault("FORGOT_PASSWORD_HOST", "https://ui.furbaby.net")
-
 load_dotenv()
+
+
+def get_password_reset_host():
+    if os.environ.get("TRAVIS_BRANCH", "").lower() == "master":
+        return "https://ui.furbabyapi.net"
+    return "https://staging-ui.furbabyapi.net"
+
+
+# NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
+os.environ.setdefault("FORGOT_PASSWORD_HOST", get_password_reset_host())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -86,16 +93,17 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "") == "" else "ebdb_master"
+database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "ebdb_master"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": database_name,
         "USER": "root",
-        "PASSWORD": os.environ["AWS_RDS_DATABASE_PASSWORD"],
+        "PASSWORD": os.environ.get("AWS_RDS_DATABASE_PASSWORD", ""),
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
         "PORT": "5432",
+        "ATOMIC_REQUESTS": True,
     }
 }
 
@@ -118,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
@@ -159,7 +170,10 @@ HEARTBEAT = {
         "heartbeat.checkers.python",
         "heartbeat.checkers.database",
     ],
-    "auth": {"username": "furbaby-api", "password": os.environ["DJANGO_SECRET_KEY"]},
+    "auth": {
+        "username": "furbaby-api",
+        "password": os.environ.get("DJANGO_SECRET_KEY"),
+    },
 }
 
 CSRF_COOKIE_SAMESITE = "Lax"
@@ -210,8 +224,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+EMAIL_HOST_USER = os.environ.get("EMAIL_APP_USERNAME")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD")
 
 GIT_COMMIT_SHORT_HASH = os.environ.get("GIT_COMMIT_SHORT_HASH", "")
 
