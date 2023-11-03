@@ -223,7 +223,8 @@ def user_location_view(request):
 
     # insert a new location record for the user
     if request.method in ["POST"]:
-        return location_view.insert_location_record(request)
+        request.data['user_id'] = request.user.id
+        return location_view.insert_location_record(request.data)
 
     # update a location record for the user
     if request.method in ["PUT", "PATCH"]:
@@ -231,7 +232,7 @@ def user_location_view(request):
 
     # delete a location record for the user
     if request.method == "DELETE":
-        return location_view.delete_location_record(request.user.id)
+        return location_view.delete_location_record(request.user.id, request.data)
 
     return json_response(
         {"error": "incorrect request method supplied"},
@@ -241,15 +242,17 @@ def user_location_view(request):
 
 # This class is for the user location(s)
 class UserLocationView(APIView):
+    authentication_classes = []
+
     # Fetch the locations serializer
     serializer_class = UserLocationSerializer
 
     def get_exception_handler(self):
         return exception_handler
 
-    # takes as input the post request and inserts a new location record for the user
-    def insert_location_record(self, request):
-        serializer = self.serializer_class(data=request.data)
+    # takes as input the user id, request and inserts a new location record for the user
+    def insert_location_record(self,request_data):
+        serializer = self.serializer_class(data=request_data)
 
         if not serializer.is_valid():
             return json_response(
@@ -284,8 +287,9 @@ class UserLocationView(APIView):
         return serialized_data
 
     # takes as input a location_id and location fields and updates the location record
-    def update_location_record(self, location_id, request_data):
+    def update_location_record(self, user_id, request_data):
         try:
+            location_id = request_data["id"]
             location = Locations.objects.get(id=location_id)
             location.address = request_data["address"]
             location.city = request_data["city"]
@@ -304,12 +308,14 @@ class UserLocationView(APIView):
                 data={
                     "error": "location not found for user",
                     "location id": location_id,
+                    "user id": user_id,
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-    def delete_location_record(self, location_id):
+    def delete_location_record(self, user_id, request_data):
         try:
+            location_id = request_data["id"]
             location = Locations.objects.get(id=location_id)
             location.delete()
             return json_response(
@@ -321,6 +327,7 @@ class UserLocationView(APIView):
                 data={
                     "error": "location not found for user",
                     "location id": location_id,
+                    "user id": user_id
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
