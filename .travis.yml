@@ -37,7 +37,7 @@ jobs:
         skip_cleanup: true
         region: "us-east-1"
         app: "project-team-1-furbaby"
-        env: "develop-furbaby"
+        env: "staging"
         bucket: "elasticbeanstalk-us-east-1-994011800090"
         on:
           all_branches: true
@@ -47,7 +47,7 @@ jobs:
         secret_access_key: $AWS_ACCESS_SECRET_KEY
         region: "us-east-1"
         app: "project-team-1-furbaby"
-        env: "furbaby-master"
+        env: "production"
         bucket: "elasticbeanstalk-us-east-1-994011800090"
         skip_cleanup: true
         on:
