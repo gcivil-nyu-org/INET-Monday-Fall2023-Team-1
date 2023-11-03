@@ -21,8 +21,8 @@ from . import settings, views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.index),
-    path("health/", views.health),  # TODO: this should come from the `heartbeat` lib
+    path("", include("api.urls")),
+    path("health/", views.health),
 ]
 
 if "heartbeat" in settings.INSTALLED_APPS:

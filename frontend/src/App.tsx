@@ -1,26 +1,101 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext, useEffect } from "react";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-function App() {
+import { AuthContext, AuthProvider } from "./auth";
+import { ROUTES } from "./constants";
+import ForgotPassword from "./ForgotPassword";
+import Home from "./Home";
+import Landing from "./Landing";
+import Loading from "./Loading";
+import NotFound from "./NotFound";
+import SignUp from "./SignUp";
+
+const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
+  const { authenticationState } = useContext(AuthContext);
+
+  if (!authenticationState.isSessionSet) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const AppRouter = () => {
+  const { onLogin, onRegister, passwordReset, authenticationState, ...rest } =
+    useContext(AuthContext);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (authenticationState.isSessionSet) {
+      if (Object.values(ROUTES.PROTECTED_ROUTES).find((route) => route === pathname)) {
+        navigate(pathname, { replace: true });
+      } else {
+        navigate(ROUTES.PROTECTED_ROUTES.HOME, { replace: true });
+      }
+    }
+  }, [authenticationState.isSessionSet]);
+
+  if (authenticationState.sessionCheckLoading && !authenticationState.isSessionSet) {
+    return <Loading />;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route index element={<Landing />} />
+      <Route
+        path="login"
+        element={<SignUp op="login" onLogin={onLogin} onRegister={onRegister} />}
+      />
+      <Route
+        path="signup"
+        element={<SignUp op="signup" onLogin={onLogin} onRegister={onRegister} />}
+      />
+      <Route
+        path="forgot-password"
+        element={<ForgotPassword resetPasswordHandlers={passwordReset} />}
+      />
+      <Route
+        path="home"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="profile"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="settings"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
-}
+};
+
+const App = () => {
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
+};
 
 export default App;
