@@ -223,7 +223,7 @@ def user_location_view(request):
 
     # insert a new location record for the user
     if request.method in ["POST"]:
-        request.data['user_id'] = request.user.id
+        request.data["user_id"] = request.user.id
         return location_view.insert_location_record(request.data)
 
     # update a location record for the user
@@ -251,7 +251,7 @@ class UserLocationView(APIView):
         return exception_handler
 
     # takes as input the user id, request and inserts a new location record for the user
-    def insert_location_record(self,request_data):
+    def insert_location_record(self, request_data):
         serializer = self.serializer_class(data=request_data)
 
         if not serializer.is_valid():
@@ -327,7 +327,7 @@ class UserLocationView(APIView):
                 data={
                     "error": "location not found for user",
                     "location id": location_id,
-                    "user id": user_id
+                    "user id": user_id,
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
