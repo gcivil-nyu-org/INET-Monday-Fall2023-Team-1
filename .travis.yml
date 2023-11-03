@@ -15,7 +15,7 @@ jobs:
       - echo $GIT_COMMIT_SHORT_HASH
 
     before_script:
-      - python manage.py migrate
+      - python manage.py migrate --settings=furbaby.settings
 
     script:
       - printenv > ./furbaby/.env
