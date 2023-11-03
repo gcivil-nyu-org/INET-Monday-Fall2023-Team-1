@@ -195,6 +195,37 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.send()
 
 
+@api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
+def user_location_view(request):
+    location_view = UserLocationView()
+
+    if not request.user.is_authenticated:
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # fetch all user locations for the user
+    if request.method == "GET":
+        locations_list = location_view.get_user_locations(request.user.id)
+        return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
+
+    # insert a new location record for the user
+    if request.method in ["POST"]:
+        request.data["user_id"] = request.user.id
+        return location_view.insert_location_record(request.data)
+
+    # update a location record for the user
+    if request.method in ["PUT", "PATCH"]:
+        return location_view.update_location_record(request.user.id, request.data)
+
+    # delete a location record for the user
+    if request.method == "DELETE":
+        return location_view.delete_location_record(request.user.id, request.data)
+
+    return json_response(
+        {"error": "incorrect request method supplied"},
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )
+
+
 # This class is for the user location(s)
 class UserLocationView(APIView):
     authentication_classes = []
