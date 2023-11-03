@@ -211,12 +211,18 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
-EMAIL_HOST = "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
+EMAIL_HOST = (
+    "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
+)
 EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
 EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
 
 GIT_COMMIT_SHORT_HASH = (
-    subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+    subprocess.check_output(["git", "rev-parse", "--short", "HEAD"])
+    .decode("ascii")
+    .strip()
 )
 
-GIT_COMMIT_HASH = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+GIT_COMMIT_HASH = (
+    subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+)

@@ -42,7 +42,9 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return json_response(
+                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer.save()
         return json_response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -72,7 +74,9 @@ class UserLoginView(APIView):
                     data={"message": "Invalid credentials"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 @api_view(["GET", "OPTIONS", "POST"])
@@ -83,13 +87,17 @@ def logout_view(request):
         )
 
     logout(request)
-    return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+    return json_response(
+        {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
+    )
 
 
 @api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     return json_response({"isAuthenticated": True})
 
@@ -97,7 +105,9 @@ def session_view(request):
 @api_view(["GET", "OPTIONS", "POST"])
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
@@ -105,7 +115,9 @@ def whoami_view(request):
 @api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
 def user_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     email_backend = EmailBackend()
     if request.method == "GET":
@@ -141,7 +153,9 @@ def index(req):
     return JsonResponse(
         {
             "version": {
-                "short_hash": getattr(settings, "GIT_COMMIT_SHORT_HASH", "default-00000"),
+                "short_hash": getattr(
+                    settings, "GIT_COMMIT_SHORT_HASH", "default-00000"
+                ),
                 "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
             }
         },
@@ -150,7 +164,9 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+def password_reset_token_created(
+    sender, instance, reset_password_token, *args, **kwargs
+):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -173,7 +189,9 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     # render email text
     email_html_message = render_to_string("email/password_reset_email.html", context)
-    email_plaintext_message = render_to_string("email/password_reset_email.txt", context)
+    email_plaintext_message = render_to_string(
+        "email/password_reset_email.txt", context
+    )
 
     msg = EmailMultiAlternatives(
         # title:
@@ -194,7 +212,9 @@ def user_location_view(request):
     location_view = UserLocationView()
 
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     # fetch all user locations for the user
     if request.method == "GET":
@@ -235,7 +255,9 @@ class UserLocationView(APIView):
         serializer = self.serializer_class(data=request_data)
 
         if not serializer.is_valid():
-            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return json_response(
+                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         instance = serializer.save()
 
