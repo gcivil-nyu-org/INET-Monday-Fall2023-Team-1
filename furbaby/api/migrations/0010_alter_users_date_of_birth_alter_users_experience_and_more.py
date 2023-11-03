@@ -45,7 +45,8 @@ class Migration(migrations.Migration):
             name="user_type",
             field=django.contrib.postgres.fields.ArrayField(
                 base_field=models.TextField(
-                    choices=[("sitter", "Pet Sitter"), ("owner", "Pet Owner")], max_length=20
+                    choices=[("sitter", "Pet Sitter"), ("owner", "Pet Owner")],
+                    max_length=20,
                 ),
                 size=2,
             ),
