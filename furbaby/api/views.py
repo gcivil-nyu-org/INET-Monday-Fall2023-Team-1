@@ -1,3 +1,4 @@
+import json
 import os
 from django.http import JsonResponse
 from django.contrib.auth import login, logout
@@ -8,15 +9,24 @@ from rest_framework.generics import GenericAPIView
 from django.conf import settings
 from rest_framework.decorators import api_view
 
+from .models import Locations
+
 from .utils import json_response
 from api.auth_backends import EmailBackend
-from .serializers import RegistrationSerializer, UserLoginSerializer
+from .serializers import (
+    RegistrationSerializer,
+    UserLocationSerializer,
+    UserLoginSerializer,
+)
 
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
 from django_rest_passwordreset.signals import reset_password_token_created
+
+import json
+from django.core.serializers import serialize
 
 
 class UserRegistrationView(GenericAPIView):
@@ -32,7 +42,9 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return json_response(
+                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer.save()
         return json_response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -62,7 +74,9 @@ class UserLoginView(APIView):
                     data={"message": "Invalid credentials"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 @api_view(["GET", "OPTIONS", "POST"])
@@ -73,13 +87,17 @@ def logout_view(request):
         )
 
     logout(request)
-    return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+    return json_response(
+        {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
+    )
 
 
 @api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     return json_response({"isAuthenticated": True})
 
@@ -87,7 +105,9 @@ def session_view(request):
 @api_view(["GET", "OPTIONS", "POST"])
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
@@ -95,7 +115,9 @@ def whoami_view(request):
 @api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
 def user_view(request):
     if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
     email_backend = EmailBackend()
     if request.method == "GET":
@@ -131,7 +153,9 @@ def index(req):
     return JsonResponse(
         {
             "version": {
-                "short_hash": getattr(settings, "GIT_COMMIT_SHORT_HASH", "default-00000"),
+                "short_hash": getattr(
+                    settings, "GIT_COMMIT_SHORT_HASH", "default-00000"
+                ),
                 "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
             }
         },
@@ -140,7 +164,9 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+def password_reset_token_created(
+    sender, instance, reset_password_token, *args, **kwargs
+):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -163,7 +189,9 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     # render email text
     email_html_message = render_to_string("email/password_reset_email.html", context)
-    email_plaintext_message = render_to_string("email/password_reset_email.txt", context)
+    email_plaintext_message = render_to_string(
+        "email/password_reset_email.txt", context
+    )
 
     msg = EmailMultiAlternatives(
         # title:
@@ -177,3 +205,122 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
+
+
+@api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
+def user_location_view(request):
+    location_view = UserLocationView()
+
+    if not request.user.is_authenticated:
+        return json_response(
+            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    # fetch all user locations for the user
+    if request.method == "GET":
+        locations_list = location_view.get_user_locations(request.user.id)
+        return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
+
+    # insert a new location record for the user
+    if request.method in ["POST"]:
+        return location_view.insert_location_record(request)
+
+    # update a location record for the user
+    if request.method in ["PUT", "PATCH"]:
+        return location_view.update_location_record(request.user.id, request.data)
+
+    # delete a location record for the user
+    if request.method == "DELETE":
+        return location_view.delete_location_record(request.user.id)
+
+    return json_response(
+        {"error": "incorrect request method supplied"},
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )
+
+
+# This class is for the user location(s)
+class UserLocationView(APIView):
+    # Fetch the locations serializer
+    serializer_class = UserLocationSerializer
+
+    def get_exception_handler(self):
+        return exception_handler
+
+    # takes as input the post request and inserts a new location record for the user
+    def insert_location_record(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if not serializer.is_valid():
+            return json_response(
+                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        instance = serializer.save()
+
+        return json_response(
+            instance.id, status=status.HTTP_201_CREATED, include_data=False, safe=False
+        )
+
+    # takes as input a location object and returns a dictionary of the location key value pairs
+    def get_location_record(self, location=None):
+        if location == None:
+            return None
+        return {
+            "id": location.id,
+            "address": location.address,
+            "city": location.city,
+            "country": location.country,
+            "zipcode": location.zipcode,
+            "user_id": location.user_id,
+            "default_location": location.default_location,
+        }
+
+    # takes as input a user_id and returns a JSON of all the locations for that user
+    def get_user_locations(self, user_id):
+        locations = Locations.objects.filter(user_id=user_id)
+        serialized_data = serialize("json", locations)
+        serialized_data = json.loads(serialized_data)
+        return serialized_data
+
+    # takes as input a location_id and location fields and updates the location record
+    def update_location_record(self, location_id, request_data):
+        try:
+            location = Locations.objects.get(id=location_id)
+            location.address = request_data["address"]
+            location.city = request_data["city"]
+            location.country = request_data["country"]
+            location.zipcode = request_data["zipcode"]
+            location.default_location = request_data["default_location"]
+            location.save()
+            return json_response(
+                self.get_location_record(Locations.objects.get(id=location_id)),
+                status.HTTP_200_OK,
+                safe=False,
+                include_data=False,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+    def delete_location_record(self, location_id):
+        try:
+            location = Locations.objects.get(id=location_id)
+            location.delete()
+            return json_response(
+                {"message": "location deleted successfully"},
+                status.HTTP_200_OK,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
