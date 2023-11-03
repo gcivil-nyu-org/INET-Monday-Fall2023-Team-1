@@ -78,7 +78,9 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "owner_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.users"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.users"
+                    ),
                 ),
             ],
         ),
@@ -102,7 +104,9 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "user_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.users"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.users"
+                    ),
                 ),
             ],
         ),
@@ -132,11 +136,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "pet_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.pets"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.pets"
+                    ),
                 ),
                 (
                     "user_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.users"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.users"
+                    ),
                 ),
             ],
         ),
@@ -158,11 +166,15 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "job_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.jobs"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.jobs"
+                    ),
                 ),
                 (
                     "user_id",
-                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="api.users"),
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="api.users"
+                    ),
                 ),
             ],
         ),
