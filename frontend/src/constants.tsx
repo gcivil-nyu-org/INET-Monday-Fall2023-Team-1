@@ -2,7 +2,7 @@ import axios from "axios";
 
 const getProdAPIHost = () => {
   const vercelCommitRef = process.env["VERCEL_GIT_COMMIT_REF"]?.toLowerCase();
-  if (["master", "develop"].find((branchName) => branchName === vercelCommitRef)) {
+  if ("master" === vercelCommitRef) {
     return "https://production.furbabyapi.net";
   }
 
