@@ -197,14 +197,13 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 # This class is for the user location(s)
 class UserLocationView(APIView):
-
     # Fetch the locations serializer
     serializer_class = UserLocationSerializer
 
     def get_exception_handler(self):
         return exception_handler
 
-    # takes as input the post request and inserts a new location record for the user
+    # takes as input the user id, request and inserts a new location record for the user
     def insert_location_record(self, request):
         serializer = self.serializer_class(data=request.data, context={"request": request})
 
@@ -234,48 +233,21 @@ class UserLocationView(APIView):
     # takes as input a user_id and returns a JSON of all the locations for that user
     def get_user_locations(self, request):
         locations = Locations.objects.filter(user_id=request.user.id)
-        location_list = [
-            {
-                "id": location.id,
-                "address": location.address,
-                "city": location.city,
-                "country": location.country,
-                "zipcode": location.zipcode,
-                "default_location": location.default_location,
-            }
-            for location in locations
-        ]
-        return location_list
+        serialized_data = serialize("json", locations)
+        serialized_data = json.loads(serialized_data)
+        return serialized_data
 
     # takes as input a location_id and location fields and updates the location record
     def update_location_record(self, request):
         try:
-            updated_fields = []
             location_id = request.data["id"]
             location = Locations.objects.get(id=location_id)
-            if "address" in request.data:
-                location.address = request.data["address"]
-                updated_fields.append("address")
-            if "city" in request.data:
-                location.city = request.data["city"]
-                updated_fields.append("city")
-            if "country" in request.data:
-                location.country = request.data["country"]
-                updated_fields.append("country")
-            if "zipcode" in request.data:
-                location.zipcode = request.data["zipcode"]
-                updated_fields.append("zipcode")
-            if "default_location" in request.data:
-                if request.data["default_location"] == True:
-                    # unset all other locations as default
-                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
-                location.default_location = request.data["default_location"]
-
-            updated_fields.append("default_location")
-
-            # location.save()
-            location.save(update_fields=updated_fields)
-
+            location.address = request.data["address"]
+            location.city = request.data["city"]
+            location.country = request.data["country"]
+            location.zipcode = request.data["zipcode"]
+            location.default_location = request.data["default_location"]
+            location.save()
             return json_response(
                 self.get_location_record(location),
                 status.HTTP_200_OK,
@@ -331,21 +303,20 @@ def user_location_view(request):
 
     # fetch all user locations for the user
     if request.method == "GET":
-        locations_list = location_view.get_user_locations(request.user.id)
+        locations_list = location_view.get_user_locations(request)
         return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
 
     # insert a new location record for the user
     if request.method in ["POST"]:
-        request.data["user_id"] = request.user.id
-        return location_view.insert_location_record(request.data)
+        return location_view.insert_location_record(request)
 
     # update a location record for the user
     if request.method in ["PUT", "PATCH"]:
-        return location_view.update_location_record(request.user.id, request.data)
+        return location_view.update_location_record(request)
 
     # delete a location record for the user
     if request.method == "DELETE":
-        return location_view.delete_location_record(request.user.id, request.data)
+        return location_view.delete_location_record(request)
 
     return json_response(
         {"error": "incorrect request method supplied"},

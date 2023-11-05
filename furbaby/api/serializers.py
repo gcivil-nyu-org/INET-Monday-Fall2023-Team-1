@@ -57,7 +57,7 @@ class UserLocationSerializer(serializers.Serializer):
 
     class Meta:
         model = Locations
-        fields = ["user_id" "address", "city", "country", "zipcode", "deault_location"]
+        fields = ["user_id" "address", "city", "country", "zipcode", "default_location"]
 
     # TODO: There should be only one default address per user
     def validate(self, data):
