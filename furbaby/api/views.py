@@ -191,7 +191,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 # This class is for the user location(s)
 class UserLocationView(APIView):
-    authentication_classes = []
 
     # Fetch the locations serializer
     serializer_class = UserLocationSerializer
