@@ -195,37 +195,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.send()
 
 
-@api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
-def user_location_view(request):
-    location_view = UserLocationView()
-
-    if not request.user.is_authenticated:
-        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
-
-    # fetch all user locations for the user
-    if request.method == "GET":
-        locations_list = location_view.get_user_locations(request.user.id)
-        return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
-
-    # insert a new location record for the user
-    if request.method in ["POST"]:
-        request.data["user_id"] = request.user.id
-        return location_view.insert_location_record(request.data)
-
-    # update a location record for the user
-    if request.method in ["PUT", "PATCH"]:
-        return location_view.update_location_record(request.user.id, request.data)
-
-    # delete a location record for the user
-    if request.method == "DELETE":
-        return location_view.delete_location_record(request.user.id, request.data)
-
-    return json_response(
-        {"error": "incorrect request method supplied"},
-        status=status.HTTP_405_METHOD_NOT_ALLOWED,
-    )
-
-
 # This class is for the user location(s)
 class UserLocationView(APIView):
     authentication_classes = []
@@ -352,16 +321,6 @@ class UserLocationView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
-        except Exception as e:
-            return json_response(
-                data={
-                    "error": "something went wrong while deleting the location record",
-                    "error message": str(e),
-                    "location id": location_id,
-                    "user id": request.user.id,
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
 
 
 @api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
@@ -373,49 +332,23 @@ def user_location_view(request):
 
     # fetch all user locations for the user
     if request.method == "GET":
-        locations_list = location_view.get_user_locations(request)
-        return json_response(
-            locations_list, status=status.HTTP_200_OK, safe=False, include_data=False
-        )
+        locations_list = location_view.get_user_locations(request.user.id)
+        return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
 
     # insert a new location record for the user
     if request.method in ["POST"]:
-        return location_view.insert_location_record(request)
+        request.data["user_id"] = request.user.id
+        return location_view.insert_location_record(request.data)
 
     # update a location record for the user
     if request.method in ["PUT", "PATCH"]:
-        return location_view.update_location_record(request)
+        return location_view.update_location_record(request.user.id, request.data)
 
     # delete a location record for the user
     if request.method == "DELETE":
-        return location_view.delete_location_record(request)
+        return location_view.delete_location_record(request.user.id, request.data)
 
     return json_response(
         {"error": "incorrect request method supplied"},
         status=status.HTTP_405_METHOD_NOT_ALLOWED,
     )
-
-
-class PetListCreateView(ListCreateAPIView):
-    queryset = Pets.objects.all()
-    serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        # You can remove this method from PetRetrieveUpdateDeleteView
-        return Pets.objects.filter(owner_id=self.request.user.id)
-
-    def create(self, request, *args, **kwargs):
-        request.data["owner_id"] = request.user.id
-        print(request.user.user_type)
-        if "owner" in request.user.user_type:
-            request.data["owner_id"] = request.user.id
-            return super().create(request, *args, **kwargs)
-        else:
-            raise PermissionDenied("You are not allowed to create a pet profile.")
-
-
-class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Pets.objects.all()
-    serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
