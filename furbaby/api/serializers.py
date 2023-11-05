@@ -48,7 +48,7 @@ class UserLoginSerializer(serializers.Serializer):
 
 
 class UserLocationSerializer(serializers.Serializer):
-    user_id = serializers.UUIDField()
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     address = serializers.CharField(max_length=200)
     city = serializers.CharField(max_length=100)
     country = serializers.CharField(max_length=100)
@@ -57,7 +57,7 @@ class UserLocationSerializer(serializers.Serializer):
 
     class Meta:
         model = Locations
-        fields = ["user_id" "address", "city", "country", "zipcode", "deault_location"]
+        fields = ["user_id" "address", "city", "country", "zipcode", "default_location"]
 
     # TODO: There should be only one default address per user
     def validate(self, data):
