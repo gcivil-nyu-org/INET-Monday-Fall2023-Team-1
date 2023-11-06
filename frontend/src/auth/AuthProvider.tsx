@@ -1,15 +1,19 @@
 import ReactJson from "@microlink/react-json-view";
 import axios from "axios";
 import React, { useEffect } from "react";
-import { useCookies } from "react-cookie";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import { API_ROUTES, ROUTES } from "../constants";
 import notify from "../Notify";
 
+interface AuthenticationState {
+  isSessionSet: boolean;
+  sessionCheckLoading: boolean;
+}
+
 export interface AuthCtx {
-  isCookiePresent: () => boolean;
+  authenticationState: AuthenticationState;
   onRegister: (email: string, password: string, userTypes: ("sitter" | "owner")[]) => void;
   onLogin: (email: string, password: string) => void;
   onLogout: () => void;
@@ -18,23 +22,24 @@ export interface AuthCtx {
     onPasswordResetConfirmToken: (token: string) => Promise<boolean>;
     onPasswordResetChangePassword: (password: string, token: string) => Promise<boolean>;
   };
-  authenticatedUser: {
-    checkAuthentication: () => void;
+  authenticatedUserChecks: {
+    checkAuthenticationState: (withToast?: boolean, withRedirect?: boolean) => void;
     checkUserInfo: () => void;
   };
+  onDeleteUser: () => Promise<unknown>;
 }
 
 const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
 
 const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
-  const [authCookie, updateAuthCookieState] = React.useState<object | null>(null);
-  const [cookie] = useCookies(["csrftoken", "sessionid"]);
+  const [authState, updateAuthState] = React.useState<AuthenticationState>({
+    isSessionSet: false,
+    sessionCheckLoading: false,
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (cookie?.csrftoken) {
-      updateAuthCookieState(cookie);
-    }
+    handleSession(false);
   }, []);
 
   const handleRegister = (email: string, password: string, userTypes: ("sitter" | "owner")[]) => {
@@ -44,9 +49,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
         JSON.stringify({
           email,
           password,
-          user_types: userTypes,
+          user_type: userTypes,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
           headers: {
             "Content-Type": "application/json",
@@ -90,13 +96,17 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       )
       .then((response) => {
         if (response.status === 200) {
-          updateAuthCookieState(cookie);
+          updateAuthState({
+            isSessionSet: true,
+            sessionCheckLoading: false,
+          });
           toast.success("Logged in!");
-          navigate(ROUTES.HOME);
+          navigate(ROUTES.PROTECTED_ROUTES.HOME);
         }
       })
       .catch((error) => {
@@ -121,7 +131,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthCookieState(null);
+          updateAuthState({
+            isSessionSet: false,
+            sessionCheckLoading: false,
+          });
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
         }
@@ -153,6 +166,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           email,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -184,6 +198,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           token,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -219,6 +234,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           token,
         }),
         {
+          withCredentials: true,
           maxBodyLength: Infinity,
         }
       )
@@ -231,7 +247,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .catch((err) => {
         notify({
-          title: "Failed to validate token...",
+          title: "Failed to validate password...",
           type: "error",
           children: (
             <details>
@@ -243,10 +259,6 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
         navigate(ROUTES.FORGOT_PASSWORD, { replace: true });
         return false;
       });
-  };
-
-  const isCookiePresent = () => {
-    return authCookie !== null;
   };
 
   const handleWhoami = () => {
@@ -271,12 +283,20 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthCookieState(null);
+        updateAuthState({
+          isSessionSet: false,
+          sessionCheckLoading: false,
+        });
         navigate(ROUTES.LOGIN);
       });
   };
 
-  const handleSession = () => {
+  const handleSession = (withToast = false, withRedirect = false) => {
+    updateAuthState({
+      isSessionSet: false,
+      sessionCheckLoading: true,
+    });
+
     axios
       .post(API_ROUTES.AUTH.SESSION, undefined, {
         withCredentials: true,
@@ -284,27 +304,44 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("user session is authenticated and active");
+          updateAuthState({
+            isSessionSet: true,
+            sessionCheckLoading: false,
+          });
+          if (withToast) {
+            toast.success("user session is authenticated and active");
+          }
         }
       })
       .catch((err) => {
-        notify({
-          title: "Failed to validate session",
-          type: "error",
-          children: (
-            <details>
-              <summary>View Error Information</summary>
-              <ReactJson src={err?.response?.data} collapsed enableClipboard={false} />
-            </details>
-          ),
+        if (withToast) {
+          notify({
+            title: "Failed to validate session",
+            type: "error",
+            children: (
+              <details>
+                <summary>View Error Information</summary>
+                <ReactJson src={err?.response?.data} collapsed enableClipboard={false} />
+              </details>
+            ),
+          });
+        }
+        if (withRedirect) {
+          navigate(ROUTES.LOGIN);
+        }
+        updateAuthState({
+          isSessionSet: false,
+          sessionCheckLoading: false,
         });
-        updateAuthCookieState(null);
-        navigate(ROUTES.LOGIN);
       });
   };
 
-  const contextValue = {
-    isCookiePresent,
+  const handleDeleteUser = () => {
+    return axios.delete(API_ROUTES.USER.USER_ROOT);
+  };
+
+  const contextValue: AuthCtx = {
+    authenticationState: authState,
     onRegister: handleRegister,
     onLogin: handleLogin,
     onLogout: handleLogout,
@@ -313,10 +350,11 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       onPasswordResetConfirmToken: handleForgotPasswordConfirmToken,
       onPasswordResetChangePassword: handleForgotPasswordChangePassword,
     },
-    authenticatedUser: {
+    authenticatedUserChecks: {
       checkUserInfo: handleWhoami,
-      checkAuthentication: handleSession,
+      checkAuthenticationState: handleSession,
     },
+    onDeleteUser: handleDeleteUser,
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;

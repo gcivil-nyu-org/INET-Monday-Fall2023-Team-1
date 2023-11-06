@@ -21,6 +21,7 @@ urlpatterns = [
         "auth/password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),
     ),
+    path("api/user", views.user_view, name="user-info"),
     path('pets/', PetListCreateView.as_view(), name='pet-list-create'),
     path('pets/<uuid:pk>/', PetRetrieveUpdateDeleteView.as_view(), name='pet-retrieve-update-delete'),
 ]

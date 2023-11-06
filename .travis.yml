@@ -1,0 +1,54 @@
+language: python
+os: linux
+dist: focal
+
+python:
+  - 3.8
+
+jobs:
+  - name: test, check format, check lint and report coverage
+    install:
+      - cd furbaby && pip install -r requirements.txt
+      - export GIT_COMMIT_SHORT_HASH=$(git rev-parse --short HEAD)
+      - export GIT_COMMIT_HASH=$(git rev-parse HEAD)
+      - echo $GIT_COMMIT_HASH
+      - echo $GIT_COMMIT_SHORT_HASH
+
+    before_script:
+      - python manage.py makemigrations --settings=furbaby.settings
+      - python manage.py migrate --settings=furbaby.settings
+
+    script:
+      - printenv > ./furbaby/.env
+      - ls -lah ./furbaby
+      - git add .
+      - git commit -m "add latest .env file"
+      - black --check .
+      - pylint **/*.py --exit-zero
+      - coverage run --source=api manage.py test
+
+    after_script:
+      - coveralls
+
+    deploy:
+      - provider: elasticbeanstalk
+        access_key_id: $AWS_ACCESS_KEY_ID
+        secret_access_key: $AWS_ACCESS_SECRET_KEY
+        skip_cleanup: true
+        region: "us-east-1"
+        app: "project-team-1-furbaby"
+        env: "staging"
+        bucket: "elasticbeanstalk-us-east-1-994011800090"
+        on:
+          branch: develop
+
+      - provider: elasticbeanstalk
+        access_key_id: $AWS_ACCESS_KEY_ID
+        secret_access_key: $AWS_ACCESS_SECRET_KEY
+        region: "us-east-1"
+        app: "project-team-1-furbaby"
+        env: "production"
+        bucket: "elasticbeanstalk-us-east-1-994011800090"
+        skip_cleanup: true
+        on:
+          branch: master

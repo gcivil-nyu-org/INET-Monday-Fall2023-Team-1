@@ -1,5 +1,5 @@
 import os
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
@@ -10,13 +10,14 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .utils import json_response
+from django.conf import settings
+from rest_framework.decorators import api_view
 from api.auth_backends import EmailBackend
 from .serializers import RegistrationSerializer, UserLoginSerializer, PetSerializer
 from .models import Pets
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
@@ -24,6 +25,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []
+
     serializer_class = RegistrationSerializer
 
     def get_exception_handler(self):
@@ -33,9 +35,7 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            return json_response(
-                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         return json_response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -62,13 +62,12 @@ class UserLoginView(APIView):
                 )
             else:
                 return json_response(
-                    data={"message": "Invalid credentials"},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    data={"message": "User is not found"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
-        return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
-
-@ensure_csrf_cookie
+@api_view(["GET", "OPTIONS", "POST"])
 def logout_view(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -76,73 +75,74 @@ def logout_view(request):
         )
 
     logout(request)
-    return json_response(
-        {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
-    )
+    return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 
-@ensure_csrf_cookie
+@api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"isAuthenticated": True})
 
 
-@ensure_csrf_cookie
+@api_view(["GET", "OPTIONS", "POST"])
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
 
-class UserLoginView(APIView):
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer.data)
-            email = serializer.validated_data["email"]
-            password = serializer.validated_data["password"]
-            email_backend = EmailBackend()
-            user = email_backend.authenticate(request, email=email, password=password)
-            if user is not None:
-                login(request, user)
-                return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
-            else:
-                print(f"Invalid login attempt: {serializer.validated_data['email']}")
-                return Response(
-                    {"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-                )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
+def user_view(request):
+    if not request.user.is_authenticated:
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-class PetListCreateView(ListCreateAPIView):
-    queryset = Pets.objects.all()
-    serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
+    email_backend = EmailBackend()
+    if request.method == "GET":
+        return email_backend.get_user_info(request, request.user.email)
 
-    def create(self, request, *args, **kwargs):
-        # Set the owner to the authenticated user
-        request.data["owner_id"] = request.user.id
-        return super().create(request, *args, **kwargs)
+    if request.method in ["PUT", "PATCH"]:
+        return __update_user_info__(request)
 
-class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    queryset = Pets.objects.all()
-    serializer_class = PetSerializer
-    permission_classes = [IsAuthenticated]
-    
+    if request.method == "DELETE":
+        return email_backend.delete_user(request, request.user.email)
+
+    return json_response(
+        {"error": "incorrect request method supplied"},
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )
+
+
+def __update_user_info__(request):
+    if not request.user.is_authenticated:
+        return json_response(
+            {
+                "isAuthenticated": False,
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    email_backend = EmailBackend()
+    return email_backend.update_user_info(request, request.user.email)
+
+
+@api_view(["GET", "OPTIONS"])
 def index(req):
-    return HttpResponse("Hello, world", status=200)
+    return JsonResponse(
+        {
+            "version": {
+                "short_hash": getattr(settings, "GIT_COMMIT_SHORT_HASH", "default-00000"),
+                "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
+            }
+        },
+        status=200,
+    )
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(
-    sender, instance, reset_password_token, *args, **kwargs
-):
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -165,9 +165,7 @@ def password_reset_token_created(
 
     # render email text
     email_html_message = render_to_string("email/password_reset_email.html", context)
-    email_plaintext_message = render_to_string(
-        "email/password_reset_email.txt", context
-    )
+    email_plaintext_message = render_to_string("email/password_reset_email.txt", context)
 
     msg = EmailMultiAlternatives(
         # title:
@@ -181,3 +179,18 @@ def password_reset_token_created(
     )
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
+
+class PetListCreateView(ListCreateAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        # Set the owner to the authenticated user
+        request.data["owner_id"] = request.user.id
+        return super().create(request, *args, **kwargs)
+
+class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
