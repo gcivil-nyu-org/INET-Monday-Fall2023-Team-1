@@ -6,7 +6,7 @@ const getProdAPIHost = () => {
   //   return "https://production.furbabyapi.net";
   // }
 
-  return "https://staging.furbabyapi.net";
+  return "https://api.furbabyapi.net";
 };
 
 export const DEFAULT_PROFILE_PICTURE = "https://randomuser.me/api/portraits/lego/1.jpg" as const;
