@@ -20,6 +20,8 @@ from django.template.loader import render_to_string
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
+from django.views.decorators.csrf import csrf_protect
+
 import boto3
 from botocore.exceptions import ClientError
 
@@ -88,6 +90,7 @@ class UserLoginView(APIView):
         return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
+@csrf_protect
 @api_view(["GET", "OPTIONS", "POST"])
 def logout_view(request):
     if not request.user.is_authenticated:
@@ -99,6 +102,7 @@ def logout_view(request):
     return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 
+@csrf_protect
 @api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
     current_user = Users.objects.filter(id=request.user.id).first()
@@ -127,6 +131,7 @@ def session_view(request):
     )
 
 
+@csrf_protect
 @api_view(["GET", "OPTIONS", "POST"])
 def whoami_view(request):
     if not request.user.is_authenticated:
@@ -135,6 +140,7 @@ def whoami_view(request):
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
 
+@csrf_protect
 @api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
 def user_view(request):
     if not request.user.is_authenticated:
@@ -222,6 +228,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.send()
 
 
+@csrf_protect
 @api_view(["GET", "POST", "OPTIONS"])
 def handle_profile_picture(request):
     if not request.user.is_authenticated:
@@ -323,6 +330,7 @@ def __upload_profile_picture__(request):
     )
 
 
+@csrf_protect
 @api_view(["POST", "GET", "OPTIONS", "DELETE"])
 def handle_pet_pictures(request):
     if not request.user.is_authenticated:
