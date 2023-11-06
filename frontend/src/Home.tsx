@@ -1,7 +1,7 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import React, { Fragment, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
@@ -17,9 +17,9 @@ type HomeProps = {
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
   const [navigation, updatePageNavigationState] = useState([
-    { name: "Dashboard", href: "#", keyId: 1, current: true },
-    { name: "Job Feed", href: "#", keyId: 2, current: false },
-    { name: "Pet Profiles", href: "#", keyId: 3, current: false },
+    { name: "Dashboard", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 1, current: true },
+    { name: "Job Feed", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 2, current: false },
+    { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 3, current: false },
   ]);
   const { pathname } = useLocation();
 
@@ -86,6 +86,14 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     return "Nothing here to display";
   }, [pathname]);
 
+  useEffect(() => {
+    if (pathname !== ROUTES.PROTECTED_ROUTES.HOME) {
+      updatePageNavigationState((prevState) =>
+        prevState.map((stateItem) => ({ ...stateItem, current: false }))
+      );
+    }
+  }, [pathname]);
+
   return (
     <>
       <div className="min-h-full">
@@ -104,9 +112,9 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item, index) => (
-                          <a
+                          <Link
+                            to={item.href}
                             key={item.name}
-                            href={item.href}
                             className={classNames(
                               item.current
                                 ? "border-b-2 border-black rounded-none"
@@ -117,7 +125,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                             onClick={() => onClickNavButton(index + 1)}
                           >
                             {item.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -196,7 +204,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
 
               <Disclosure.Panel className="md:hidden">
                 <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                  {navigation.map((item) => (
+                  {navigation.map((item, index) => (
                     <Disclosure.Button
                       key={item.name}
                       as="a"
@@ -208,6 +216,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                         "block rounded-md px-3 py-2 text-base font-medium"
                       )}
                       aria-current={item.current ? "page" : undefined}
+                      onClick={() => onClickNavButton(index + 1)}
                     >
                       {item.name}
                     </Disclosure.Button>

@@ -11,7 +11,7 @@ import { API_ROUTES } from "./constants";
 import notify from "./Notify";
 import { User, UserTypes } from "./types";
 import UserTypeBadge from "./UserTypeBadge";
-import { classNames } from "./utils";
+import { classNames, getCurrentAge } from "./utils";
 
 type ProfileProps = {
   userAuthState: AuthCtx["authenticationState"];
@@ -37,6 +37,16 @@ const Profile = ({ handleLogout }: React.PropsWithChildren<ProfileProps>) => {
     }
     return false;
   }, [userTypes]);
+
+  const resetToDBState = () => {
+    if (currentUserInfoInDB) {
+      updateFirstName(currentUserInfoInDB.first_name);
+      updateLastName(currentUserInfoInDB.last_name);
+      updateDateOfBirth(currentUserInfoInDB.date_of_birth ?? null);
+      updateAbout(currentUserInfoInDB.about);
+      updateQualifications(currentUserInfoInDB.qualifications);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -114,8 +124,21 @@ const Profile = ({ handleLogout }: React.PropsWithChildren<ProfileProps>) => {
     if (!currentUserInfoInDB) {
       return;
     }
+
     const saveConsent = confirm("Are you sure you want to make these changes?");
+
     if (saveConsent) {
+      if (dateOfBirth) {
+        const currentAge = getCurrentAge(dateOfBirth);
+        if (currentAge < 16) {
+          notify({
+            title: "Users under the age of 16 are not allowed",
+            type: "error",
+          });
+          resetToDBState();
+          return;
+        }
+      }
       const newUserInfo: User = {
         email,
         first_name: firstName,

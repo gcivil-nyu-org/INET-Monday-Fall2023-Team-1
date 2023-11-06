@@ -16,4 +16,11 @@ function isJSONString(err: unknown) {
   return true;
 }
 
-export { classNames, isJSONString, validateEmail };
+const getCurrentAge = (date: string) => {
+  const today = new Date();
+  const dob = new Date(date);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Math.floor(((today as any) - (dob as any)) / 31557600000);
+};
+
+export { classNames, getCurrentAge, isJSONString, validateEmail };
