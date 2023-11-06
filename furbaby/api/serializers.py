@@ -57,7 +57,14 @@ class UserLocationSerializer(serializers.Serializer):
 
     class Meta:
         model = Locations
-        fields = ["user_id" "address", "city", "country", "zipcode", "default_location"]
+        fields = [
+            "user_id",
+            "address",
+            "city",
+            "country",
+            "zipcode",
+            "default_location",
+        ]
 
     # TODO: There should be only one default address per user
     def validate(self, data):
@@ -79,6 +86,9 @@ class UserLocationSerializer(serializers.Serializer):
             raise ValidationError("Users must be located in New York City/NYC")
         if country not in countries_allowed_list:
             raise ValidationError("Users must be located in the United States of America/USA")
+        if data.get("default_location", True):
+            # If the user is setting a default location, set all other locations to false
+            Locations.objects.filter(user_id=data.get("user").id).update(default_location=False)
         return data
 
     def create(self, validated_data):
