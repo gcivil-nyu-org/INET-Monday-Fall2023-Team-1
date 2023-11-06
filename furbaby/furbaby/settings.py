@@ -115,12 +115,12 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "ebdb_master"
+# database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "ebdb_master"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": database_name,
+        "NAME": "ebdb",
         "USER": "root",
         "PASSWORD": os.environ.get("AWS_RDS_DATABASE_PASSWORD", ""),
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
