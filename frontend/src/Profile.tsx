@@ -29,7 +29,6 @@ const Profile = ({ handleLogout }: React.PropsWithChildren<ProfileProps>) => {
   const [about, updateAbout] = useState("");
   const [qualifications, updateQualifications] = useState("");
   const [userTypes, updateUserTypes] = useState<UserTypes[]>([]);
-  // TODO: profile picture
 
   const hasSitterUserType = useMemo(() => {
     if (userTypes.find((u) => u === "sitter")) {
@@ -145,7 +144,6 @@ const Profile = ({ handleLogout }: React.PropsWithChildren<ProfileProps>) => {
         id: currentUserInfoInDB.id,
         last_name: lastName,
         user_type: currentUserInfoInDB.user_type, // TODO: make this also editable
-        // profile_picture?: string;
         date_of_birth: dateOfBirth ?? null,
         about,
         qualifications,
