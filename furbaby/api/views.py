@@ -371,7 +371,7 @@ def __get_user_pet_picture__(request):
                         )
                     }
                 },
-                status=status.HTTP_200_OK,
+                status=status.HTTP_404_NOT_FOUND,
             )
         return json_response(
             data={
