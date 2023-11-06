@@ -8,7 +8,7 @@ from rest_framework.generics import GenericAPIView
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.response import Response
 from .utils import json_response
 from api.auth_backends import EmailBackend
 from .serializers import RegistrationSerializer, UserLoginSerializer, PetSerializer
