@@ -1,5 +1,5 @@
 import os
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
@@ -8,9 +8,9 @@ from rest_framework.generics import GenericAPIView
 from django.conf import settings
 from rest_framework.decorators import api_view
 
-from .models import Pets
+from .models import Pets, Users
 
-from .utils import json_response, make_s3_path, read_request_body
+from .utils import json_response, make_s3_path
 from api.auth_backends import EmailBackend
 from .serializers import RegistrationSerializer, UserLoginSerializer
 
@@ -101,17 +101,27 @@ def logout_view(request):
 
 @api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
-    if not request.user.is_authenticated:
+    current_user = Users.objects.filter(id=request.user.id).first()
+
+    if not request.user.is_authenticated or current_user == None:
         return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+    user_response_body = {
+        "id": current_user.id,
+        "email": current_user.email.lower(),
+    }
+
+    if current_user.first_name != None or current_user.last_name != None:
+        name = "{} {}".format(
+            "" if current_user.first_name == None else current_user.first_name,
+            "" if current_user.last_name == None else current_user.last_name,
+        )
+        user_response_body["name"] = name
 
     return json_response(
         {
             "isAuthenticated": True,
-            "user": {
-                "id": request.user.id,
-                "name": "{} {}".format(request.user.first_name, request.user.last_name).strip(),
-                "email": str(request.user.email).lower(),
-            },
+            "user": user_response_body,
         },
         status=status.HTTP_200_OK,
     )
@@ -212,7 +222,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.send()
 
 
-@api_view(["GET", "PUT", "OPTIONS"])
+@api_view(["GET", "POST", "OPTIONS"])
 def handle_profile_picture(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -223,7 +233,7 @@ def handle_profile_picture(request):
     if request.method == "GET":
         return __get_user_profile_picture__(request)
 
-    if request.method == "PUT":
+    if request.method == "POST":
         return __upload_profile_picture__(request)
 
     return json_response(
@@ -237,7 +247,7 @@ def handle_profile_picture(request):
 
 def __get_user_profile_picture__(request):
     profile_picture_path = make_s3_path(
-        s3AssetsFolder, request.user.id, "profile-picture", "picture"
+        s3AssetsFolder, str(request.user.id), "profile-picture", "picture"
     )
 
     try:
@@ -250,15 +260,16 @@ def __get_user_profile_picture__(request):
                 {
                     "data": {
                         "message": "no profile picture present with current user: {}".format(
-                            request.user.id
-                        )
+                            str(request.user.id),
+                        ),
+                        "key": profile_picture_path,
                     }
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
         return json_response(
             data={
-                "error": "failed to fetch profile picture, ({})".format(e.__str__()),
+                "error": "failed to fetch profile picture, ({})".format(e),
                 "message": "unknown error occurred while fetching user profile picture",
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -292,7 +303,9 @@ def __upload_profile_picture__(request):
         )
 
     try:
-        upload_path = make_s3_path(s3AssetsFolder, request.user.id, "profile-picture", "picture")
+        upload_path = make_s3_path(
+            s3AssetsFolder, str(request.user.id), "profile-picture", "picture"
+        )
         # NOTE: if the Key is the same, the object(s) are overwritten
         s3Client.put_object(Bucket=s3BucketName, Body=picture, Key=upload_path)
     except ClientError as e:
@@ -310,7 +323,7 @@ def __upload_profile_picture__(request):
     )
 
 
-@api_view(["POST", "PUT", "OPTIONS", "DELETE"])
+@api_view(["POST", "GET", "OPTIONS", "DELETE"])
 def handle_pet_pictures(request):
     if not request.user.is_authenticated:
         return json_response(
@@ -324,10 +337,10 @@ def handle_pet_pictures(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    if request.method == "POST":
+    if request.method == "GET":
         return __get_user_pet_picture__(request)
 
-    if request.method == "PUT":
+    if request.method == "POST":
         return __put_user_pet_picture__(request)
 
     if request.method == "DELETE":
@@ -355,7 +368,7 @@ def __get_user_pet_picture__(request):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    pet_picture_path = make_s3_path(s3AssetsFolder, request.user.id, "pets", str(pet_info.id))
+    pet_picture_path = make_s3_path(s3AssetsFolder, str(request.user.id), "pets", str(pet_info.id))
 
     try:
         image_object = s3Client.get_object(Bucket=s3BucketName, Key=pet_picture_path)
@@ -413,7 +426,7 @@ def __put_user_pet_picture__(request):
         )
 
     try:
-        upload_path = make_s3_path(s3AssetsFolder, request.user.id, "pets", str(pet_info.id))
+        upload_path = make_s3_path(s3AssetsFolder, str(request.user.id), "pets", str(pet_info.id))
         # NOTE: if the Key is the same, the object(s) are overwritten
         s3Client.put_object(Bucket=s3BucketName, Body=picture, Key=upload_path)
     except ClientError as e:
@@ -444,7 +457,7 @@ def __delete_user_pet_picture__(request):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    pet_picture_path = make_s3_path(s3AssetsFolder, request.user.id, "pets", str(pet_info.id))
+    pet_picture_path = make_s3_path(s3AssetsFolder, str(request.user.id), "pets", str(pet_info.id))
 
     try:
         s3Client.delete_object(Bucket=s3BucketName, Key=pet_picture_path)
