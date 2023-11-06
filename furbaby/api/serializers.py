@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users,Pets
+from .models import Users, Pets
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -46,9 +46,10 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(min_length=8, write_only=True)
 
+
 class PetSerializer(serializers.ModelSerializer):
-    owner = serializers.HiddenField(default=serializers.CurrentUserDefault()) 
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Pets
-        exclude = ()  
+        exclude = ()

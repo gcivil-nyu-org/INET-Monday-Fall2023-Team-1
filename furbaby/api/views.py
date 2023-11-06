@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .utils import json_response
@@ -66,6 +66,7 @@ class UserLoginView(APIView):
                     status=status.HTTP_404_NOT_FOUND,
                 )
         return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
 
 @api_view(["GET", "OPTIONS", "POST"])
 def logout_view(request):
@@ -180,6 +181,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
 
+
 class PetListCreateView(ListCreateAPIView):
     queryset = Pets.objects.all()
     serializer_class = PetSerializer
@@ -189,6 +191,7 @@ class PetListCreateView(ListCreateAPIView):
         # Set the owner to the authenticated user
         request.data["owner_id"] = request.user.id
         return super().create(request, *args, **kwargs)
+
 
 class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Pets.objects.all()
