@@ -12,16 +12,38 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
+# from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
+from botocore.config import Config as AWSConfig
+
+# load_dotenv(find_dotenv(".eb_env", True, False)) - when using this settings file locally
 load_dotenv()
+
+CURRENT_BRANCH = os.environ.get("TRAVIS_BRANCH", "").lower()
 
 
 def get_password_reset_host():
-    if os.environ.get("TRAVIS_BRANCH", "").lower() == "master":
+    if CURRENT_BRANCH == "master":
         return "https://ui.furbabyapi.net"
     return "https://staging-ui.furbabyapi.net"
 
+
+def get_s3_assets_path():
+    if CURRENT_BRANCH == "master":
+        return "production-assets"
+    return "staging-assets"
+
+
+S3_CONFIG = AWSConfig(
+    region_name="us-east-1",
+    retries={"max_attempts": 10, "mode": "standard"},
+    signature_version="v4",
+)
+
+AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME", "")
+
+ASSETS_PATH = get_s3_assets_path()
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
 os.environ.setdefault("FORGOT_PASSWORD_HOST", get_password_reset_host())

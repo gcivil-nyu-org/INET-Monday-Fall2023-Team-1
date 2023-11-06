@@ -14,12 +14,23 @@ import os
 import subprocess
 
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+from botocore.config import Config as AWSConfig
+
+
+load_dotenv(find_dotenv(".eb_env", True, False))
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
 
-load_dotenv()
+S3_CONFIG = AWSConfig(
+    region_name="us-east-1",
+    retries={"max_attempts": 10, "mode": "standard"},
+    signature_version="v4",
+)
 
+AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME", "")
+
+ASSETS_PATH = "local-assets"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
