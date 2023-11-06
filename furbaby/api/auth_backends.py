@@ -73,7 +73,6 @@ class EmailBackend(ModelBackend):
             user.date_of_birth = req_body["date_of_birth"]  # type: ignore
             user.experience = req_body["about"]  # type: ignore
             user.qualifications = req_body["qualifications"]  # type: ignore
-            # TODO: add something for profile picture here
             user.save()
             # NOTE: use user.save(update_fields=[column_names...]) to make sure
             # that it is going to be an update on those columns alone

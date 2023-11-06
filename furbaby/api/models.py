@@ -51,6 +51,14 @@ class Users(AbstractUser):
     def __str__(self):
         return self.email
 
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                name="check_if_atleast_16_constraint",
+                check=(models.Q(date_of_birth__gte=16) | models.Q(date_of_birth__isnull=True)),
+            )
+        ]
+
 
 """
 
