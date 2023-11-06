@@ -292,6 +292,16 @@ class UserLocationView(APIView):
                 },
                 status=status.HTTP_404_NOT_FOUND,
             )
+        except Exception as e:
+            return json_response(
+                data={
+                    "error": "something went wrong while deleting the location record",
+                    "error message": str(e),
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 @api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
