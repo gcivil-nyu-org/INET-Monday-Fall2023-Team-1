@@ -227,9 +227,18 @@ class UserLocationView(APIView):
     # takes as input a user_id and returns a JSON of all the locations for that user
     def get_user_locations(self, request):
         locations = Locations.objects.filter(user_id=request.user.id)
-        serialized_data = serialize("json", locations)
-        serialized_data = json.loads(serialized_data)
-        return serialized_data
+        location_list = [
+            {
+                "id": location.id,
+                "address": location.address,
+                "city": location.city,
+                "country": location.country,
+                "zipcode": location.zipcode,
+                "default_location": location.default_location,
+            }
+            for location in locations
+        ]
+        return location_list
 
     # takes as input a location_id and location fields and updates the location record
     def update_location_record(self, request):
@@ -325,7 +334,9 @@ def user_location_view(request):
     # fetch all user locations for the user
     if request.method == "GET":
         locations_list = location_view.get_user_locations(request)
-        return json_response(locations_list, status=status.HTTP_200_OK, safe=False)
+        return json_response(
+            locations_list, status=status.HTTP_200_OK, safe=False, include_data=False
+        )
 
     # insert a new location record for the user
     if request.method in ["POST"]:
