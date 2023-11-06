@@ -4,7 +4,7 @@ from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
 
-from .utils import json_response
+from .utils import json_response, read_request_body
 
 
 class EmailBackend(ModelBackend):
@@ -67,13 +67,12 @@ class EmailBackend(ModelBackend):
         User = get_user_model()
         try:
             user = User.objects.get(email=email, username=email)
-            body_unicode = request.body.decode("utf-8")
-            req_body = json.loads(body_unicode)
-            user.first_name = req_body["first_name"]
-            user.last_name = req_body["last_name"]
-            user.date_of_birth = req_body["date_of_birth"]
-            user.experience = req_body["about"]
-            user.qualifications = req_body["qualifications"]
+            req_body = read_request_body(request)
+            user.first_name = req_body["first_name"]  # type: ignore
+            user.last_name = req_body["last_name"]  # type: ignore
+            user.date_of_birth = req_body["date_of_birth"]  # type: ignore
+            user.experience = req_body["about"]  # type: ignore
+            user.qualifications = req_body["qualifications"]  # type: ignore
             # TODO: add something for profile picture here
             user.save()
             # NOTE: use user.save(update_fields=[column_names...]) to make sure
