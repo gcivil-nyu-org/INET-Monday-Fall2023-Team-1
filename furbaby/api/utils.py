@@ -12,5 +12,4 @@ def make_s3_path(*args: str):
 
 def read_request_body(request):
     body_unicode = request.body.decode("utf-8")
-    body = json.loads(body_unicode)
-    return body["content"]
+    return json.loads(body_unicode)
