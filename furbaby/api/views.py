@@ -104,7 +104,17 @@ def session_view(request):
     if not request.user.is_authenticated:
         return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-    return json_response({"isAuthenticated": True})
+    return json_response(
+        {
+            "isAuthenticated": True,
+            "user": {
+                "id": request.user.id,
+                "name": "{} {}".format(request.user.first_name, request.user.last_name).strip(),
+                "email": str(request.user.email).lower(),
+            },
+        },
+        status=status.HTTP_200_OK,
+    )
 
 
 @api_view(["GET", "OPTIONS", "POST"])
