@@ -9,6 +9,8 @@ const getProdAPIHost = () => {
   return "https://staging.furbabyapi.net";
 };
 
+export const DEFAULT_PROFILE_PICTURE = "https://randomuser.me/api/portraits/lego/1.jpg" as const;
+
 const PROD_API_HOST = getProdAPIHost();
 const LOCAL_API_HOST = "http://localhost:8000";
 const API_HOST = process.env.NODE_ENV === "development" ? LOCAL_API_HOST : PROD_API_HOST;
@@ -47,5 +49,6 @@ export const API_ROUTES = {
   HOME: "/",
   USER: {
     USER_ROOT: "api/user",
+    PROFILE_PICTURE: "api/user/profile_picture",
   },
 } as const;

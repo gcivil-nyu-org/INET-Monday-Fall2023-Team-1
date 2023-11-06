@@ -7,4 +7,13 @@ function validateEmail(email: string) {
   return re.test(email);
 }
 
-export { classNames, validateEmail };
+function isJSONString(err: unknown) {
+  try {
+    JSON.parse(err as string);
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+export { classNames, isJSONString, validateEmail };
