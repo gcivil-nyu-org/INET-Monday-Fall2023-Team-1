@@ -256,6 +256,9 @@ class UserLocationView(APIView):
                 location.zipcode = request.data["zipcode"]
                 updated_fileds.append("zipcode")
             if "default_location" in request.data:
+                if request.data["default_location"] == True:
+                    # unset all other locations as default
+                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
                 location.default_location = request.data["default_location"]
                 updated_fileds.append("default_location")
 
