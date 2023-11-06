@@ -234,14 +234,28 @@ class UserLocationView(APIView):
     # takes as input a location_id and location fields and updates the location record
     def update_location_record(self, request):
         try:
+            updated_fileds = []
             location_id = request.data["id"]
             location = Locations.objects.get(id=location_id)
-            location.address = request.data["address"]
-            location.city = request.data["city"]
-            location.country = request.data["country"]
-            location.zipcode = request.data["zipcode"]
-            location.default_location = request.data["default_location"]
-            location.save()
+            if "address" in request.data:
+                location.address = request.data["address"]
+                updated_fileds.append("address")
+            if "city" in request.data:
+                location.city = request.data["city"]
+                updated_fileds.append("city")
+            if "country" in request.data:
+                location.country = request.data["country"]
+                updated_fileds.append("country")
+            if "zipcode" in request.data:
+                location.zipcode = request.data["zipcode"]
+                updated_fileds.append("zipcode")
+            if "default_location" in request.data:
+                location.default_location = request.data["default_location"]
+                updated_fileds.append("default_location")
+
+            # location.save()
+            location.save(update_fields=updated_fileds)
+
             return json_response(
                 self.get_location_record(location),
                 status.HTTP_200_OK,
