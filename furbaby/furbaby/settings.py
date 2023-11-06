@@ -23,10 +23,10 @@ load_dotenv()
 CURRENT_BRANCH = os.environ.get("TRAVIS_BRANCH", "").lower()
 
 
-def get_password_reset_host():
-    if CURRENT_BRANCH == "master":
-        return "https://ui.furbabyapi.net"
-    return "https://staging-ui.furbabyapi.net"
+# def get_password_reset_host():
+#     if CURRENT_BRANCH == "master":
+#         return "https://ui.furbabyapi.net"
+#     return "https://staging-ui.furbabyapi.net"
 
 
 def get_s3_assets_path():
@@ -46,7 +46,7 @@ AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME", "")
 ASSETS_PATH = get_s3_assets_path()
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
-os.environ.setdefault("FORGOT_PASSWORD_HOST", get_password_reset_host())
+os.environ.setdefault("FORGOT_PASSWORD_HOST", "https://ui.furbabyapi.net")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
