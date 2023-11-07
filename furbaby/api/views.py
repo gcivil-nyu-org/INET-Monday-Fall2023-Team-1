@@ -23,6 +23,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 
 from rest_framework.exceptions import PermissionDenied
 
+
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []
@@ -200,6 +201,7 @@ class PetListCreateView(ListCreateAPIView):
             return super().create(request, *args, **kwargs)
         else:
             raise PermissionDenied("You are not allowed to create a pet profile.")
+
 
 class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Pets.objects.all()
