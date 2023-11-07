@@ -21,6 +21,7 @@ from django.template.loader import render_to_string
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
+from rest_framework.exceptions import PermissionDenied
 
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
@@ -187,11 +188,18 @@ class PetListCreateView(ListCreateAPIView):
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        # Set the owner to the authenticated user
-        request.data["owner_id"] = request.user.id
-        return super().create(request, *args, **kwargs)
+    def get_queryset(self):
+        # You can remove this method from PetRetrieveUpdateDeleteView
+        return Pets.objects.filter(owner_id=self.request.user.id)
 
+    def create(self, request, *args, **kwargs):
+        request.data["owner_id"] = request.user.id
+        print(request.user.user_type)
+        if "owner" in request.user.user_type:
+            request.data["owner_id"] = request.user.id
+            return super().create(request, *args, **kwargs)
+        else:
+            raise PermissionDenied("You are not allowed to create a pet profile.")
 
 class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Pets.objects.all()
