@@ -221,7 +221,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("Your password was validated successfully!");
+          toast.success("Your token was validated successfully!");
           return true;
         }
         return false;

@@ -17,7 +17,7 @@ import os
 from dotenv import load_dotenv
 from botocore.config import Config as AWSConfig
 
-# load_dotenv(find_dotenv(".eb_env", True, False)) - when using this settings file locally
+# load_dotenv(find_dotenv(".eb_env", True, False)) - when using this settings file locally or deploying manually
 load_dotenv()
 
 CURRENT_BRANCH = os.environ.get("TRAVIS_BRANCH", "").lower()
