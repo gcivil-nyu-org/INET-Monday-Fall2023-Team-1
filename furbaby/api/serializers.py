@@ -54,8 +54,10 @@ class PetSerializer(serializers.ModelSerializer):
         model = Pets
         exclude = ()
 
+
 class JobSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Jobs
-        fields = '__all__'
+        fields = "__all__"

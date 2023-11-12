@@ -22,6 +22,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 
+
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []
@@ -205,6 +206,7 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
 
+
 class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -218,7 +220,7 @@ class JobView(APIView):
             raise ValidationError("Job not found or you do not have permission to access this job.")
 
     def get(self, request, *args, **kwargs):
-        job_id = self.request.data.get('id')
+        job_id = self.request.data.get("id")
         if job_id:
             job = self.get_object(job_id)
             serializer = JobSerializer(job)
@@ -232,7 +234,7 @@ class JobView(APIView):
         request.data["user_id"] = request.user.id
         print(request.user.user_type)
         if "owner" in request.user.user_type:
-            pet_id = self.request.data.get('pet')
+            pet_id = self.request.data.get("pet")
             try:
                 pet = Pets.objects.get(id=pet_id, owner=self.request.user)
             except Pets.DoesNotExist:
@@ -243,7 +245,7 @@ class JobView(APIView):
                 raise PermissionDenied("You do not have permission to create a job for this pet.")
 
             # Now, create the job with the specified pet
-            serializer = JobSerializer(data=request.data, context={'request': request})
+            serializer = JobSerializer(data=request.data, context={"request": request})
             serializer.is_valid(raise_exception=True)
             serializer.save(user=self.request.user, pet=pet)
 
@@ -251,9 +253,8 @@ class JobView(APIView):
         else:
             raise PermissionDenied("You are not allowed to create a job.")
 
-
     def delete(self, request, *args, **kwargs):
-        job_id = self.request.data.get('id')
+        job_id = self.request.data.get("id")
         if job_id:
             job = self.get_object(job_id)
             job.delete()
