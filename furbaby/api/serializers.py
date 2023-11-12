@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Pets
+from .models import Users, Pets, Jobs
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -53,3 +53,9 @@ class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pets
         exclude = ()
+
+class JobSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    class Meta:
+        model = Jobs
+        fields = '__all__'
