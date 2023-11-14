@@ -1,23 +1,24 @@
 import os
+import json
 from django.http import JsonResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, ListCreateAPIView
 from django.conf import settings
 from rest_framework.decorators import api_view
 
 from .utils import json_response
 from api.auth_backends import EmailBackend
-from .serializers import RegistrationSerializer, UserLoginSerializer
+from .serializers import RegistrationSerializer, UserLoginSerializer, CustomUserSerializer
 
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
 from django_rest_passwordreset.signals import reset_password_token_created
-
+from .models import Users
 
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
@@ -177,3 +178,11 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     )
     msg.attach_alternative(email_html_message, "text/html")
     msg.send()
+class UserList(ListCreateAPIView):
+    def get(self, request, *args, **kwargs):
+        queryset = Users.objects.all()
+        try:
+            return json_response( data= list(queryset.values()), status=status.HTTP_200_OK
+         )
+        except Exception as e:
+            return json_response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
