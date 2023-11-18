@@ -360,6 +360,7 @@ def user_location_view(request):
         status=status.HTTP_405_METHOD_NOT_ALLOWED,
     )
 
+
 class PetListCreateView(ListCreateAPIView):
     queryset = Pets.objects.all()
     serializer_class = PetSerializer

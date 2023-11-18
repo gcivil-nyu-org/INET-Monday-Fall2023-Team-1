@@ -94,6 +94,7 @@ class UserLocationSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Locations.objects.create(**validated_data)
 
+
 class PetSerializer(serializers.ModelSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
