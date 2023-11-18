@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Locations, Pets
+from .models import Users, Locations
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -93,11 +93,3 @@ class UserLocationSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return Locations.objects.create(**validated_data)
-
-
-class PetSerializer(serializers.ModelSerializer):
-    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Pets
-        exclude = ()

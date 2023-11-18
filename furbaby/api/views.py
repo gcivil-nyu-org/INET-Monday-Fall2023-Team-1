@@ -32,8 +32,6 @@ from django_rest_passwordreset.signals import reset_password_token_created
 import json
 from django.core.serializers import serialize
 
-from rest_framework.exceptions import PermissionDenied
-
 
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
