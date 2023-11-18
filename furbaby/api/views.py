@@ -10,6 +10,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from .utils import json_response
 from django.conf import settings
 from rest_framework.decorators import api_view
@@ -358,3 +359,27 @@ def user_location_view(request):
         {"error": "incorrect request method supplied"},
         status=status.HTTP_405_METHOD_NOT_ALLOWED,
     )
+
+class PetListCreateView(ListCreateAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # You can remove this method from PetRetrieveUpdateDeleteView
+        return Pets.objects.filter(owner_id=self.request.user.id)
+
+    def create(self, request, *args, **kwargs):
+        request.data["owner_id"] = request.user.id
+        print(request.user.user_type)
+        if "owner" in request.user.user_type:
+            request.data["owner_id"] = request.user.id
+            return super().create(request, *args, **kwargs)
+        else:
+            raise PermissionDenied("You are not allowed to create a pet profile.")
+
+
+class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
