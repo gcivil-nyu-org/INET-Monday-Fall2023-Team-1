@@ -22,4 +22,5 @@ urlpatterns = [
     path("api/user", views.user_view, name="user-info"),
     path('user-list/', views.UserList.as_view(), name="user-list"),
     path('jobs/<uuid:job_id>/apply/', views.ApplyForJobView.as_view(), name='apply_for_job'),
+    path('/get-job-status/<uuid:job_id>',views.GetJobStatus.as_view())
 ]

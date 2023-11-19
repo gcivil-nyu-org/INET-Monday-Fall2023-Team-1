@@ -103,7 +103,7 @@ def user_view(request):
         return email_backend.get_user_info(request, request.user.email)
 
     if request.method in ["PUT", "PATCH"]:
-        return __update_user_info__(request)
+        return _update_user_info_(request)
 
     if request.method == "DELETE":
         return email_backend.delete_user(request, request.user.email)
@@ -114,7 +114,7 @@ def user_view(request):
     )
 
 
-def __update_user_info__(request):
+def _update_user_info_(request):
     if not request.user.is_authenticated:
         return json_response(
             {
@@ -187,6 +187,7 @@ class UserList(ListAPIView):
         except Exception as e:
             return json_response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
 class ApplyForJobView(GenericAPIView):
     serializer_class = ApplicationsSerializer
 
@@ -195,16 +196,18 @@ class ApplyForJobView(GenericAPIView):
         print("request", request)
         try:
             job = Jobs.objects.get(id=job_id)
+            print("Jobs", job.values())
         except Jobs.DoesNotExist:
-            return json_response({"error": "Job does not exist"}, status=status.HTTP_404_NOT_FOUND)
-
+            return json_response({"error": "Job not found or you do not have permission to access this job."},
+                                 status=status.HTTP_404_NOT_FOUND)
+        print("User data",request.data.get('user'))
         user_serializer = CustomUserSerializer(data=request.data.get('user'))
         if not user_serializer.is_valid():
             return json_response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         application_data = {
             'job_id': job_id,
-            'user': user_serializer.validated_data,
+            'user': request.data.get('user'),
             'status': 'accepted',
             'details': {}  
         }
@@ -212,7 +215,24 @@ class ApplyForJobView(GenericAPIView):
         application_serializer = self.get_serializer(data=application_data)
         if application_serializer.is_valid():
             application_serializer.save()
-            return json_response(application_serializer.data, status=status.HTTP_201_CREATED)
+            return json_response(application_serializer.data,
+                                 status=status.HTTP_201_CREATED)
         else:
-            return json_response(application_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return json_response(application_serializer.errors,
+                                 status=status.HTTP_400_BAD_REQUEST)
 
+class GetJobStatus(APIView):
+
+    def get(self, request, job_id):
+        if not isinstance(job_id, int):
+            return json_response({"error": "Invalid Job Id"}, 
+                                 status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            job = Jobs.objects.get(id=job_id)
+        except Jobs.DoesNotExist:
+            return json_response({"error": "Job does not exist"}, 
+                                 status=status.HTTP_404_NOT_FOUND)
+
+        data = {"job_status": job.status}
+        return json_response(data, status=status.HTTP_200_OK)
