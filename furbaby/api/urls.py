@@ -26,4 +26,5 @@ urlpatterns = [
     path(
         "pets/<uuid:pk>/", PetRetrieveUpdateDeleteView.as_view(), name="pet-retrieve-update-delete"
     ),
+    path("api/user/locations", views.user_location_view, name="user-location"),
 ]
