@@ -402,9 +402,7 @@ class ApplyForJobView(GenericAPIView):
 class GetJobStatus(APIView):
 
     def get(self, request, job_id):
-        if not isinstance(job_id, int):
-            return json_response({"error": "Invalid Job Id"}, 
-                                 status=status.HTTP_400_BAD_REQUEST)
+       
 
         try:
             job = Jobs.objects.get(id=job_id)
