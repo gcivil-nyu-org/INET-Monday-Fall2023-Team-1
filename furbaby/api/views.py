@@ -50,9 +50,7 @@ class UserRegistrationView(GenericAPIView):
         serializer = self.serializer_class(data=request.data)
 
         if not serializer.is_valid():
-            return json_response(
-                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         serializer.save()
         return json_response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -82,9 +80,7 @@ class UserLoginView(APIView):
                     data={"message": "User is not found"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
-        return json_response(
-            data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response(data=serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(["GET", "OPTIONS", "POST"])
@@ -95,17 +91,13 @@ def logout_view(request):
         )
 
     logout(request)
-    return json_response(
-        {"detail": "Successfully logged out."}, status=status.HTTP_200_OK
-    )
+    return json_response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "OPTIONS", "POST"])
 def session_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"isAuthenticated": True})
 
@@ -113,9 +105,7 @@ def session_view(request):
 @api_view(["GET", "OPTIONS", "POST"])
 def whoami_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     return json_response({"email": request.user.email}, status=status.HTTP_200_OK)
 
@@ -123,9 +113,7 @@ def whoami_view(request):
 @api_view(["GET", "OPTIONS", "PUT", "PATCH", "DELETE"])
 def user_view(request):
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     email_backend = EmailBackend()
     if request.method == "GET":
@@ -161,9 +149,7 @@ def index(req):
     return JsonResponse(
         {
             "version": {
-                "short_hash": getattr(
-                    settings, "GIT_COMMIT_SHORT_HASH", "default-00000"
-                ),
+                "short_hash": getattr(settings, "GIT_COMMIT_SHORT_HASH", "default-00000"),
                 "hash": getattr(settings, "GIT_COMMIT_HASH", "default-00000"),
             }
         },
@@ -172,9 +158,7 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(
-    sender, instance, reset_password_token, *args, **kwargs
-):
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -197,9 +181,7 @@ def password_reset_token_created(
 
     # render email text
     email_html_message = render_to_string("email/password_reset_email.html", context)
-    email_plaintext_message = render_to_string(
-        "email/password_reset_email.txt", context
-    )
+    email_plaintext_message = render_to_string("email/password_reset_email.txt", context)
 
     msg = EmailMultiAlternatives(
         # title:
@@ -225,14 +207,10 @@ class UserLocationView(APIView):
 
     # takes as input the user id, request and inserts a new location record for the user
     def insert_location_record(self, request):
-        serializer = self.serializer_class(
-            data=request.data, context={"request": request}
-        )
+        serializer = self.serializer_class(data=request.data, context={"request": request})
 
         if not serializer.is_valid():
-            return json_response(
-                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         instance = serializer.save()
 
@@ -291,9 +269,7 @@ class UserLocationView(APIView):
             if "default_location" in request.data:
                 if request.data["default_location"] == True:
                     # unset all other locations as default
-                    Locations.objects.filter(user_id=request.user.id).update(
-                        default_location=False
-                    )
+                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
                 location.default_location = request.data["default_location"]
                 updated_fields.append("default_location")
 
@@ -361,9 +337,7 @@ def user_location_view(request):
     location_view = UserLocationView()
 
     if not request.user.is_authenticated:
-        return json_response(
-            {"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED
-        )
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     # fetch all user locations for the user
     if request.method == "GET":
@@ -394,13 +368,9 @@ class UserList(ListAPIView):
     def get(self, request, *args, **kwargs):
         queryset = Users.objects.all()
         try:
-            return json_response(
-                data=list(queryset.values()), status=status.HTTP_200_OK
-            )
+            return json_response(data=list(queryset.values()), status=status.HTTP_200_OK)
         except Exception as e:
-            return json_response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return json_response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class ApplyForJobView(GenericAPIView):
@@ -414,17 +384,13 @@ class ApplyForJobView(GenericAPIView):
             print("Jobs", job.values())
         except Jobs.DoesNotExist:
             return json_response(
-                {
-                    "error": "Job not found or you do not have permission to access this job."
-                },
+                {"error": "Job not found or you do not have permission to access this job."},
                 status=status.HTTP_404_NOT_FOUND,
             )
         print("User data", request.data.get("user"))
         user_serializer = CustomUserSerializer(data=request.data.get("user"))
         if not user_serializer.is_valid():
-            return json_response(
-                user_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         application_data = {
             "job_id": job_id,
@@ -436,13 +402,9 @@ class ApplyForJobView(GenericAPIView):
         application_serializer = self.get_serializer(data=application_data)
         if application_serializer.is_valid():
             application_serializer.save()
-            return json_response(
-                application_serializer.data, status=status.HTTP_201_CREATED
-            )
+            return json_response(application_serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return json_response(
-                application_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return json_response(application_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetJobStatus(APIView):
@@ -450,9 +412,7 @@ class GetJobStatus(APIView):
         try:
             job = Jobs.objects.get(id=job_id)
         except Jobs.DoesNotExist:
-            return json_response(
-                {"error": "Job does not exist"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return json_response({"error": "Job does not exist"}, status=status.HTTP_404_NOT_FOUND)
 
         data = {"job_status": job.status}
         return json_response(data, status=status.HTTP_200_OK)
