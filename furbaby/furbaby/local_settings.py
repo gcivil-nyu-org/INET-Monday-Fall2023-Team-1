@@ -15,6 +15,7 @@ import subprocess
 
 from pathlib import Path
 from dotenv import load_dotenv
+import os
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
 

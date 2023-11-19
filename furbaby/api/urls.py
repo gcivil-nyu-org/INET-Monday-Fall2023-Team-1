@@ -1,6 +1,8 @@
 from django.urls import path, include
 
 from . import views
+from .views import UserRegistrationView
+from .views import UserLoginView, PetListCreateView, PetRetrieveUpdateDeleteView
 
 # csrf
 
@@ -20,5 +22,10 @@ urlpatterns = [
         include("django_rest_passwordreset.urls", namespace="password_reset"),
     ),
     path("api/user", views.user_view, name="user-info"),
+    path("api/user/locations", views.user_location_view, name="user-location"),
+    path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
+    path(
+        "pets/<uuid:pk>/", PetRetrieveUpdateDeleteView.as_view(), name="pet-retrieve-update-delete"
+    ),
     path("api/user/locations", views.user_location_view, name="user-location"),
 ]
