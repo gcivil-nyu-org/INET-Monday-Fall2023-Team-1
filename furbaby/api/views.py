@@ -17,15 +17,6 @@ from rest_framework.decorators import api_view
 
 from .models import Locations
 from api.auth_backends import EmailBackend
-<<<<<<< HEAD
-=======
-from .serializers import (
-    RegistrationSerializer,
-    UserLocationSerializer,
-    UserLoginSerializer,
-    PetSerializer,
-)
->>>>>>> c8029c45d746b1ff5e17cad224fc867d4316faec
 from .models import Pets
 from .models import Locations
 from .utils import json_response
