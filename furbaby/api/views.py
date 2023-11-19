@@ -389,6 +389,8 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
     queryset = Pets.objects.all()
     serializer_class = PetSerializer
     permission_classes = [IsAuthenticated]
+
+
 # This class is for the user location(s)
 class UserLocationView(APIView):
     # Fetch the locations serializer

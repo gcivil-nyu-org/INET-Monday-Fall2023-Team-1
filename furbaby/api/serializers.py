@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Locations,Pets
+from .models import Users, Locations, Pets
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -101,6 +101,8 @@ class PetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pets
         exclude = ()
+
+
 class UserLocationSerializer(serializers.Serializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     address = serializers.CharField(max_length=200)
