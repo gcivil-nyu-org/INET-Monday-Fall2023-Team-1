@@ -9,6 +9,8 @@ import Landing from "./Landing";
 import Loading from "./Loading";
 import NotFound from "./NotFound";
 import SignUp from "./SignUp";
+import PetProfiles from "./PetProfiles";
+
 
 const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
   const { authenticationState } = useContext(AuthContext);
@@ -83,6 +85,12 @@ const AppRouter = () => {
               authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
             />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="pet-profiles"
+        element={
+          <PetProfiles />
         }
       />
       <Route path="*" element={<NotFound />} />

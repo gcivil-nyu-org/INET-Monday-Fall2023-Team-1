@@ -28,6 +28,7 @@ export const ROUTES = {
     HOME: "/home",
     PROFILE: "/profile",
     SETTINGS: "/settings",
+    PET_PROFILES: "/pet-profiles",
   },
 } as const;
 
@@ -48,4 +49,5 @@ export const API_ROUTES = {
   USER: {
     USER_ROOT: "api/user",
   },
+  PETS: "pets/"
 } as const;

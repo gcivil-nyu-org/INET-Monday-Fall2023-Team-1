@@ -7,6 +7,7 @@ import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
 import Profile from "./Profile";
+import PetProfiles from './PetProfiles';
 import Settings from "./Settings";
 import { classNames } from "./utils";
 
@@ -19,7 +20,7 @@ const user = {
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Job Feed", href: "#", current: false },
-  { name: "Pet Profiles", href: "#", current: false },
+  { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, current: true },
 ];
 
 type HomeProps = {
@@ -83,6 +84,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
         />
       );
     }
+
     return "Nothing here to display";
   }, [pathname]);
 
