@@ -153,7 +153,6 @@ const PetProfiles: React.FC = () => {
                 <div className="mt-4">
                   <h3 className="text-xl font-bold mb-2">Edit Pet Profile</h3>
                   <form>
-                    {/* Include your form fields here */}
                     <label htmlFor="edit-name">Name:</label>
                     <input
                       type="text"
@@ -163,7 +162,34 @@ const PetProfiles: React.FC = () => {
                       onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-                    {/* ... Repeat for other fields */}
+                    <label htmlFor="edit-species">Species</label>
+                    <input
+                      type="text"
+                      name="species"
+                      id="edit-species"
+                      value={editFormData.species}
+                      onChange={e => setEditFormData({ ...editFormData, species: e.target.value })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="edit-breed">Breed</label>
+                    <input
+                      type="text"
+                      name="breed"
+                      id="edit-breed"
+                      value={editFormData.breed}
+                      onChange={e => setEditFormData({ ...editFormData, breed: e.target.value })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="edit-weight">Weight</label>
+                    <input
+                      type="text"
+                      name="weight"
+                      id="edit-weight"
+                      value={editFormData.weight}
+                      onChange={e => setEditFormData({ ...editFormData, weight: e.target.value })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+
                   </form>
                   <div className="mt-4 flex">
                     <button
@@ -184,8 +210,13 @@ const PetProfiles: React.FC = () => {
                 <div>
                   <p className="font-bold mb-2">Name: {pet.name}</p>
                   <p>Species: {pet.species}</p>
+                  <p>Breed: {pet.breed}</p>
+                  <p>Weight: {pet.weight}</p>
                   <p>Color: {pet.color}</p>
-                  {/* ... Display other pet information */}
+                  <p>Height: {pet.height}</p>
+                  <p>Chip Number: {pet.chip_number}</p>
+                  <p>Health Requirements: {pet.health_requirements}</p>
+
                 </div>
               )}
               <div className="mt-4 flex">
@@ -218,10 +249,15 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
   const [petFormData, setPetFormData] = useState({
     name: '',
     species: '',
+    color: '',
+    height: '',
     breed: '',
     weight: '',
     pictures: ['url1', 'url2', 'url3'],
+    chip_number: '',
+    health_requirements: '',
   });
+
 
   const onClickSave = () => {
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
@@ -233,9 +269,13 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
             setPetFormData({
               name: '',
               species: '',
+              color: '',
+              height: '',
               breed: '',
               weight: '',
               pictures: ['url1', 'url2', 'url3'],
+              chip_number: '',
+              health_requirements: '',
             });
           } else {
             throw new Error('Failed to save pet profile');
@@ -254,9 +294,13 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
       setPetFormData({
         name: '',
         species: '',
+        color: '',
+        height: '',
         breed: '',
         weight: '',
         pictures: ['url1', 'url2', 'url3'],
+        chip_number: '',
+        health_requirements: '',
       });
     }
   };
@@ -307,6 +351,29 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   onChange={e => setPetFormData({ ...petFormData, species: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
+                <label htmlFor="pet-color" className="block text-sm font-medium text-gray-700">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  name="color"
+                  id="pet-color"
+                  value={petFormData.color}
+                  onChange={(e) => setPetFormData({ ...petFormData, color: e.target.value })}
+                  className="border border-gray-300 rounded-md p-2 mt-1"
+                />
+
+                <label htmlFor="pet-height" className="block text-sm font-medium text-gray-700">
+                  Height
+                </label>
+                <input
+                  type="text"
+                  name="height"
+                  id="pet-height"
+                  value={petFormData.height}
+                  onChange={(e) => setPetFormData({ ...petFormData, height: e.target.value })}
+                  className="border border-gray-300 rounded-md p-2 mt-1"
+                />
                 <label htmlFor="pet-breed" className="block text-sm font-medium text-gray-700">
                   Breed
                 </label>
@@ -327,6 +394,29 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   id="pet-weight"
                   value={petFormData.weight}
                   onChange={e => setPetFormData({ ...petFormData, weight: e.target.value })}
+                  className="border border-gray-300 rounded-md p-2 mt-1"
+                />
+                <label htmlFor="pet-chip-number" className="block text-sm font-medium text-gray-700">
+                  Chip Number
+                </label>
+                <input
+                  type="text"
+                  name="chip_number"
+                  id="pet-chip-number"
+                  value={petFormData.chip_number}
+                  onChange={(e) => setPetFormData({ ...petFormData, chip_number: e.target.value })}
+                  className="border border-gray-300 rounded-md p-2 mt-1"
+                />
+
+                <label htmlFor="pet-health-requirements" className="block text-sm font-medium text-gray-700">
+                  Health Requirements
+                </label>
+                <input
+                  type="text"
+                  name="health_requirements"
+                  id="pet-health-requirements"
+                  value={petFormData.health_requirements}
+                  onChange={(e) => setPetFormData({ ...petFormData, health_requirements: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
               </div>
@@ -351,5 +441,6 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
     </div>
   );
 };
+
 
 export default PetProfilePage;
