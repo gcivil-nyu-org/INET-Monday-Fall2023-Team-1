@@ -28,5 +28,9 @@ urlpatterns = [
     ),
     path("/get-job-status/<uuid:job_id>", views.GetJobStatus.as_view()),
     path("api/user/locations", views.user_location_view, name="user-location"),
-path('jobs/<uuid:job_id>/applications/<uuid:application_id>/accept/', views.accept_application, name='accept_application'),
+    path(
+        "jobs/<uuid:job_id>/applications/<uuid:application_id>/accept/",
+        views.accept_application,
+        name="accept_application",
+    ),
 ]
