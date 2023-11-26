@@ -453,3 +453,42 @@ def accept_application(request, job_id, application_id):
         return json_response(
             {"error": "Job or application does not exist"}, status=status.HTTP_404_NOT_FOUND
         )
+
+
+@api_view(["POST"])
+def reject_application(request, job_id, application_id):
+    try:
+        request.data["user_id"] = request.user.id
+        print(request.user.user_type)
+        if "owner" in request.user.user_type:
+            pet_id = request.data.get("pet")
+            try:
+                pet = Pets.objects.get(id=pet_id, owner=request.user)
+            except Pets.DoesNotExist:
+                raise ValidationError("Invalid pet ID or you do not own the pet.")
+
+            # Ensure that the pet owner is the one creating the job
+            if pet.owner != request.user:
+                raise BasePermission.PermissionDenied(
+                    "You do not have permission to accept the job for this pet."
+                )
+        job = Jobs.objects.get(id=job_id)
+        application = Applications.objects.get(id=application_id, job=job)
+
+        if job.user != request.user:  # Check if the requester is the job owner
+            return json_response(
+                {"error": "You are not authorized to perform this action"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # Mark the application as rejected or remove it as per your business logic
+        application.status = "rejected"
+        application.save()
+
+        # Additional logic: Notify the pet sitter about rejection
+
+        return json_response({"message": "Application rejected successfully"})
+    except (Jobs.DoesNotExist, Applications.DoesNotExist):
+        return json_response(
+            {"error": "Job or application does not exist"}, status=status.HTTP_404_NOT_FOUND
+        )

@@ -33,4 +33,9 @@ urlpatterns = [
         views.accept_application,
         name="accept_application",
     ),
+    path(
+        "jobs/<uuid:job_id>/applications/<uuid:application_id>/reject/",
+        views.reject_application,
+        name="reject_application",
+    ),
 ]
