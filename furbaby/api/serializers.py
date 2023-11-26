@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Locations, Pets, Jobs
+from .models import Users, Locations, Pets, Jobs, Applications
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -109,3 +109,22 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Jobs
         fields = "__all__"
+
+
+class UserSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    username = serializers.CharField()
+
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Applications
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user_representation = UserSerializer(instance.user).data
+        representation["user"] = user_representation
+        return representation
