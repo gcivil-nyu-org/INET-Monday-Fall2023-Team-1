@@ -2,7 +2,7 @@ from django.urls import path, include
 
 from . import views
 from .views import UserRegistrationView
-from .views import UserLoginView, PetListCreateView, PetRetrieveUpdateDeleteView, JobView
+from .views import UserLoginView, PetListCreateView, PetRetrieveUpdateDeleteView, JobView,ApplicationView
 
 # csrf
 
@@ -28,4 +28,5 @@ urlpatterns = [
         "pets/<uuid:pk>/", PetRetrieveUpdateDeleteView.as_view(), name="pet-retrieve-update-delete"
     ),
     path("jobs/", JobView.as_view(), name="custom-job-view"),
+      path("applications/", ApplicationView.as_view(), name="application-list"),
 ]

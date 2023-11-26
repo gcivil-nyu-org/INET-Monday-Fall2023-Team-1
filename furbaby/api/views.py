@@ -41,7 +41,16 @@ from rest_framework.exceptions import PermissionDenied
 import json
 from django.core.serializers import serialize
 
-
+def update_job_status(job):
+    applications_count = Applications.objects.filter(job=job).count()
+    if applications_count < 10:
+        job.status = "open"
+    elif applications_count > 10:
+        job.status = "job_acceptance_pending"
+    else:
+        job.status = "acceptance_complete"
+    job.save()
+    
 class UserRegistrationView(GenericAPIView):
     # the next line is to disable CORS for that endpoint/view
     authentication_classes = []

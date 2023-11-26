@@ -19,7 +19,7 @@ import os
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
 
-load_dotenv("/Users/yaminaik/INET-Monday-Fall2023-Team-1/furbaby/furbaby/.dotenv")
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -92,9 +92,9 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "demo1",
-        "USER": "yami",
-        "PASSWORD": "yami",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
         "HOST": "localhost",
         "PORT": "5432",
         "ATOMIC_REQUESTS": True,
