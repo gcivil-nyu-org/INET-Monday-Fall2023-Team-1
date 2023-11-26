@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view
 from .models import Locations
 from api.auth_backends import EmailBackend
 from .models import Pets
-from .models import Locations
+from .models import Locations,Jobs,Applications
 from .utils import json_response
 from api.auth_backends import EmailBackend
 from .serializers import (
@@ -26,6 +26,8 @@ from .serializers import (
     UserLocationSerializer,
     UserLoginSerializer,
     PetSerializer,
+    JobSerializer,
+    ApplicationSerializer,
 )
 
 from django.core.mail import EmailMultiAlternatives
@@ -444,3 +446,111 @@ class JobView(APIView):
             job = self.get_object(job_id)
             job.delete()
             return JsonResponse({"detail": "Job deleted successfully."})
+class ApplicationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        job_id = request.query_params.get("job_id")
+        applications = Applications.objects.filter(job_id=job_id)
+        serializer = ApplicationSerializer(applications, many=True)
+        print(serializer.data)
+        return JsonResponse(serializer.data, safe=False)
+
+    def put(self, request, *args, **kwargs):
+        # Retrieve the application ID from the URL or request data
+        application_id = request.data.get("id")
+        print(application_id)
+        try:
+            application = Applications.objects.get(id=application_id)
+        except Applications.DoesNotExist:
+            raise ValidationError("Application not found.")
+        job_instance = Jobs.objects.get(id=application.job_id)
+
+        # Check if the user making the request is the owner of the application
+        if request.user == job_instance.user:
+            print(request.user)
+            # Check if the job status is "open"
+            if job_instance.status == "open":
+                # Update the application status based on your requirements
+                new_status = request.data.get("status")
+                if new_status:
+                    application.status = new_status
+                    application.save()
+
+                    # You can perform additional actions based on the new status if needed
+                    # For example, update the job status or send notifications
+
+                    return Response(
+                        {"detail": "Application status updated successfully."},
+                        status=status.HTTP_200_OK,
+                    )
+                else:
+                    return Response(
+                        {"detail": "New status is required for the update."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            else:
+                return Response(
+                    {"detail": "The job status must be 'open' to update the application."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"detail": "You do not have permission to update this application."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+    def post(self, request, *args, **kwargs):
+        job_id = self.request.data.get("id")
+        print(request.data)
+        print(job_id)
+        try:
+            job = Jobs.objects.get(id=job_id)
+        except Jobs.DoesNotExist:
+            raise ValidationError("Job not found.")
+
+        # Check if the user is allowed to apply for this job
+        if "sitter" in request.user.user_type:
+            # Check if the job is still available (you can add more checks based on your logic)
+            if job.status == "open":
+                # Check if the user is not the owner of the job
+                if job.user != request.user:
+                    # Check if the user has not already applied for this job
+                    if not Applications.objects.filter(user=request.user, job=job).exists():
+                        # Create an application for the job
+                        application_data = {
+                            "user": request.user.id,
+                            "job": job_id,
+                            "status": "rejected",  # You can set an initial status here
+                            "details": {},  # You can add more details if needed
+                        }
+                        application_serializer = ApplicationSerializer(
+                            data=application_data, context={"request": self.request}
+                        )
+                        application_serializer.is_valid(raise_exception=True)
+                        application_serializer.save()
+                        update_job_status(job)
+
+                        return Response(
+                            {"detail": "Application submitted successfully."},
+                            status=status.HTTP_201_CREATED,
+                        )
+                    else:
+                        return Response(
+                            {"detail": "You have already applied for this job."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                else:
+                    return Response(
+                        {"detail": "You cannot apply to your own job."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+            else:
+                return Response(
+                    {"detail": "This job is no longer available."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"detail": "Only pet sitters can apply for jobs."}, status=status.HTTP_403_FORBIDDEN
+            )
