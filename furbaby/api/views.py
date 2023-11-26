@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view
 from .models import Locations
 from api.auth_backends import EmailBackend
 from .models import Pets
-from .models import Locations,Jobs,Applications
+from .models import Locations, Jobs, Applications
 from .utils import json_response
 from api.auth_backends import EmailBackend
 from .serializers import (
@@ -397,6 +397,9 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get_all(self):
+        return Jobs.objects.all()
+
     def get_queryset(self):
         return Jobs.objects.filter(user_id=self.request.user.id)
 
@@ -413,13 +416,55 @@ class JobView(APIView):
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            queryset = self.get_queryset()
-            serializer = JobSerializer(queryset, many=True)
-            return JsonResponse(serializer.data, safe=False)
+            print(request.user.user_type)
+            if "owner" in request.user.user_type and "sitter" in request.user.user_type:
+                queryset_owner = self.get_queryset()
+                queryset_sitter = self.get_all()
+
+                serializer_owner = JobSerializer(queryset_owner, many=True)
+                serializer_sitter = JobSerializer(queryset_sitter, many=True)
+
+                response_data = {
+                    "owner_jobs": serializer_owner.data,
+                    "sitter_jobs": serializer_sitter.data,
+                }
+                print(response_data)
+                return JsonResponse(response_data, safe=False)
+
+            elif "owner" in request.user.user_type:
+                queryset_owner = self.get_queryset()
+                serializer_owner = JobSerializer(queryset_owner, many=True)
+                response_data = {
+                    "owner_jobs": serializer_owner.data,
+                }
+                return JsonResponse(response_data, safe=False)
+
+            elif "sitter" in request.user.user_type:
+                queryset_sitter = self.get_all()
+                serializer_sitter = JobSerializer(queryset_sitter, many=True)
+                response_data = {
+                    "sitter_jobs": serializer_sitter.data,
+                }
+                return JsonResponse(response_data, safe=False)
+
+    def put(self, request, *args, **kwargs):
+        # Retrieve the application ID from the URL or request data
+        job_id = self.request.data.get("id")
+        try:
+            job = Jobs.objects.get(id=job_id)
+            print(job.status)
+            if job.status == "open":
+                job.status = "acceptance_complete"
+                job.save()
+                return Response({"detail": "Job status updated successfully."})
+
+        except Jobs.DoesNotExist:
+            return Response({"detail": "Job not found."}, status=404)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
 
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
-        print(request.user.user_type)
         if "owner" in request.user.user_type:
             pet_id = self.request.data.get("pet")
             try:
@@ -430,7 +475,6 @@ class JobView(APIView):
             # Ensure that the pet owner is the one creating the job
             if pet.owner != self.request.user:
                 raise PermissionDenied("You do not have permission to create a job for this pet.")
-
             # Now, create the job with the specified pet
             serializer = JobSerializer(data=request.data, context={"request": request})
             serializer.is_valid(raise_exception=True)
@@ -446,6 +490,8 @@ class JobView(APIView):
             job = self.get_object(job_id)
             job.delete()
             return JsonResponse({"detail": "Job deleted successfully."})
+
+
 class ApplicationView(APIView):
     permission_classes = [IsAuthenticated]
 
