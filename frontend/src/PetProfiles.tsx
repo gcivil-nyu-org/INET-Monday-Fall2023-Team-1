@@ -13,7 +13,7 @@ interface Pet {
   height: string;
   breed: string;
   weight: string;
-  pictures: string[];
+
   chip_number: string;
   health_requirements: string;
 }

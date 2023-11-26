@@ -10,6 +10,8 @@ import Loading from "./Loading";
 import NotFound from "./NotFound";
 import SignUp from "./SignUp";
 import PetProfiles from "./PetProfiles";
+import Jobs from "./Jobs"
+import Dashboard from "./Dashboard";
 
 
 const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
@@ -90,7 +92,18 @@ const AppRouter = () => {
       <Route
         path="pet-profiles"
         element={
-          <PetProfiles />
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+        }
+      />
+      <Route
+        path="jobs"
+        element={
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+
         }
       />
       <Route path="*" element={<NotFound />} />
