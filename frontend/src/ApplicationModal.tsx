@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { API_ROUTES } from "./constants";
 import toast from "react-hot-toast";
@@ -18,7 +18,6 @@ interface Application {
   // Add more fields as needed
 }
 
-
 interface ApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,7 +28,7 @@ interface ApplicationModalProps {
 const updateJobStatus = async (jobId: string) => {
   try {
     // Assuming you have a 'status' variable representing the new status
-    const newStatus = 'acceptance_complete';  // Replace this with your desired status
+    const newStatus = "acceptance_complete"; // Replace this with your desired status
 
     const response = await axios.put(`${API_ROUTES.JOBS}`, {
       id: jobId,
@@ -38,27 +37,22 @@ const updateJobStatus = async (jobId: string) => {
 
     if (response.status === 200) {
       console.log(`Job with ID ${jobId} updated successfully.`);
-
     } else {
-      console.error('Failed to update job.');
+      console.error("Failed to update job.");
       // Handle the error scenario
     }
   } catch (error) {
-    console.error('Error updating job:', error);
+    console.error("Error updating job:", error);
     // Handle the error scenario
   }
 };
-
-
-
-
 
 const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, applications }) => {
   const [acceptedApplications, setAcceptedApplications] = useState<string[]>([]);
 
   const handleAccept = async (applicationId: string, jobId: string) => {
     try {
-      const newStatus = 'accepted';
+      const newStatus = "accepted";
       const response = await axios.put(`${API_ROUTES.APPLY}`, {
         id: applicationId,
         status: newStatus,
@@ -68,29 +62,27 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         console.log(`Application with ID ${applicationId} accepted successfully.`);
         setAcceptedApplications((prevAccepted) => [...prevAccepted, applicationId]);
         updateJobStatus(jobId);
-        toast.success(`Application accepted for user: ${applications.find(app => app.id === applicationId)?.user.username}`);
+        toast.success(
+          `Application accepted for user: ${applications.find((app) => app.id === applicationId)
+            ?.user.username}`
+        );
         setTimeout(() => {
           window.location.reload();
         }, 700);
 
-
-
-
-
         // Perform any additional actions upon successful acceptance
-
       } else {
-        console.error('Failed to accept application.');
+        console.error("Failed to accept application.");
         // Handle the error scenario
       }
     } catch (error: any) {
-      console.error('Error accepting application:', error);
+      console.error("Error accepting application:", error);
 
       // Check if the error response contains a 'detail' property
       if (error.response && error.response.data && error.response.data.detail) {
         toast.error(error.response.data.detail); // Toast the specific error message from the API
       } else {
-        toast.error('Error accepting application: ' + error.message); // Toast a generic error message
+        toast.error("Error accepting application: " + error.message); // Toast a generic error message
       }
     }
   };
@@ -106,7 +98,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+          &#8203;
+        </span>
 
         <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -115,12 +109,12 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
               <div key={application.id} className="mb-4">
                 <p>Status: {application.status}</p>
                 <p>
-                  Username: {' '}
+                  Username:{" "}
                   <Link to={`/user-profile/${application.user.id}`}>
                     {application.user.username}
                   </Link>
                 </p>
-                {application.status !== 'accepted' && (
+                {application.status !== "accepted" && (
                   <button
                     onClick={() => handleAccept(application.id, application.job)} // Call onAccept function with application ID
                     type="button"

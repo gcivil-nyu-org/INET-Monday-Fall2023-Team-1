@@ -35,8 +35,7 @@ const Locations = () => {
       )
       .then((response) => {
         // TODO: handle response
-        if (response.status === 201)
-        {
+        if (response.status === 201) {
           onCloseModal();
           toast.success("Location added successfully.");
         }
@@ -44,7 +43,7 @@ const Locations = () => {
       })
       .catch((err) => {
         // TODO: handle error
-          toast.error("Failed to add location.");
+        toast.error("Failed to add location.");
         console.error(err);
       });
   };
@@ -72,7 +71,7 @@ const Locations = () => {
 
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getLocations()//.then((response) => {
+    getLocations(); //.then((response) => {
   }, []);
 
   const setAsDefault = (location: FurbabyLocation) => {

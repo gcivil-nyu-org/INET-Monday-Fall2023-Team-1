@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Tab } from "@headlessui/react";
 import { API_ROUTES } from "./constants";
 import toast from "react-hot-toast";
-
 
 interface Pet {
   id: string;
@@ -26,7 +25,7 @@ interface EditPetFormData {
   pictures: string[];
 }
 
-interface PetProfilePageProps { }
+interface PetProfilePageProps {}
 
 const PetProfiles: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -34,10 +33,10 @@ const PetProfiles: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [editFormData, setEditFormData] = useState({
-    name: '',
-    species: '',
-    breed: '',
-    weight: '',
+    name: "",
+    species: "",
+    breed: "",
+    weight: "",
   });
 
   useEffect(() => {
@@ -54,8 +53,8 @@ const PetProfiles: React.FC = () => {
 
       setPets(response.data);
     } catch (error: any) {
-      console.error('Error fetching pets:', error.message);
-      setError('Failed to fetch pets. Please try again.');
+      console.error("Error fetching pets:", error.message);
+      setError("Failed to fetch pets. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -71,7 +70,7 @@ const PetProfiles: React.FC = () => {
           setPets((prevPets) => prevPets.filter((pet) => pet.id !== petId));
           toast.success("Pet profile deleted successfully");
         } else {
-          throw new Error('Failed to delete pet profile');
+          throw new Error("Failed to delete pet profile");
         }
       } catch (err) {
         console.error(err);
@@ -93,10 +92,10 @@ const PetProfiles: React.FC = () => {
   const handleEditCancel = () => {
     setEditingPet(null);
     setEditFormData({
-      name: '',
-      species: '',
-      breed: '',
-      weight: '',
+      name: "",
+      species: "",
+      breed: "",
+      weight: "",
     });
   };
 
@@ -128,7 +127,7 @@ const PetProfiles: React.FC = () => {
           toast.success("Pet profile updated successfully");
           setEditingPet(null);
         } else {
-          throw new Error('Failed to edit pet profile');
+          throw new Error("Failed to edit pet profile");
         }
       } catch (err) {
         console.error(err);
@@ -168,7 +167,9 @@ const PetProfiles: React.FC = () => {
                       name="species"
                       id="edit-species"
                       value={editFormData.species}
-                      onChange={e => setEditFormData({ ...editFormData, species: e.target.value })}
+                      onChange={(e) =>
+                        setEditFormData({ ...editFormData, species: e.target.value })
+                      }
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                     <label htmlFor="edit-breed">Breed</label>
@@ -177,7 +178,7 @@ const PetProfiles: React.FC = () => {
                       name="breed"
                       id="edit-breed"
                       value={editFormData.breed}
-                      onChange={e => setEditFormData({ ...editFormData, breed: e.target.value })}
+                      onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                     <label htmlFor="edit-weight">Weight</label>
@@ -186,10 +187,9 @@ const PetProfiles: React.FC = () => {
                       name="weight"
                       id="edit-weight"
                       value={editFormData.weight}
-                      onChange={e => setEditFormData({ ...editFormData, weight: e.target.value })}
+                      onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
-
                   </form>
                   <div className="mt-4 flex">
                     <button
@@ -216,7 +216,6 @@ const PetProfiles: React.FC = () => {
                   <p>Height: {pet.height}</p>
                   <p>Chip Number: {pet.chip_number}</p>
                   <p>Health Requirements: {pet.health_requirements}</p>
-
                 </div>
               )}
               <div className="mt-4 flex">
@@ -243,42 +242,41 @@ const PetProfiles: React.FC = () => {
   );
 };
 
-
 const PetProfilePage: React.FC<PetProfilePageProps> = () => {
-  const [activeTab, setActiveTab] = useState('view');
+  const [activeTab, setActiveTab] = useState("view");
   const [petFormData, setPetFormData] = useState({
-    name: '',
-    species: '',
-    color: '',
-    height: '',
-    breed: '',
-    weight: '',
-    pictures: ['url1', 'url2', 'url3'],
-    chip_number: '',
-    health_requirements: '',
+    name: "",
+    species: "",
+    color: "",
+    height: "",
+    breed: "",
+    weight: "",
+    pictures: ["url1", "url2", "url3"],
+    chip_number: "",
+    health_requirements: "",
   });
-
 
   const onClickSave = () => {
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      axios.post(API_ROUTES.PETS, petFormData)
+      axios
+        .post(API_ROUTES.PETS, petFormData)
         .then((response) => {
           if (response.status === 201) {
             toast.success("Pet profile updated successfully");
             setPetFormData({
-              name: '',
-              species: '',
-              color: '',
-              height: '',
-              breed: '',
-              weight: '',
-              pictures: ['url1', 'url2', 'url3'],
-              chip_number: '',
-              health_requirements: '',
+              name: "",
+              species: "",
+              color: "",
+              height: "",
+              breed: "",
+              weight: "",
+              pictures: ["url1", "url2", "url3"],
+              chip_number: "",
+              health_requirements: "",
             });
           } else {
-            throw new Error('Failed to save pet profile');
+            throw new Error("Failed to save pet profile");
           }
         })
         .catch((err) => {
@@ -292,15 +290,15 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
     const cancelConsent = window.confirm("Are you sure you want to discard these changes?");
     if (cancelConsent) {
       setPetFormData({
-        name: '',
-        species: '',
-        color: '',
-        height: '',
-        breed: '',
-        weight: '',
-        pictures: ['url1', 'url2', 'url3'],
-        chip_number: '',
-        health_requirements: '',
+        name: "",
+        species: "",
+        color: "",
+        height: "",
+        breed: "",
+        weight: "",
+        pictures: ["url1", "url2", "url3"],
+        chip_number: "",
+        health_requirements: "",
       });
     }
   };
@@ -310,24 +308,26 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
       <Tab.Group>
         <Tab.List className="flex bg-gray-100 p-4 rounded-t-md">
           <Tab
-            className={({ selected }) => selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"}
-            onClick={() => setActiveTab('view')}
+            className={({ selected }) =>
+              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+            }
+            onClick={() => setActiveTab("view")}
           >
             View Pet Profiles
           </Tab>
           <Tab
-            className={({ selected }) => selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"}
-            onClick={() => setActiveTab('add')}
+            className={({ selected }) =>
+              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+            }
+            onClick={() => setActiveTab("add")}
           >
             Add Pet Profile
           </Tab>
         </Tab.List>
         <Tab.Panels className="p-4 bg-white border border-t-0 rounded-b-md">
+          <Tab.Panel>{activeTab === "view" && <PetProfiles />}</Tab.Panel>
           <Tab.Panel>
-            {activeTab === 'view' && <PetProfiles />}
-          </Tab.Panel>
-          <Tab.Panel>
-            {activeTab === 'add' && (
+            {activeTab === "add" && (
               <div className="mb-4">
                 <label htmlFor="pet-name" className="block text-sm font-medium text-gray-700">
                   Pet Name
@@ -337,7 +337,7 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   name="name"
                   id="pet-name"
                   value={petFormData.name}
-                  onChange={e => setPetFormData({ ...petFormData, name: e.target.value })}
+                  onChange={(e) => setPetFormData({ ...petFormData, name: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
                 <label htmlFor="pet-species" className="block text-sm font-medium text-gray-700">
@@ -348,7 +348,7 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   name="species"
                   id="pet-species"
                   value={petFormData.species}
-                  onChange={e => setPetFormData({ ...petFormData, species: e.target.value })}
+                  onChange={(e) => setPetFormData({ ...petFormData, species: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
                 <label htmlFor="pet-color" className="block text-sm font-medium text-gray-700">
@@ -382,7 +382,7 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   name="breed"
                   id="pet-breed"
                   value={petFormData.breed}
-                  onChange={e => setPetFormData({ ...petFormData, breed: e.target.value })}
+                  onChange={(e) => setPetFormData({ ...petFormData, breed: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
                 <label htmlFor="pet-weight" className="block text-sm font-medium text-gray-700">
@@ -393,10 +393,13 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   name="weight"
                   id="pet-weight"
                   value={petFormData.weight}
-                  onChange={e => setPetFormData({ ...petFormData, weight: e.target.value })}
+                  onChange={(e) => setPetFormData({ ...petFormData, weight: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
-                <label htmlFor="pet-chip-number" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="pet-chip-number"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Chip Number
                 </label>
                 <input
@@ -408,7 +411,10 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
 
-                <label htmlFor="pet-health-requirements" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="pet-health-requirements"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Health Requirements
                 </label>
                 <input
@@ -416,7 +422,9 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   name="health_requirements"
                   id="pet-health-requirements"
                   value={petFormData.health_requirements}
-                  onChange={(e) => setPetFormData({ ...petFormData, health_requirements: e.target.value })}
+                  onChange={(e) =>
+                    setPetFormData({ ...petFormData, health_requirements: e.target.value })
+                  }
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
               </div>
@@ -441,6 +449,5 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
     </div>
   );
 };
-
 
 export default PetProfilePage;

@@ -42,9 +42,7 @@ const Dashboard = () => {
 
         const jobsWithPetDetails = await Promise.all(
           response.data.sitter_jobs.map(async (job: Job) => {
-            const petDetailsResponse = await axios.get(
-              `${API_ROUTES.PETS}${job.pet}`
-            );
+            const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${job.pet}`);
             const petDetail = petDetailsResponse.data;
 
             return {
@@ -64,12 +62,11 @@ const Dashboard = () => {
   }, []);
 
   const applyForJob = async (jobId: number) => {
-    console.log(jobId)
+    console.log(jobId);
     try {
-      const response = await axios.post(`${API_ROUTES.APPLY}`,
-        {
-          id: jobId,
-        });
+      const response = await axios.post(`${API_ROUTES.APPLY}`, {
+        id: jobId,
+      });
       console.log(response.data);
       toast.success("Application submitted successfully!");
     } catch (error) {
@@ -85,7 +82,6 @@ const Dashboard = () => {
     return petNameIncludes;
   });
 
-
   return (
     <div className="max-w-2xl mx-auto p-4">
       <div className="flex justify-end mb-4">
@@ -97,7 +93,6 @@ const Dashboard = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-
         </div>
       </div>
       <div>

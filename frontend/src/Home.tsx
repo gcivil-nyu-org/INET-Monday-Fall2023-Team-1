@@ -8,13 +8,12 @@ import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
 import Locations from "./Locations";
 import Profile from "./Profile";
-import PetProfiles from './PetProfiles';
+import PetProfiles from "./PetProfiles";
 import Dashboard from "./Dashboard";
 import JobPage from "./Jobs";
 import Settings from "./Settings";
 import { classNames } from "./utils";
 import { User, UserTypes } from "./types";
-
 
 type HomeProps = {
   authContext: AuthCtx;
@@ -23,9 +22,24 @@ type HomeProps = {
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
   const [navigation, updatePageNavigationState] = useState([
-    { name: "Dashboard", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD },
-    { name: "Job Feed", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS },
-    { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES },
+    {
+      name: "Dashboard",
+      href: ROUTES.PROTECTED_ROUTES.DASHBOARD,
+      keyId: 1,
+      current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD,
+    },
+    {
+      name: "Job Feed",
+      href: ROUTES.PROTECTED_ROUTES.JOBS,
+      keyId: 2,
+      current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS,
+    },
+    {
+      name: "Pet Profiles",
+      href: ROUTES.PROTECTED_ROUTES.PET_PROFILES,
+      keyId: 3,
+      current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES,
+    },
   ]);
   const { pathname } = useLocation();
 
@@ -65,7 +79,6 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     [props]
   );
 
-
   const pageHeader = useMemo(() => {
     if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
       return navigation.find((item) => item.current === true)?.name ?? "Dashboard";
@@ -75,11 +88,9 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
       return "Settings";
     } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
       return "Locations";
-    }
-    else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
       return "Pet Profiles";
-    }
-    else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
       return "Jobs";
     }
 
@@ -88,9 +99,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
 
   const pageContent = useMemo(() => {
     if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
-      return (
-        <Dashboard />
-      );
+      return <Dashboard />;
     } else if (pathname === ROUTES.PROTECTED_ROUTES.PROFILE) {
       return (
         <Profile
@@ -108,16 +117,10 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
       );
     } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
       return <Locations />;
-    }
-    else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
-      return (
-        <PetProfiles />
-      );
-    }
-    else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
-      return (
-        <JobPage />
-      );
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
+      return <PetProfiles />;
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
+      return <JobPage />;
     }
     return "Nothing here to display";
   }, [pathname]);

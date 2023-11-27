@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Tab } from "@headlessui/react";
 import { API_ROUTES } from "./constants";
 import toast from "react-hot-toast";
-import ApplicationModal from './ApplicationModal';
-
+import ApplicationModal from "./ApplicationModal";
 
 interface Job {
   id: string;
@@ -23,7 +22,6 @@ interface Location {
   country: string;
 }
 
-
 interface Pet {
   id: string;
   name: string;
@@ -37,8 +35,7 @@ interface Pet {
   health_requirements: string;
 }
 
-
-interface JobPageProps { }
+interface JobPageProps {}
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -61,10 +58,8 @@ const Jobs: React.FC = () => {
     setIsModalOpen(false);
   };
 
-
   useEffect(() => {
     fetchJobs();
-
   }, []);
 
   const fetchJobs = async () => {
@@ -81,18 +76,17 @@ const Jobs: React.FC = () => {
         const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${job.pet}`);
         const petDetail = petDetailsResponse.data;
 
-        console.log('Fetched pet details:', petDetail);
-
+        console.log("Fetched pet details:", petDetail);
 
         const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
         const locationDetail = locationDetailsResponse.data;
 
-        console.log('Fetched Location details:', locationDetail);
-        console.log(locationDetail.find((location:any) => location.id === job.location))
+        console.log("Fetched Location details:", locationDetail);
+        console.log(locationDetail.find((location: any) => location.id === job.location));
         jobsWithPetDetails.push({
           ...job,
           pet: petDetail,
-          location: locationDetail.find((location:any) => location.id === job.location),
+          location: locationDetail.find((location: any) => location.id === job.location),
         });
       }
 
@@ -101,8 +95,8 @@ const Jobs: React.FC = () => {
       console.log(resolvedJobs);
       setJobs(resolvedJobs);
     } catch (error: any) {
-      console.error('Error fetching pets:', error.message);
-      setError('Failed to fetch pets. Please try again.');
+      console.error("Error fetching pets:", error.message);
+      setError("Failed to fetch pets. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -119,7 +113,7 @@ const Jobs: React.FC = () => {
           window.location.reload();
           toast.success("Pet profile deleted successfully");
         } else {
-          throw new Error('Failed to delete pet profile');
+          throw new Error("Failed to delete pet profile");
         }
       } catch (err) {
         console.error(err);
@@ -139,19 +133,17 @@ const Jobs: React.FC = () => {
         if (response.status !== 200) {
           throw new Error(`Failed to fetch applications. Status: ${response.status}`);
         }
-        console.log('Fetched applications:', response.data);
+        console.log("Fetched applications:", response.data);
         // Handle the fetched applications as needed
         setApplications(response.data);
-        const selectedJob = jobs.find(job => job.id === jobId);
+        const selectedJob = jobs.find((job) => job.id === jobId);
         setSelectedJob(selectedJob || null);
-
       } catch (err) {
         console.error(err);
         toast.error("Failed to fetch applications");
       }
     }
   };
-
 
   if (loading) {
     return <p className="text-center">Loading...</p>;
@@ -167,7 +159,7 @@ const Jobs: React.FC = () => {
             <div>
               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
               <p>Status: {job.status}</p>
-              <p>Location: {job?.location?.address ?? ''}</p>
+              <p>Location: {job?.location?.address ?? ""}</p>
               <p>Pay: {job.pay}</p>
               <p>Start: {job.start}</p>
               <p>End: {job.end}</p>
@@ -175,7 +167,8 @@ const Jobs: React.FC = () => {
             <div className="mt-4 flex">
               <button
                 onClick={() => handleDelete(job.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md">
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+              >
                 Delete
               </button>
 
@@ -184,31 +177,35 @@ const Jobs: React.FC = () => {
                   viewApplication(job.id);
                   openModal();
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md">
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              >
                 View Application
               </button>
             </div>
-
           </li>
         ))}
       </ul>
-      <ApplicationModal isOpen={isModalOpen} onClose={closeModal} applications={applications} handleAccept={handleAccept} />
+      <ApplicationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        applications={applications}
+        handleAccept={handleAccept}
+      />
     </div>
   );
 };
 
-
 const JobPage: React.FC<JobPageProps> = () => {
-  const [activeTab, setActiveTab] = useState('view');
+  const [activeTab, setActiveTab] = useState("view");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [jobFormData, setJobFormData] = useState({
-    pet: '',
-    location: '',
-    pay: '',
-    status: '',
-    start: '',
-    end: '',
+    pet: "",
+    location: "",
+    pay: "",
+    status: "",
+    start: "",
+    end: "",
   });
   const [pets, setPets] = useState<Pet[]>([]); // Assuming Pet is your pet type/interface
   const [locations, setLocations] = useState<Location[]>([]);
@@ -216,7 +213,6 @@ const JobPage: React.FC<JobPageProps> = () => {
   useEffect(() => {
     fetchPets();
     getLocations();
-
   }, []);
 
   const fetchPets = async () => {
@@ -229,8 +225,8 @@ const JobPage: React.FC<JobPageProps> = () => {
 
       setPets(response.data);
     } catch (error: any) {
-      console.error('Error fetching pets:', error.message);
-      setError('Failed to fetch pets. Please try again.');
+      console.error("Error fetching pets:", error.message);
+      setError("Failed to fetch pets. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -251,22 +247,23 @@ const JobPage: React.FC<JobPageProps> = () => {
   const onClickSave = () => {
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      console.log(jobFormData)
-      jobFormData.status = "open"
-      axios.post(API_ROUTES.JOBS, jobFormData)
+      console.log(jobFormData);
+      jobFormData.status = "open";
+      axios
+        .post(API_ROUTES.JOBS, jobFormData)
         .then((response) => {
           if (response.status === 201) {
             toast.success("Job Addedd Successfully");
             setJobFormData({
-              pet: '',
-              location: '',
-              pay: '',
-              start: '',
-              status: '',
-              end: '',
+              pet: "",
+              location: "",
+              pay: "",
+              start: "",
+              status: "",
+              end: "",
             });
           } else {
-            throw new Error('Failed to save Job');
+            throw new Error("Failed to save Job");
           }
         })
         .catch((err) => {
@@ -280,13 +277,12 @@ const JobPage: React.FC<JobPageProps> = () => {
     const cancelConsent = window.confirm("Are you sure you want to discard these changes?");
     if (cancelConsent) {
       setJobFormData({
-        pet: '',
-        location: '',
-        pay: '',
-        start: '',
-        status: '',
-        end: '',
-
+        pet: "",
+        location: "",
+        pay: "",
+        start: "",
+        status: "",
+        end: "",
       });
     }
   };
@@ -296,24 +292,26 @@ const JobPage: React.FC<JobPageProps> = () => {
       <Tab.Group>
         <Tab.List className="flex bg-gray-100 p-4 rounded-t-md">
           <Tab
-            className={({ selected }) => selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"}
-            onClick={() => setActiveTab('view')}
+            className={({ selected }) =>
+              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+            }
+            onClick={() => setActiveTab("view")}
           >
             View Jobs
           </Tab>
           <Tab
-            className={({ selected }) => selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"}
-            onClick={() => setActiveTab('add')}
+            className={({ selected }) =>
+              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+            }
+            onClick={() => setActiveTab("add")}
           >
             Add Jobs
           </Tab>
         </Tab.List>
         <Tab.Panels className="p-4 bg-white border border-t-0 rounded-b-md">
+          <Tab.Panel>{activeTab === "view" && <Jobs />}</Tab.Panel>
           <Tab.Panel>
-            {activeTab === 'view' && <Jobs />}
-          </Tab.Panel>
-          <Tab.Panel>
-            {activeTab === 'add' && (
+            {activeTab === "add" && (
               <div className="mb-4">
                 <label htmlFor="pet-dropdown" className="block text-sm font-medium text-gray-700">
                   Select a Pet
@@ -325,7 +323,9 @@ const JobPage: React.FC<JobPageProps> = () => {
                   onChange={(e) => setJobFormData({ ...jobFormData, pet: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 >
-                  <option value="" disabled>Select a pet</option>
+                  <option value="" disabled>
+                    Select a pet
+                  </option>
                   {pets.map((pet) => (
                     <option key={pet.id} value={pet.id}>
                       {pet.name}
@@ -339,15 +339,15 @@ const JobPage: React.FC<JobPageProps> = () => {
                   onChange={(e) => setJobFormData({ ...jobFormData, location: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 >
-                  <option value="" disabled>Select a Location</option>
+                  <option value="" disabled>
+                    Select a Location
+                  </option>
                   {locations.map((location) => (
                     <option key={location.id} value={location.id}>
                       {location.address}
                     </option>
                   ))}
                 </select>
-
-
 
                 <label htmlFor="pet-breed" className="block text-sm font-medium text-gray-700">
                   Pay
@@ -357,7 +357,7 @@ const JobPage: React.FC<JobPageProps> = () => {
                   name="pay"
                   id="job-pay"
                   value={jobFormData.pay}
-                  onChange={e => setJobFormData({ ...jobFormData, pay: e.target.value })}
+                  onChange={(e) => setJobFormData({ ...jobFormData, pay: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
                 <label htmlFor="job-start" className="block text-sm font-medium text-gray-700">
@@ -383,8 +383,6 @@ const JobPage: React.FC<JobPageProps> = () => {
                   onChange={(e) => setJobFormData({ ...jobFormData, end: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
-
-
               </div>
             )}
             <div className="mt-4 flex items-center justify-end gap-x-6">
@@ -408,6 +406,4 @@ const JobPage: React.FC<JobPageProps> = () => {
   );
 };
 
-
 export default JobPage;
-

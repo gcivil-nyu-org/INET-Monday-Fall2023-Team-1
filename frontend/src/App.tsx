@@ -10,9 +10,8 @@ import Loading from "./Loading";
 import NotFound from "./NotFound";
 import SignUp from "./SignUp";
 import PetProfiles from "./PetProfiles";
-import Jobs from "./Jobs"
+import Jobs from "./Jobs";
 import Dashboard from "./Dashboard";
-
 
 const ProtectedRoute = ({ children }: React.PropsWithChildren<unknown>) => {
   const { authenticationState } = useContext(AuthContext);
@@ -105,7 +104,7 @@ const AppRouter = () => {
           />
         }
       />
-      
+
       <Route
         path="locations"
         element={
