@@ -4,11 +4,19 @@ import React, { useEffect } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-import { API_ROUTES, ROUTES } from "../constants";
+import { API_ROUTES, DEFAULT_PROFILE_PICTURE, ROUTES } from "../constants";
 import notify from "../Notify";
+
+type UserSession = {
+  name: string;
+  email: string;
+  id: string;
+  profilePicture: string;
+};
 
 interface AuthenticationState {
   isSessionSet: boolean;
+  sessionInformation: UserSession;
   sessionCheckLoading: boolean;
 }
 
@@ -33,9 +41,16 @@ const AuthContext = React.createContext<AuthCtx>({} as AuthCtx);
 
 const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
   const [authState, updateAuthState] = React.useState<AuthenticationState>({
+    sessionInformation: {
+      id: "",
+      profilePicture: DEFAULT_PROFILE_PICTURE,
+      name: "",
+      email: "",
+    },
     isSessionSet: false,
     sessionCheckLoading: false,
   });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -101,10 +116,11 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((response) => {
         if (response.status === 200) {
-          updateAuthState({
+          updateAuthState((prevState) => ({
+            ...prevState,
             isSessionSet: true,
             sessionCheckLoading: false,
-          });
+          }));
           toast.success("Logged in!");
           navigate(ROUTES.PROTECTED_ROUTES.HOME);
         }
@@ -131,10 +147,11 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthState({
+          updateAuthState((prevState) => ({
+            ...prevState,
             isSessionSet: false,
             sessionCheckLoading: false,
-          });
+          }));
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
         }
@@ -204,7 +221,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       )
       .then((resp) => {
         if (resp.status === 200) {
-          toast.success("Your password was validated successfully!");
+          toast.success("Your token was validated successfully!");
           return true;
         }
         return false;
@@ -283,19 +300,21 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             </details>
           ),
         });
-        updateAuthState({
+        updateAuthState((prevState) => ({
+          ...prevState,
           isSessionSet: false,
           sessionCheckLoading: false,
-        });
+        }));
         navigate(ROUTES.LOGIN);
       });
   };
 
   const handleSession = (withToast = false, withRedirect = false) => {
-    updateAuthState({
+    updateAuthState((prevState) => ({
+      ...prevState,
       isSessionSet: false,
       sessionCheckLoading: true,
-    });
+    }));
 
     axios
       .post(API_ROUTES.AUTH.SESSION, undefined, {
@@ -304,10 +323,16 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       })
       .then((resp) => {
         if (resp.status === 200) {
-          updateAuthState({
+          updateAuthState((prevState) => ({
+            ...prevState,
             isSessionSet: true,
             sessionCheckLoading: false,
-          });
+            sessionInformation: {
+              ...prevState.sessionInformation,
+              ...resp.data.data.user,
+            },
+          }));
+
           if (withToast) {
             toast.success("user session is authenticated and active");
           }
@@ -329,16 +354,42 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
         if (withRedirect) {
           navigate(ROUTES.LOGIN);
         }
-        updateAuthState({
+        updateAuthState((prevState) => ({
+          ...prevState,
           isSessionSet: false,
           sessionCheckLoading: false,
-        });
+        }));
       });
   };
 
   const handleDeleteUser = () => {
     return axios.delete(API_ROUTES.USER.USER_ROOT);
   };
+
+  useEffect(() => {
+    if (authState.isSessionSet) {
+      axios
+        .get(API_ROUTES.USER.PROFILE_PICTURE, {
+          responseType: "blob",
+        })
+        .then((response) => {
+          if (response.status === 404) {
+            toast("You can set a profile picture from the user settings page");
+          } else if (response.status === 200) {
+            updateAuthState((prevState) => ({
+              ...prevState,
+              sessionInformation: {
+                ...prevState.sessionInformation,
+                profilePicture: URL.createObjectURL(response.data),
+              },
+            }));
+          }
+        })
+        .catch((err) => {
+          console.error("failed to fetch user profile picture", err);
+        });
+    }
+  }, [authState.isSessionSet]);
 
   const contextValue: AuthCtx = {
     authenticationState: authState,

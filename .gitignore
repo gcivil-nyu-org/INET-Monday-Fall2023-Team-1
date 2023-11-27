@@ -12,3 +12,5 @@
 **/.coveralls.yml
 
 **/*.coverage
+
+**/fakeData.json

@@ -1,11 +1,12 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import React, { Fragment, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
+import Locations from "./Locations";
 import Profile from "./Profile";
 import PetProfiles from './PetProfiles';
 import Dashboard from "./Dashboard";
@@ -14,17 +15,6 @@ import Settings from "./Settings";
 import { classNames } from "./utils";
 import { User, UserTypes } from "./types";
 
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl: "https://randomuser.me/api/portraits/lego/1.jpg",
-};
-
-const navigation = [
-  { name: "Dashboard", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD },
-  { name: "Job Feed", href: ROUTES.PROTECTED_ROUTES.JOBS, current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS },
-  { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES },
-];
 
 type HomeProps = {
   authContext: AuthCtx;
@@ -32,7 +22,19 @@ type HomeProps = {
 
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
+  const [navigation, updatePageNavigationState] = useState([
+    { name: "Dashboard", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD },
+    { name: "Job Feed", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS },
+    { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES },
+  ]);
   const { pathname } = useLocation();
+
+  const onClickNavButton = (keyId: number) => {
+    updatePageNavigationState((prevState) =>
+      prevState.map((stateItem) => ({ ...stateItem, current: stateItem.keyId === keyId }))
+    );
+  };
+
   const userNavigation = React.useMemo(
     () => [
       {
@@ -48,6 +50,12 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
         },
       },
       {
+        name: "Locations",
+        onClick: () => {
+          navigate(ROUTES.PROTECTED_ROUTES.LOCATIONS);
+        },
+      },
+      {
         name: "Sign out",
         onClick: () => {
           props.authContext.onLogout();
@@ -60,11 +68,13 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
 
   const pageHeader = useMemo(() => {
     if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
-      return "Dashboard";
+      return navigation.find((item) => item.current === true)?.name ?? "Dashboard";
     } else if (pathname === ROUTES.PROTECTED_ROUTES.PROFILE) {
       return "Profile";
     } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
       return "Settings";
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
+      return "Locations";
     }
     else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
       return "Pet Profiles";
@@ -72,8 +82,9 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
       return "Jobs";
     }
-    return "Default";
-  }, [pathname]);
+
+    return "";
+  }, [pathname, navigation]);
 
   const pageContent = useMemo(() => {
     if (pathname === ROUTES.PROTECTED_ROUTES.HOME) {
@@ -92,8 +103,11 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
         <Settings
           handleDeleteUser={props.authContext.onDeleteUser}
           userAuthState={props.authContext.authenticationState}
+          refetchUserInfo={props.authContext.authenticatedUserChecks.checkAuthenticationState}
         />
       );
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
+      return <Locations />;
     }
     else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
       return (
@@ -108,6 +122,14 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     return "Nothing here to display";
   }, [pathname]);
 
+  useEffect(() => {
+    if (pathname !== ROUTES.PROTECTED_ROUTES.HOME) {
+      updatePageNavigationState((prevState) =>
+        prevState.map((stateItem) => ({ ...stateItem, current: false }))
+      );
+    }
+  }, [pathname]);
+
   return (
     <>
       <div className="min-h-full">
@@ -118,14 +140,17 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                 <div className="flex h-16 items-center justify-between">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <FurBabyLogo className="h-8 w-8" />
+                      <FurBabyLogo
+                        className="h-8 w-8 hover:cursor-pointer"
+                        onClick={() => navigate(ROUTES.PROTECTED_ROUTES.HOME)}
+                      />
                     </div>
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
-                        {navigation.map((item) => (
-                          <a
+                        {navigation.map((item, index) => (
+                          <Link
+                            to={item.href}
                             key={item.name}
-                            href={item.href}
                             className={classNames(
                               item.current
                                 ? "border-b-2 border-black rounded-none"
@@ -133,9 +158,10 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                               "rounded-md px-3 py-2 text-sm font-medium"
                             )}
                             aria-current={item.current ? "page" : undefined}
+                            onClick={() => onClickNavButton(index + 1)}
                           >
                             {item.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     </div>
@@ -157,7 +183,14 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                           <Menu.Button className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black">
                             <span className="absolute -inset-1.5" />
                             <span className="sr-only">Open user menu</span>
-                            <img className="h-8 w-8 rounded-full" src={user.imageUrl} alt="" />
+                            <img
+                              className="h-8 w-8 rounded-full"
+                              src={
+                                props.authContext.authenticationState.sessionInformation
+                                  .profilePicture
+                              }
+                              alt={`profile picuture - user (${props.authContext.authenticationState.sessionInformation.email})`}
+                            />
                           </Menu.Button>
                         </div>
                         <Transition
@@ -207,7 +240,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
 
               <Disclosure.Panel className="md:hidden">
                 <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                  {navigation.map((item) => (
+                  {navigation.map((item, index) => (
                     <Disclosure.Button
                       key={item.name}
                       as="a"
@@ -219,6 +252,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                         "block rounded-md px-3 py-2 text-base font-medium"
                       )}
                       aria-current={item.current ? "page" : undefined}
+                      onClick={() => onClickNavButton(index + 1)}
                     >
                       {item.name}
                     </Disclosure.Button>
@@ -227,14 +261,20 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                 <div className="border-t border-gray-700 pb-3 pt-4">
                   <div className="flex items-center px-5">
                     <div className="flex-shrink-0">
-                      <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src={
+                          props.authContext.authenticationState.sessionInformation.profilePicture
+                        }
+                        alt={`profile picuture - user (${props.authContext.authenticationState.sessionInformation.email})`}
+                      />
                     </div>
                     <div className="ml-3">
                       <div className="text-base font-medium leading-none text-white">
-                        {user.name}
+                        {props.authContext.authenticationState.sessionInformation.name}
                       </div>
                       <div className="text-sm font-medium leading-none text-gray-400">
-                        {user.email}
+                        {props.authContext.authenticationState.sessionInformation.email}
                       </div>
                     </div>
                     <button

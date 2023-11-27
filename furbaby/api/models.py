@@ -18,7 +18,6 @@ CREATE TABLE users (
     first_name text not null,
     last_name text not null,
     user_type user_feature_access_type[2],
-    profile_picture text,
     contact text not null,
     date_of_birth date not null,
     experience text,
@@ -40,10 +39,10 @@ class Users(AbstractUser):
     first_name = models.TextField(null=True, editable=True)
     last_name = models.TextField(null=True, editable=True)
     user_type = ArrayField(models.TextField(max_length=20, choices=UserTypes.choices), size=2)
-    profile_picture = models.TextField(editable=True, null=True)
     date_of_birth = models.DateField(editable=False, null=True)
     experience = models.TextField(editable=True, null=True)
     qualifications = models.TextField(editable=True, null=True)
+    phone_number = models.TextField(editable=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -62,6 +61,7 @@ CREATE TABLE locations (
     "address" text not null,
     city text,
     country text,
+    zipcode text,
     default_location boolean default FALSE
 );
 
@@ -98,7 +98,6 @@ CREATE TABLE pets (
     height text,
     breed text not null,
     "weight" text not null,
-    picures text[],
     chip_number text,
     health_requirements text
 );
@@ -114,9 +113,6 @@ class Pets(models.Model):
     height = models.TextField(editable=True, null=True)
     breed = models.TextField(editable=True, null=False)
     weight = models.TextField(editable=True, null=False)
-    pictures = ArrayField(
-        models.TextField(null=True, blank=True), blank=True, null=False, editable=True
-    )
     chip_number = models.TextField(editable=True, null=True)
     health_requirements = models.TextField(editable=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

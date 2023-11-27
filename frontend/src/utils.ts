@@ -7,4 +7,20 @@ function validateEmail(email: string) {
   return re.test(email);
 }
 
-export { classNames, validateEmail };
+function isJSONString(err: unknown) {
+  try {
+    JSON.parse(err as string);
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+const getCurrentAge = (date: string) => {
+  const today = new Date();
+  const dob = new Date(date);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return Math.floor(((today as any) - (dob as any)) / 31557600000);
+};
+
+export { classNames, getCurrentAge, isJSONString, validateEmail };
