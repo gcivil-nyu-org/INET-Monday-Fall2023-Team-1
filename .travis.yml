@@ -16,10 +16,6 @@ jobs:
       - export AWS_SECRET_ACCESS_KEY="$AWS_ACCESS_SECRET_KEY"
       - export AWS_BUCKET_NAME="elasticbeanstalk-us-east-1-994011800090"
 
-    before_script:
-      - python manage.py makemigrations --settings=furbaby.settings
-      - python manage.py migrate --settings=furbaby.settings
-
     script:
       - printenv > ./furbaby/.env
       - ls -lah ./furbaby
