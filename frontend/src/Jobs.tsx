@@ -9,7 +9,7 @@ import ApplicationModal from './ApplicationModal';
 interface Job {
   id: string;
   pet: Pet;
-  location: string;
+  location: Location;
   status: string;
   pay: string;
   start: string;
@@ -17,6 +17,7 @@ interface Job {
 }
 
 interface Location {
+  id: string;
   address: string;
   city: string;
   country: string;
@@ -82,9 +83,16 @@ const Jobs: React.FC = () => {
 
         console.log('Fetched pet details:', petDetail);
 
+
+        const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
+        const locationDetail = locationDetailsResponse.data;
+
+        console.log('Fetched Location details:', locationDetail);
+        console.log(locationDetail.find((location:any) => location.id === job.location))
         jobsWithPetDetails.push({
           ...job,
           pet: petDetail,
+          location: locationDetail.find((location:any) => location.id === job.location),
         });
       }
 
@@ -159,7 +167,7 @@ const Jobs: React.FC = () => {
             <div>
               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
               <p>Status: {job.status}</p>
-              <p>Location: {job.location}</p>
+              <p>Location: {job?.location?.address ?? ''}</p>
               <p>Pay: {job.pay}</p>
               <p>Start: {job.start}</p>
               <p>End: {job.end}</p>
@@ -203,9 +211,11 @@ const JobPage: React.FC<JobPageProps> = () => {
     end: '',
   });
   const [pets, setPets] = useState<Pet[]>([]); // Assuming Pet is your pet type/interface
+  const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     fetchPets();
+    getLocations();
 
   }, []);
 
@@ -226,7 +236,18 @@ const JobPage: React.FC<JobPageProps> = () => {
     }
   };
 
-
+  const getLocations = () => {
+    return axios
+      .get(API_ROUTES.USER.LOCATION)
+      .then((response) => {
+        console.log(response, response.data);
+        setLocations(response?.data ?? []);
+        // return response;
+      })
+      .catch((err) => {
+        console.error("failed to fetch locations", err);
+      });
+  };
   const onClickSave = () => {
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
@@ -311,17 +332,20 @@ const JobPage: React.FC<JobPageProps> = () => {
                     </option>
                   ))}
                 </select>
-                <label htmlFor="job-location-address" className="block text-sm font-medium text-gray-700">
-                  Location
-                </label>
-                <input
-                  type="text"
+                <select
+                  id="location-dropdown"
                   name="location"
-                  id="job-location"
                   value={jobFormData.location}
                   onChange={(e) => setJobFormData({ ...jobFormData, location: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
-                />
+                >
+                  <option value="" disabled>Select a Location</option>
+                  {locations.map((location) => (
+                    <option key={location.id} value={location.id}>
+                      {location.address}
+                    </option>
+                  ))}
+                </select>
 
 
 
