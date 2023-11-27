@@ -1,6 +1,8 @@
 from django.urls import path, include
 
 from . import views
+from .views import UserRegistrationView
+from .views import UserLoginView, PetListCreateView, PetRetrieveUpdateDeleteView
 
 # csrf
 
@@ -27,6 +29,11 @@ urlpatterns = [
         name="apply_for_job",
     ),
     path("/get-job-status/<uuid:job_id>", views.GetJobStatus.as_view()),
+    path("api/user/locations", views.user_location_view, name="user-location"),
+    path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
+    path(
+        "pets/<uuid:pk>/", PetRetrieveUpdateDeleteView.as_view(), name="pet-retrieve-update-delete"
+    ),
     path("api/user/locations", views.user_location_view, name="user-location"),
     path(
         "jobs/<uuid:job_id>/applications/<uuid:application_id>/accept/",
