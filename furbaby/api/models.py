@@ -38,9 +38,7 @@ class Users(AbstractUser):
     password = models.TextField(null=False, editable=True)
     first_name = models.TextField(null=True, editable=True)
     last_name = models.TextField(null=True, editable=True)
-    user_type = ArrayField(
-        models.TextField(max_length=20, choices=UserTypes.choices), size=2
-    )
+    user_type = ArrayField(models.TextField(max_length=20, choices=UserTypes.choices), size=2)
     date_of_birth = models.DateField(editable=False, null=True)
     experience = models.TextField(editable=True, null=True)
     qualifications = models.TextField(editable=True, null=True)
@@ -122,9 +120,7 @@ class Pets(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=("name", "owner_id"), name="name_owner_id_constraint"
-            )
+            models.UniqueConstraint(fields=("name", "owner_id"), name="name_owner_id_constraint")
         ]
 
 
@@ -209,7 +205,5 @@ class Applications(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=("user_id", "job_id"), name="user_id_job_id_constraint"
-            )
+            models.UniqueConstraint(fields=("user_id", "job_id"), name="user_id_job_id_constraint")
         ]
