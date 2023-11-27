@@ -28,7 +28,7 @@ urlpatterns = [
         views.ApplyForJobView.as_view(),
         name="apply_for_job",
     ),
-    path("/get-job-status/<uuid:job_id>", views.GetJobStatus.as_view()),
+    path("get-job-status/<uuid:job_id>", views.GetJobStatus.as_view()),
     path("api/user/locations", views.user_location_view, name="user-location"),
     path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
     path(
