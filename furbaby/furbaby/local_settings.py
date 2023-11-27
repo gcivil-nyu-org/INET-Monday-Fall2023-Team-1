@@ -17,7 +17,6 @@ from pathlib import Path
 from dotenv import load_dotenv, find_dotenv
 from botocore.config import Config as AWSConfig
 
-
 load_dotenv(find_dotenv(".eb_env", True, False))
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")

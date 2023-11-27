@@ -1,6 +1,12 @@
 from django.urls import path, include
 
 from . import views
+from .views import (
+    UserRegistrationView,
+    UserLoginView,
+    PetListCreateView,
+    PetRetrieveUpdateDeleteView,
+)
 
 # NOTE: We might have to use the decorator csrf_protect to ensure that
 # the endpoints that need the csrf token always get it
@@ -9,10 +15,10 @@ urlpatterns = [
     path("", views.index, name="index"),
     path(
         "auth/register",
-        views.UserRegistrationView.as_view(),
+        UserRegistrationView.as_view(),
         name="user-registration",
     ),
-    path("auth/login", views.UserLoginView.as_view(), name="user-login"),
+    path("auth/login", UserLoginView.as_view(), name="user-login"),
     path("auth/logout", views.logout_view, name="user-logout"),
     path("auth/session", views.session_view, name="user-session-view"),
     path("auth/whoami", views.whoami_view, name="user-whoami"),
@@ -26,9 +32,16 @@ urlpatterns = [
         views.handle_profile_picture,
         name="user-info-profile-picture",
     ),
+    # path(
+    #     "api/user/pet/pictures",
+    #     views.handle_pet_pictures,
+    #     name="user-info-pet-pictures",
+    # ),
+    path("api/user/locations", views.user_location_view, name="user-location"),
+    path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
     path(
-        "api/user/pet/pictures",
-        views.handle_pet_pictures,
-        name="user-info-pet-pictures",
+        "pets/<uuid:pk>/",
+        PetRetrieveUpdateDeleteView.as_view(),
+        name="pet-retrieve-update-delete",
     ),
 ]

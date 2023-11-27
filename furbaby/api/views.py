@@ -1,3 +1,4 @@
+import json
 import os
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import login, logout
@@ -5,14 +6,23 @@ from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
+
+# from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from .utils import json_response, make_s3_path
 from django.conf import settings
 from rest_framework.decorators import api_view
 
-from .models import Pets, Users
-
-from .utils import json_response, make_s3_path
+from .models import Pets, Users, Locations
 from api.auth_backends import EmailBackend
-from .serializers import RegistrationSerializer, UserLoginSerializer
+from .serializers import (
+    RegistrationSerializer,
+    UserLocationSerializer,
+    UserLoginSerializer,
+    PetSerializer,
+)
 
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -21,6 +31,7 @@ from django.template.loader import render_to_string
 from django_rest_passwordreset.signals import reset_password_token_created
 
 from django.views.decorators.csrf import csrf_protect
+from django.core.serializers import serialize
 
 import boto3
 from botocore.exceptions import ClientError
@@ -330,37 +341,184 @@ def __upload_profile_picture__(request):
     )
 
 
-@csrf_protect
-@api_view(["POST", "GET", "OPTIONS", "DELETE"])
-def handle_pet_pictures(request):
-    if not request.user.is_authenticated:
+# @csrf_protect
+# @api_view(["POST", "GET", "OPTIONS", "DELETE"])
+# def handle_pet_pictures(request):
+#     if not request.user.is_authenticated:
+#         return json_response(
+#             data={"error": "unauthenticated request. rejected"},
+#             status=status.HTTP_401_UNAUTHORIZED,
+#         )
+
+#     if s3Config == None:
+#         return json_response(
+#             data={"error": "failed to upload picture due to internal error"},
+#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#         )
+
+#     if request.method == "GET":
+#         return __get_user_pet_picture__(request)
+
+#     if request.method == "POST":
+#         return __put_user_pet_picture__(request)
+
+#     if request.method == "DELETE":
+#         return __delete_user_pet_picture__(request)
+
+#     return json_response(
+#         {
+#             "error": "incorrect request method",
+#             "message": 'endpoint only allows only "POST" & "PUT" requests',
+#         },
+
+
+# This class is for the user location(s)
+class UserLocationView(APIView):  # type: ignore
+    # Fetch the locations serializer
+    serializer_class = UserLocationSerializer
+
+    def get_exception_handler(self):
+        return exception_handler
+
+    # takes as input the user id, request and inserts a new location record for the user
+    def insert_location_record(self, request):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+
+        if not serializer.is_valid():
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        instance = serializer.save()
+
         return json_response(
-            data={"error": "unauthenticated request. rejected"},
-            status=status.HTTP_401_UNAUTHORIZED,
+            instance.id, status=status.HTTP_201_CREATED, include_data=False, safe=False
         )
 
-    if s3Config == None:
-        return json_response(
-            data={"error": "failed to upload picture due to internal error"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+    # takes as input a location object and returns a dictionary of the location key value pairs
+    def get_location_record(self, location=None):
+        if location == None:
+            return None
+        return {
+            "id": location.id,
+            "address": location.address,
+            "city": location.city,
+            "country": location.country,
+            "zipcode": location.zipcode,
+            "user_id": location.user_id,
+            "default_location": location.default_location,
+        }
 
-    if request.method == "GET":
-        return __get_user_pet_picture__(request)
+    # takes as input a user_id and returns a JSON of all the locations for that user
+    def get_user_locations(self, request):
+        locations = Locations.objects.filter(user_id=request.user.id)
+        location_list = [
+            {
+                "id": location.id,
+                "address": location.address,
+                "city": location.city,
+                "country": location.country,
+                "zipcode": location.zipcode,
+                "default_location": location.default_location,
+            }
+            for location in locations
+        ]
+        return location_list
 
-    if request.method == "POST":
-        return __put_user_pet_picture__(request)
+    # takes as input a location_id and location fields and updates the location record
+    def update_location_record(self, request):
+        location_id: str = request.data["id"]
 
-    if request.method == "DELETE":
-        return __delete_user_pet_picture__(request)
+        if location_id == None:
+            return json_response(
+                {"message": "location_id is missing in request"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
-    return json_response(
-        {
-            "error": "incorrect request method",
-            "message": 'endpoint only allows only "POST" & "PUT" requests',
-        },
-        status=status.HTTP_405_METHOD_NOT_ALLOWED,
-    )
+        try:
+            updated_fields = []
+            location = Locations.objects.get(id=location_id)
+            if "address" in request.data:
+                location.address = request.data["address"]
+                updated_fields.append("address")
+            if "city" in request.data:
+                location.city = request.data["city"]
+                updated_fields.append("city")
+            if "country" in request.data:
+                location.country = request.data["country"]
+                updated_fields.append("country")
+            if "zipcode" in request.data:
+                location.zipcode = request.data["zipcode"]
+                updated_fields.append("zipcode")
+            if "default_location" in request.data:
+                if request.data["default_location"] == True:
+                    # unset all other locations as default
+                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
+                location.default_location = request.data["default_location"]
+                updated_fields.append("default_location")
+
+            # location.save()
+            location.save(update_fields=updated_fields)
+
+            return json_response(
+                self.get_location_record(location),
+                status.HTTP_200_OK,
+                safe=False,
+                include_data=False,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return json_response(
+                data={
+                    "error": "something went wrong while updating the location record",
+                    "error message": str(e),
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def delete_location_record(self, request):
+        location_id: str = request.data["id"]
+
+        if location_id == None:
+            return json_response(
+                {"message": "location_id is missing in request"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            location = Locations.objects.get(id=location_id)
+            location.delete()
+            return json_response(
+                {"message": "location deleted successfully"},
+                status.HTTP_200_OK,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return json_response(
+                data={
+                    "error": "something went wrong while deleting the location record",
+                    "error message": str(e),
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 def __get_user_pet_picture__(request):
@@ -494,3 +652,209 @@ def __delete_user_pet_picture__(request):
             },
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+class PetListCreateView(ListCreateAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # You can remove this method from PetRetrieveUpdateDeleteView
+        return Pets.objects.filter(owner_id=self.request.user.id)  # type: ignore
+
+    def create(self, request, *args, **kwargs):
+        request.data["owner_id"] = request.user.id
+        print(request.user.user_type)
+        if "owner" in request.user.user_type:
+            request.data["owner_id"] = request.user.id
+            return super().create(request, *args, **kwargs)
+        else:
+            raise PermissionDenied("You are not allowed to create a pet profile.")
+
+
+class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    queryset = Pets.objects.all()
+    serializer_class = PetSerializer
+    permission_classes = [IsAuthenticated]
+
+
+# This class is for the user location(s)
+class UserLocationView(APIView):
+    # Fetch the locations serializer
+    serializer_class = UserLocationSerializer
+
+    def get_exception_handler(self):
+        return exception_handler
+
+    # takes as input the user id, request and inserts a new location record for the user
+    def insert_location_record(self, request):
+        serializer = self.serializer_class(data=request.data, context={"request": request})
+
+        if not serializer.is_valid():
+            return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        instance = serializer.save()
+
+        return json_response(
+            instance.id, status=status.HTTP_201_CREATED, include_data=False, safe=False
+        )
+
+    # takes as input a location object and returns a dictionary of the location key value pairs
+    def get_location_record(self, location=None):
+        if location == None:
+            return None
+        return {
+            "id": location.id,
+            "address": location.address,
+            "city": location.city,
+            "country": location.country,
+            "zipcode": location.zipcode,
+            "user_id": location.user_id,
+            "default_location": location.default_location,
+        }
+
+    # takes as input a user_id and returns a JSON of all the locations for that user
+    def get_user_locations(self, request):
+        locations = Locations.objects.filter(user_id=request.user.id)
+        location_list = [
+            {
+                "id": location.id,
+                "address": location.address,
+                "city": location.city,
+                "country": location.country,
+                "zipcode": location.zipcode,
+                "default_location": location.default_location,
+            }
+            for location in locations
+        ]
+        return location_list
+
+    # takes as input a location_id and location fields and updates the location record
+    def update_location_record(self, request):
+        location_id: str = request.data["id"]
+
+        if location_id == None:
+            return json_response(
+                {"message": "location_id is missing in request"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            updated_fields = []
+            location = Locations.objects.get(id=location_id)
+            if "address" in request.data:
+                location.address = request.data["address"]
+                updated_fields.append("address")
+            if "city" in request.data:
+                location.city = request.data["city"]
+                updated_fields.append("city")
+            if "country" in request.data:
+                location.country = request.data["country"]
+                updated_fields.append("country")
+            if "zipcode" in request.data:
+                location.zipcode = request.data["zipcode"]
+                updated_fields.append("zipcode")
+            if "default_location" in request.data:
+                if request.data["default_location"] == True:
+                    # unset all other locations as default
+                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
+                location.default_location = request.data["default_location"]
+                updated_fields.append("default_location")
+
+            # location.save()
+            location.save(update_fields=updated_fields)
+
+            return json_response(
+                self.get_location_record(location),
+                status.HTTP_200_OK,
+                safe=False,
+                include_data=False,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return json_response(
+                data={
+                    "error": "something went wrong while updating the location record",
+                    "error message": str(e),
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def delete_location_record(self, request):
+        location_id: str = request.data["id"]
+
+        if location_id == None:
+            return json_response(
+                {"message": "location_id is missing in request"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            location = Locations.objects.get(id=location_id)
+            location.delete()
+            return json_response(
+                {"message": "location deleted successfully"},
+                status.HTTP_200_OK,
+            )
+        except Locations.DoesNotExist:
+            return json_response(
+                data={
+                    "error": "location not found for user",
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except Exception as e:
+            return json_response(
+                data={
+                    "error": "something went wrong while deleting the location record",
+                    "error message": str(e),
+                    "location id": location_id,
+                    "user id": request.user.id,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+@api_view(["GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"])
+def user_location_view(request):
+    location_view = UserLocationView()
+
+    if not request.user.is_authenticated:
+        return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+    # fetch all user locations for the user
+    if request.method == "GET":
+        locations_list = location_view.get_user_locations(request)
+        return json_response(
+            locations_list, status=status.HTTP_200_OK, safe=False, include_data=False
+        )
+
+    # insert a new location record for the user
+    if request.method in ["POST"]:
+        return location_view.insert_location_record(request)
+
+    # update a location record for the user
+    if request.method in ["PUT", "PATCH"]:
+        return location_view.update_location_record(request)
+
+    # delete a location record for the user
+    if request.method == "DELETE":
+        return location_view.delete_location_record(request)
+
+    return json_response(
+        {"error": "incorrect request method supplied"},
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )

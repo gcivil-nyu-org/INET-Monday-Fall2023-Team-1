@@ -74,7 +74,7 @@ class Locations(models.Model):
     address = models.TextField(max_length=200, editable=True, null=False)
     city = models.TextField(editable=True, null=False)
     country = models.TextField(editable=True, null=False)
-    zipcode = models.TextField(editable=True, null=False)
+    zipcode = models.TextField(editable=True, null=True)
     default_location = models.BooleanField(default=False, editable=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
