@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
 import FurBabyLogo from "./FurbabyLogo";
+import Locations from "./Locations";
 import Profile from "./Profile";
 import Settings from "./Settings";
 import { classNames } from "./utils";
@@ -44,6 +45,12 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
         },
       },
       {
+        name: "Locations",
+        onClick: () => {
+          navigate(ROUTES.PROTECTED_ROUTES.LOCATIONS);
+        },
+      },
+      {
         name: "Sign out",
         onClick: () => {
           props.authContext.onLogout();
@@ -60,6 +67,8 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
       return "Profile";
     } else if (pathname === ROUTES.PROTECTED_ROUTES.SETTINGS) {
       return "Settings";
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
+      return "Locations";
     }
     return "";
   }, [pathname, navigation]);
@@ -82,6 +91,8 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
           refetchUserInfo={props.authContext.authenticatedUserChecks.checkAuthenticationState}
         />
       );
+    } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
+      return <Locations />;
     }
     return "Nothing here to display";
   }, [pathname]);

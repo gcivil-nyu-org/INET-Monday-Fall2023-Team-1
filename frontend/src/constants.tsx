@@ -30,6 +30,7 @@ export const ROUTES = {
     HOME: "/home",
     PROFILE: "/profile",
     SETTINGS: "/settings",
+    LOCATIONS: "/locations",
   },
 } as const;
 
@@ -50,5 +51,6 @@ export const API_ROUTES = {
   USER: {
     USER_ROOT: "api/user",
     PROFILE_PICTURE: "api/user/profile_picture",
+    LOCATION: "api/location",
   },
 } as const;

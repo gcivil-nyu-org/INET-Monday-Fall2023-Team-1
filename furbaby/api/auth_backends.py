@@ -1,5 +1,4 @@
-import json
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
@@ -30,6 +29,7 @@ class EmailBackend(ModelBackend):
             "date_of_birth": user.date_of_birth,
             "about": user.experience,
             "qualifications": user.qualifications,
+            "phone_number": user.phone_number,
             "created_at": user.created_at,
             "updated_at": user.updated_at,
         }
@@ -52,6 +52,7 @@ class EmailBackend(ModelBackend):
         User = get_user_model()
         try:
             user = User.objects.get(email=email, username=email)
+            logout(request)
             user.delete()
             return json_response(
                 {"message": "User deleted successfully"},
@@ -73,6 +74,7 @@ class EmailBackend(ModelBackend):
             user.date_of_birth = req_body["date_of_birth"]  # type: ignore
             user.experience = req_body["about"]  # type: ignore
             user.qualifications = req_body["qualifications"]  # type: ignore
+            user.phone_number = req_body["phone_number"]  # type: ignore
             user.save()
             # NOTE: use user.save(update_fields=[column_names...]) to make sure
             # that it is going to be an update on those columns alone
