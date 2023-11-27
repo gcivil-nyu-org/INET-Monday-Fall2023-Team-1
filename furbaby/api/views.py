@@ -26,6 +26,8 @@ from .serializers import (
     UserLocationSerializer,
     UserLoginSerializer,
     PetSerializer,
+    ApplicationsSerializer,
+    CustomUserSerializer,
 )
 
 from django.core.mail import EmailMultiAlternatives
@@ -557,7 +559,9 @@ def user_location_view(request):
         {"error": "incorrect request method supplied"},
         status=status.HTTP_405_METHOD_NOT_ALLOWED,
     )
-class UserList(ListAPIView):
+
+
+class UserList(GenericAPIView):
     def get(self, request, *args, **kwargs):
         queryset = Users.objects.all()
         try:
@@ -570,6 +574,11 @@ class ApplyForJobView(GenericAPIView):
     serializer_class = ApplicationsSerializer
 
     def post(self, request, job_id):
+        print(request.user.user_type)
+        if "owner" in request.user.user_type:
+            return json_response(
+                "Pet Owner are not allowed to apply for Job", status=status.HTTP_400_BAD_REQUEST
+            )
         print("JobID", job_id)
         print("request", request)
         try:
@@ -622,6 +631,11 @@ def accept_application(request, job_id, application_id):
                 pet = Pets.objects.get(id=pet_id, owner=request.user)
             except Pets.DoesNotExist:
                 raise ValidationError("Invalid pet ID or you do not own the pet.")
+
+                # return json_response({"error": "You do not have permission to accept the job for this pet."},
+                #                  status=status.HTTP_400_BAD_REQUEST)
+                # return json_response({"error": "You do not have permission to accept the job for this pet."},
+                #                  status=status.HTTP_400_BAD_REQUEST)
 
             # Ensure that the pet owner is the one creating the job
             if pet.owner != request.user:
