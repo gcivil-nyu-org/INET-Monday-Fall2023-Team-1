@@ -120,7 +120,7 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ebdb",
+        "NAME": "db",
         "USER": "root",
         "PASSWORD": os.environ.get("AWS_RDS_DATABASE_PASSWORD", ""),
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
