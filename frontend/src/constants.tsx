@@ -1,13 +1,15 @@
 import axios from "axios";
 
 const getProdAPIHost = () => {
-  const vercelCommitRef = process.env["VERCEL_GIT_COMMIT_REF"]?.toLowerCase();
-  if ("master" === vercelCommitRef) {
-    return "https://production.furbabyapi.net";
-  }
+  // const vercelCommitRef = process.env["VERCEL_GIT_COMMIT_REF"]?.toLowerCase();
+  // if ("master" === vercelCommitRef) {
+  //   return "https://production.furbabyapi.net";
+  // }
 
-  return "https://staging.furbabyapi.net";
+  return "https://api.furbabyapi.net";
 };
+
+export const DEFAULT_PROFILE_PICTURE = "https://randomuser.me/api/portraits/lego/1.jpg" as const;
 
 const PROD_API_HOST = getProdAPIHost();
 const LOCAL_API_HOST = "http://localhost:8000";
@@ -28,6 +30,7 @@ export const ROUTES = {
     HOME: "/home",
     PROFILE: "/profile",
     SETTINGS: "/settings",
+    LOCATIONS: "/locations",
   },
 } as const;
 
@@ -47,5 +50,7 @@ export const API_ROUTES = {
   HOME: "/",
   USER: {
     USER_ROOT: "api/user",
+    PROFILE_PICTURE: "api/user/profile_picture",
+    LOCATION: "api/location",
   },
 } as const;
