@@ -7,6 +7,7 @@ import { API_ROUTES } from "./constants";
 // import fakeData from "./fakeData.json";
 import Modal from "./Modal";
 import { FurbabyLocation } from "./types";
+import toast from "react-hot-toast";
 
 const Locations = () => {
   const [open, setOpen] = useState(false);
@@ -24,19 +25,26 @@ const Locations = () => {
       .post(
         API_ROUTES.USER.LOCATION,
         JSON.stringify({
-          state,
+          // state,
           address,
           city,
           zipcode,
           country,
+          default_location: false,
         })
       )
       .then((response) => {
         // TODO: handle response
+        if (response.status === 201)
+        {
+          onCloseModal();
+          toast.success("Location added successfully.");
+        }
         console.log(response);
       })
       .catch((err) => {
         // TODO: handle error
+          toast.error("Failed to add location.");
         console.error(err);
       });
   };
@@ -53,8 +61,9 @@ const Locations = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
-        console.log(response);
-        return response;
+        console.log(response, response.data);
+        setLocations(response?.data ?? []);
+        // return response;
       })
       .catch((err) => {
         console.error("failed to fetch locations", err);
@@ -63,9 +72,7 @@ const Locations = () => {
 
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getLocations().then((response) => {
-      setLocations(response?.data?.locations ?? []);
-    });
+    getLocations()//.then((response) => {
   }, []);
 
   const setAsDefault = (location: FurbabyLocation) => {
