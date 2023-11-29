@@ -46,7 +46,7 @@ urlpatterns = [
     # ),
     path("api/user/locations", views.user_location_view, name="user-location"),
     path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
-   path(
+    path(
         "pets/<uuid:pk>/", PetRetrieveUpdateDeleteView.as_view(), name="pet-retrieve-update-delete"
     ),
     path("api/user/locations", views.user_location_view, name="user-location"),
@@ -60,4 +60,5 @@ urlpatterns = [
         views.reject_application,
         name="reject_application",
     ),
+    path("/get-previously-completed-jobs", views.GetPetSitterJobHistory.as_view()),
 ]

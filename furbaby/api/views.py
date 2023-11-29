@@ -1004,3 +1004,19 @@ def reject_application(request, job_id, application_id):
         return json_response(
             {"error": "Job or application does not exist"}, status=status.HTTP_404_NOT_FOUND
         )
+
+
+class GetPetSitterJobHistory(APIView):
+    def post(self, request):
+        if "owner" in request.user.user_type:
+            return json_response("Invalid User: Pet Owner", status=status.HTTP_400_BAD_REQUEST)
+
+        job_history = Jobs.objects.filter(user_id=request.user.id, status="job_complete").values(
+            "start", "end", "pet", "location", "pay"
+        )
+
+        response_message = "Completed jobs history fetched successfully"
+        if not job_history:
+            response_message = "No completed jobs history found for this pet " "sitter"
+        data = {"message": response_message, "job_history": job_history}
+        return json_response(data, status=status.HTTP_200_OK)
