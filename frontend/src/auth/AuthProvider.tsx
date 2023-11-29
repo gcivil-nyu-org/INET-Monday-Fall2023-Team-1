@@ -12,6 +12,7 @@ type UserSession = {
   email: string;
   id: string;
   profilePicture: string;
+  user_type?: ("sitter" | "owner")[];
 };
 
 interface AuthenticationState {
@@ -46,6 +47,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       profilePicture: DEFAULT_PROFILE_PICTURE,
       name: "",
       email: "",
+      user_type: [],
     },
     isSessionSet: false,
     sessionCheckLoading: false,

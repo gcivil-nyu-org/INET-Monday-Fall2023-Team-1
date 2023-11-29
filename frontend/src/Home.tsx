@@ -21,26 +21,39 @@ type HomeProps = {
 
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
-  const [navigation, updatePageNavigationState] = useState([
-    {
-      name: "Dashboard",
-      href: ROUTES.PROTECTED_ROUTES.DASHBOARD,
-      keyId: 1,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD,
-    },
-    {
-      name: "Job Feed",
-      href: ROUTES.PROTECTED_ROUTES.JOBS,
-      keyId: 2,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS,
-    },
-    {
-      name: "Pet Profiles",
-      href: ROUTES.PROTECTED_ROUTES.PET_PROFILES,
-      keyId: 3,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES,
-    },
-  ]);
+
+  //console.log("session info: ", props.authContext.authenticationState.sessionInformation);
+
+  const user_type = props.authContext.authenticationState.sessionInformation.user_type;
+
+  //console.log("userType: ", user_type);
+
+  const isPetOwner = user_type?.includes('owner');
+  const isPetSitter = user_type?.includes('sitter');
+
+  //console.log("isPetOwner: ", isPetOwner);
+  //console.log("isPetSitter: ", isPetSitter);
+
+  // Dynamic navigation links based on user roles
+  const [navigation, updatePageNavigationState] = useState(() => {
+
+    const petOwnerLinks = [
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: true },
+      { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: false },
+    ];
+
+    const petSitterLinks = [
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 2, current: true },
+      { name: "My Applications", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 3, current: false },
+    ];
+
+    return [
+      ...(isPetOwner ? petOwnerLinks : []),
+      ...(isPetSitter ? petSitterLinks : []),
+    ];
+  });
+
+
   const { pathname } = useLocation();
 
   const onClickNavButton = (keyId: number) => {

@@ -138,6 +138,7 @@ def session_view(request):
     user_response_body = {
         "id": current_user.id,
         "email": current_user.email.lower(),
+        "user_type": current_user.user_type,
     }
 
     if current_user.first_name != None or current_user.last_name != None:
