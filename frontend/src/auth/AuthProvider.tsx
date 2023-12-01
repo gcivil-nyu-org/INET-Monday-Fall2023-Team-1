@@ -79,8 +79,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       .then((response) => {
         if (response.status === 201) {
           toast.success(
-            `An account has been created for ${
-              response.data?.data?.email ?? ""
+            `An account has been created for ${response.data?.data?.email ?? ""
             }. Redirecting to login page...`
           );
           navigate("/login");
@@ -127,6 +126,10 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
           navigate(ROUTES.PROTECTED_ROUTES.HOME);
         }
       })
+      .then(() => {
+        handleSession();
+        window.location.reload();
+      })
       .catch((error) => {
         notify({
           title: "Failed to login",
@@ -153,6 +156,13 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
             ...prevState,
             isSessionSet: false,
             sessionCheckLoading: false,
+            sessionInformation: {
+              id: "",
+              profilePicture: DEFAULT_PROFILE_PICTURE,
+              name: "",
+              email: "",
+              user_type: [],
+            },
           }));
           toast.success("logged out successfully");
           navigate(ROUTES.LOGIN);
