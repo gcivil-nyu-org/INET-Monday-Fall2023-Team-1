@@ -172,6 +172,7 @@ const Jobs: React.FC = () => {
                 Delete
               </button>
 
+              {job.status === 'open' && (
               <button
                 onClick={() => {
                   viewApplication(job.id);
@@ -181,6 +182,7 @@ const Jobs: React.FC = () => {
               >
                 View Application
               </button>
+              )}
             </div>
           </li>
         ))}
