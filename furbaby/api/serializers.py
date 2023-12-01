@@ -30,7 +30,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         # Check if the email already exists in the database
         if Users.objects.filter(email__iexact=email).exists():
-            raise serializers.ValidationError("Email already existsaaa")
+            raise serializers.ValidationError("Email already exists")
 
         if "sitter" in user_type and not email.endswith("nyu.edu"):
             raise serializers.ValidationError("Pet sitters must have a nyu.edu email")
