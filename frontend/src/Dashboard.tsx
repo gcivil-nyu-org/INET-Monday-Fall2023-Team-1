@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [myApplications, setMyApplications] = useState<Application[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -74,9 +75,6 @@ const Dashboard = () => {
             const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
             const locationDetail = locationDetailsResponse.data;
 
-            //TODO: fix this
-            console.log("location detail", locationDetail.find((location: any) => location.id === job.location));
-
             return {
               ...job,
               pet: petDetail,
@@ -84,7 +82,6 @@ const Dashboard = () => {
             };
           })
         );
-
         setJobs(jobsWithPetDetails);
       } catch (error) {
         console.error(error);
