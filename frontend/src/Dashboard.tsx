@@ -101,8 +101,31 @@ const Dashboard = () => {
         if (response.status !== 200) {
           throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
         }
-        //TODO: Add job details and pet details here
-        setMyApplications(response.data);
+        //console.log("my applications", response.data)
+
+        const myApplicationsWithJobDetails = await Promise.all(
+          response.data.map(async (myApplications: Application) => {
+            //console.log("myApplications.job", myApplications.job)
+            const jobDetailsResponse = await axios.get(`${API_ROUTES.JOBS}?id=${myApplications.job}`);
+            console.log("job details response", jobDetailsResponse.data)
+            const jobDetail = jobDetailsResponse.data.sitter_jobs;
+
+            //try {
+            //const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet.id}`);
+            //const petDetail = petDetailsResponse.data;
+            //} catch {
+            //console.log("pet details not found")
+            //}
+
+            return {
+              ...myApplications,
+              job: jobDetail,
+              //pet: petDetail,
+            };
+          })
+        );
+        //console.log("my applications with job details", myApplicationsWithJobDetails)
+        setMyApplications(myApplicationsWithJobDetails);
       } catch (error) {
         console.error(error);
       }
@@ -174,7 +197,7 @@ const Dashboard = () => {
                       <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
                         <div>
                           <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-                          <p>Status: {job.status}</p>
+                          <p>Job Status: {job.status}</p>
                           <p>Location: {job?.location?.address ?? ""}</p>
                           <p>Pay: ${job.pay}</p>
                           <p>Start: {job.start}</p>
@@ -196,15 +219,15 @@ const Dashboard = () => {
               </div>
             </div>
           )}</Tab.Panel>
-          <Tab.Panel>{activeTab === "my jobs" && (
+          <Tab.Panel>{activeTab === "my applications" && (
             <div className="max-w-screen-md mx-auto p-6">
               {error && <p className="text-red-500">{error}</p>}
               <ul className="list-none p-0">
-                {myApplications.map((application: Application) => (
-                  <li key={application.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+                {myApplications.map((myApplications: Application) => (
+                  <li key={myApplications.id} className="border border-gray-300 mb-4 p-4 rounded-md">
                     <div>
-                      <p>Status: {application.status}</p>
-                      <p>id: {application.id}</p>
+                      <p>Application Status: {myApplications.status}</p>
+                      <p>Application id: {myApplications.id}</p>
                     </div>
                   </li>
                 ))}
