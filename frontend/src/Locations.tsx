@@ -2,12 +2,12 @@ import { PlusCircleIcon, ShieldExclamationIcon } from "@heroicons/react/24/outli
 import axios from "axios";
 import React from "react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import { API_ROUTES } from "./constants";
 // import fakeData from "./fakeData.json";
 import Modal from "./Modal";
 import { FurbabyLocation } from "./types";
-import toast from "react-hot-toast";
 
 const Locations = () => {
   const [open, setOpen] = useState(false);
