@@ -182,6 +182,17 @@ const Jobs: React.FC = () => {
                   View Application
                 </button>
               )}
+              {job.status === 'acceptance_complete' && (
+                <button
+                  onClick={() => {
+                    viewApplication(job.id);
+                    openModal();
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  View Confirmed Pet Sitter
+                </button>
+              )}
             </div>
           </li>
         ))}
