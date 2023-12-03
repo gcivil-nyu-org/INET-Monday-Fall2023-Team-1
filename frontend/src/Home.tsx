@@ -30,16 +30,16 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const [navigation, updatePageNavigationState] = useState(() => {
 
     const petOwnerLinks = [
-      { name: "Manage Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 1, current: true },
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 1, current: true },
       { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 2, current: false },
     ];
 
     const petSitterLinks = [
-      { name: "Jobs Feed", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 1, current: true },
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: true },
     ];
 
     const bothLinks = [
-      { name: "Jobs Feed", href: ROUTES.PROTECTED_ROUTES.HOME, keyId: 1, current: true },
+      { name: "Jobs Feed", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: true },
       { name: "Manage Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: false },
       { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: false },
     ];
