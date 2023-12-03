@@ -298,7 +298,7 @@ const JobPage: React.FC<JobPageProps> = () => {
             }
             onClick={() => setActiveTab("view")}
           >
-            View Jobs
+            View My Jobs
           </Tab>
           <Tab
             className={({ selected }) =>
@@ -306,7 +306,7 @@ const JobPage: React.FC<JobPageProps> = () => {
             }
             onClick={() => setActiveTab("add")}
           >
-            Add Jobs
+            Add Job
           </Tab>
         </Tab.List>
         <Tab.Panels className="p-4 bg-white border border-t-0 rounded-b-md">
