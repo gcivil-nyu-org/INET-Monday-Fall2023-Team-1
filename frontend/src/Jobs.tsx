@@ -35,11 +35,26 @@ interface Pet {
   health_requirements: string;
 }
 
-interface JobPageProps {}
+interface User {
+  id: string;
+  username: string;
+  date_of_birth: string;
+  experience: string;
+}
+
+interface Application {
+  id: string;
+  status: string;
+  user: User;
+  job: string;
+  details: string;
+  // Add more fields as needed
+}
+interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [applications, setApplications] = useState([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -130,6 +145,7 @@ const Jobs: React.FC = () => {
         const response = await axios.get(API_ROUTES.APPLY, {
           params: { job_id: jobId },
         });
+
         if (response.status !== 200) {
           throw new Error(`Failed to fetch applications. Status: ${response.status}`);
         }
@@ -144,55 +160,98 @@ const Jobs: React.FC = () => {
       }
     }
   };
+  const viewConfirmedApplication = async (jobId: string) => {
+    const confirmConsent = window.confirm("Confirm to view Applications?");
+    console.log(jobId);
+    if (confirmConsent) {
+      try {
+        const response = await axios.get(API_ROUTES.APPLY, {
+          params: { job_id: jobId },
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch applications. Status: ${response.status}`);
+        }
+        console.log("Fetched applications:", response.data);
+        // Handle the fetched applications as needed
+        const applications: Application[] = response.data;
+
+        // Filter applications to include only accepted ones
+        const acceptedApplications = applications.filter((app: Application) => app.status === 'accepted');
+
+        setApplications(acceptedApplications);
+
+
+        const selectedJob = jobs.find((job) => job.id === jobId);
+        setSelectedJob(selectedJob || null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch applications");
+      }
+    }
+  };
 
   if (loading) {
     return <p className="text-center">Loading...</p>;
   }
 
-  return (
-    <div className="max-w-screen-md mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-4">Jobs</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <ul className="list-none p-0">
-        {jobs.map((job: Job) => (
-          <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-            <div>
-              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-              <p>Status: {job.status}</p>
-              <p>Location: {job?.location?.address ?? ""}</p>
-              <p>Pay: {job.pay}</p>
-              <p>Start: {job.start}</p>
-              <p>End: {job.end}</p>
-            </div>
-            <div className="mt-4 flex">
-              <button
-                onClick={() => handleDelete(job.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-              >
-                Delete
-              </button>
+    return (
+      <div className="max-w-screen-md mx-auto p-6">
+        <h2 className="text-3xl font-bold mb-4">Jobs</h2>
+        {error && <p className="text-red-500">{error}</p>}
+        <ul className="list-none p-0">
+          {jobs.map((job: Job) => (
+            <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+              <div>
+                <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                <p>Status: {job.status}</p>
+                <p>Location: {job?.location?.address ?? ""}</p>
+                <p>Pay: {job.pay}</p>
+                <p>Start: {job.start}</p>
+                <p>End: {job.end}</p>
+              </div>
+              <div className="mt-4 flex">
+                <button
+                  onClick={() => handleDelete(job.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Delete
+                </button>
+                {job.status == "open" && (
+                  <button
+                    onClick={() => {
+                      viewApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Application
+                  </button>
+                )}
+                {job.status == "acceptance_complete" && (
+                  <button
+                    onClick={() => {
+                      viewConfirmedApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Confirmed Application
+                  </button>
+                )}
 
-              <button
-                onClick={() => {
-                  viewApplication(job.id);
-                  openModal();
-                }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              >
-                View Application
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
-      <ApplicationModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        applications={applications}
-        handleAccept={handleAccept}
-      />
-    </div>
-  );
+              </div>
+            </li>
+          ))}
+        </ul>
+        <ApplicationModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          applications={applications}
+          handleAccept={handleAccept}
+        />
+      </div>
+    );
 };
 
 const JobPage: React.FC<JobPageProps> = () => {

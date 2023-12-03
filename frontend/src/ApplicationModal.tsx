@@ -7,6 +7,8 @@ import toast from "react-hot-toast";
 interface User {
   id: string;
   username: string;
+  date_of_birth: string;
+  experience: string;
 }
 
 interface Application {
@@ -49,7 +51,11 @@ const updateJobStatus = async (jobId: string) => {
 
 const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, applications }) => {
   const [acceptedApplications, setAcceptedApplications] = useState<string[]>([]);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
 
+  const toggleApplicationDetails = (applicationId: string) => {
+    setSelectedApplicationId(selectedApplicationId === applicationId ? null : applicationId);
+  }
   const handleAccept = async (applicationId: string, jobId: string) => {
     try {
       const newStatus = "accepted";
@@ -92,53 +98,57 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
   }
 
   return (
-    <div className="fixed inset-0 overflow-y-auto">
-      <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+    <div className="fixed inset-0 bg-gray-500 bg-opacity-75 overflow-y-auto flex justify-center items-center">
+      <div className="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all max-w-lg w-full">
+        <div className="bg-indigo-700 text-white px-4 py-4 text-lg leading-6 font-bold">
+          Applications
         </div>
-
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
-          &#8203;
-        </span>
-
-        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">Applications</h3>
-            {applications.map((application) => (
-              <div key={application.id} className="mb-4">
-                <p>Status: {application.status}</p>
-                <p>
-                  Username:{" "}
-                  <Link to={`/user-profile/${application.user.id}`}>
-                    {application.user.username}
-                  </Link>
-                </p>
-                {application.status !== "accepted" && (
-                  <button
-                    onClick={() => handleAccept(application.id, application.job)} // Call onAccept function with application ID
-                    type="button"
-                    className="mt-2 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm"
-                  >
-                    Accept
-                  </button>
-                )}
+        <div className="px-4 py-5 sm:p-6">
+          {applications.map((application) => (
+            <div key={application.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between">
+                <span
+                  className="text-indigo-600 font-medium"
+                  onClick={() => toggleApplicationDetails(application.id)}
+                >
+                  {application.user.username}
+                </span>
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${application.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                  {application.status}
+                </span>
               </div>
-            ))}
-          </div>
-          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              onClick={onClose}
-              type="button"
-              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Close
-            </button>
-          </div>
+              {selectedApplicationId === application.id && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
+                  <p className="text-sm text-gray-600">Experience: {application.user.experience}</p>
+                  {/* Add more fields as needed */}
+                </div>
+              )}
+              {application.status !== "accepted" && (
+                <button
+                  onClick={() => handleAccept(application.id, application.job)}
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
+                >
+                  Accept
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="px-4 py-3 bg-gray-200 text-right">
+          <button
+            onClick={onClose}
+            type="button"
+            className="py-2 px-4 bg-indigo-600 rounded-md text-white font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
   );
+
 };
 
 export default ApplicationModal;

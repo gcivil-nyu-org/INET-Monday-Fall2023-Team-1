@@ -114,6 +114,10 @@ class JobSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     username = serializers.CharField()
+    date_of_birth = serializers.DateField()
+    experience = serializers.CharField()
+    qualifications = serializers.CharField()
+
 
 
 class ApplicationSerializer(serializers.ModelSerializer):
