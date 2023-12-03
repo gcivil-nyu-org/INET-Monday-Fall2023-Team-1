@@ -35,7 +35,7 @@ interface Pet {
   health_requirements: string;
 }
 
-interface JobPageProps {}
+interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -172,15 +172,15 @@ const Jobs: React.FC = () => {
               </button>
 
               {job.status === 'open' && (
-              <button
-                onClick={() => {
-                  viewApplication(job.id);
-                  openModal();
-                }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              >
-                View Application
-              </button>
+                <button
+                  onClick={() => {
+                    viewApplication(job.id);
+                    openModal();
+                  }}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  View Application
+                </button>
               )}
             </div>
           </li>

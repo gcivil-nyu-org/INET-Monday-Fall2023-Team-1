@@ -834,7 +834,7 @@ class ApplicationView(APIView):
             applications = Applications.objects.filter(job_id=job_id)
             serializer = ApplicationSerializer(applications, many=True)
             return JsonResponse(serializer.data, safe=False)
-        
+
         else:
             user_id = request.user.id
             applications = Applications.objects.filter(user_id=user_id)
