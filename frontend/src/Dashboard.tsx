@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_ROUTES } from "./constants";
 import toast from "react-hot-toast";
+import { Tab } from "@headlessui/react";
+import { sortBy } from "lodash";
 
 type Job = {
   id: number;
@@ -9,7 +11,7 @@ type Job = {
   description: string;
   pet: Pet;
   status: string;
-  location: string;
+  location: Location;
   pay: number;
   start: string;
   end: string;
@@ -28,9 +30,33 @@ interface Pet {
   health_requirements: string;
 }
 
+interface Location {
+  id: string;
+  address: string;
+  city: string;
+  country: string;
+}
+
+interface Application {
+  id: string;
+  status: string;
+  user: User;
+  job: string;
+  details: string;
+  // Add more fields as needed
+}
+
+interface User {
+  id: string;
+  username: string;
+}
+
 const Dashboard = () => {
+  const [activeTab, setActiveTab] = useState("available jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [myApplications, setMyApplications] = useState<Application[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -45,9 +71,16 @@ const Dashboard = () => {
             const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${job.pet}`);
             const petDetail = petDetailsResponse.data;
 
+            const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
+            const locationDetail = locationDetailsResponse.data;
+
+            //TODO: fix this
+            console.log("location detail", locationDetail.find((location: any) => location.id === job.location));
+
             return {
               ...job,
               pet: petDetail,
+              location: locationDetail.find((location: any) => location.id === job.location),
             };
           })
         );
@@ -60,6 +93,24 @@ const Dashboard = () => {
 
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    const fetchMyApplications = async () => {
+      try {
+        const response = await axios.get(`${API_ROUTES.APPLY}`);
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
+        }
+        //TODO: Add job details and pet details here
+        setMyApplications(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMyApplications();
+  }, []);
+
 
   const applyForJob = async (jobId: number) => {
     console.log(jobId);
@@ -83,43 +134,88 @@ const Dashboard = () => {
   });
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <div className="flex justify-end mb-4">
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="Search by pet name..."
-            className="px-4 py-2 border rounded-md"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-      </div>
-      <div>
-        {filteredJobs.map((job) => (
-          <div key={job.id} className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
-            <h2 className="text-2xl font-bold text-blue-800 mb-2">{job.title}</h2>
-            <p className="text-gray-700 mb-4">{job.description}</p>
-            <div className="flex flex-col">
-              <p className="font-bold text-gray-800 mb-2">Pet Name: {job.pet.name}</p>
-              <p>Status: {job.status}</p>
-              <p>Location: {job.location}</p>
-              <p>Pay: ${job.pay}</p>
-              <p>Start: {job.start}</p>
-              <p>End: {job.end}</p>
-              {job.status === "open" && (
-                <button
-                  onClick={() => applyForJob(job.id)}
-                  className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
-                >
-                  Apply Now
-                </button>
-              )}
+    <div className="max-w-screen-md mx-auto p-4">
+      <Tab.Group>
+        <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+          <Tab
+            className={({ selected }) =>
+              selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
+            }
+            onClick={() => setActiveTab("available jobs")}
+          >Available Jobs
+          </Tab>
+          <Tab
+            className={({ selected }) =>
+              selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
+            }
+            onClick={() => setActiveTab("my applications")}
+          >My Applications
+          </Tab>
+        </Tab.List>
+        <Tab.Panels className="p-4 bg-white border border-t-0 rounded-b-md">
+          <Tab.Panel>{activeTab === "available jobs" && (
+            <div className="mb-4">
+              <div className="flex justify-end mb-4">
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="text"
+                    placeholder="Search by pet name..."
+                    className="px-4 py-2 border rounded-md"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div>
+                {filteredJobs.map((job) => (
+                  <div key={job.id} className="max-w-screen-md mx-auto p-6">
+                    {error && <p className="text-red-500">{error}</p>}
+                    <ul className="list-none p-0">
+                      <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+                        <div>
+                          <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                          <p>Status: {job.status}</p>
+                          <p>Location: {job?.location?.address ?? ""}</p>
+                          <p>Pay: ${job.pay}</p>
+                          <p>Start: {job.start}</p>
+                          <p>End: {job.end}</p>
+                          {job.status === "open" && (
+                            <button
+                              onClick={() => applyForJob(job.id)}
+                              className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
+                            >
+                              Apply Now
+                            </button>
+                          )}
+                        </div>
+                      </li>
+
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
+          )}</Tab.Panel>
+          <Tab.Panel>{activeTab === "my jobs" && (
+            <div className="max-w-screen-md mx-auto p-6">
+              {error && <p className="text-red-500">{error}</p>}
+              <ul className="list-none p-0">
+                {myApplications.map((application: Application) => (
+                  <li key={application.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+                    <div>
+                      <p>Status: {application.status}</p>
+                      <p>id: {application.id}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+          }
+          </Tab.Panel >
+        </Tab.Panels >
+      </Tab.Group >
+    </div >
   );
 };
 
