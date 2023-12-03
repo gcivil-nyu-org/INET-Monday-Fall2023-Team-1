@@ -119,7 +119,6 @@ class UserSerializer(serializers.Serializer):
     qualifications = serializers.CharField()
 
 
-
 class ApplicationSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
