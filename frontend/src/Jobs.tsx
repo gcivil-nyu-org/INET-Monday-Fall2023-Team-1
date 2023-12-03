@@ -151,7 +151,6 @@ const Jobs: React.FC = () => {
 
   return (
     <div className="max-w-screen-md mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-4">Jobs</h2>
       {error && <p className="text-red-500">{error}</p>}
       <ul className="list-none p-0">
         {jobs.map((job: Job) => (
