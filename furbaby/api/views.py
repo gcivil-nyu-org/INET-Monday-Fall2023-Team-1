@@ -358,35 +358,37 @@ def __upload_profile_picture__(request):
     )
 
 
-# @csrf_protect
-# @api_view(["POST", "GET", "OPTIONS", "DELETE"])
-# def handle_pet_pictures(request):
-#     if not request.user.is_authenticated:
-#         return json_response(
-#             data={"error": "unauthenticated request. rejected"},
-#             status=status.HTTP_401_UNAUTHORIZED,
-#         )
+@csrf_protect
+@api_view(["POST", "GET", "OPTIONS", "DELETE"])
+def handle_pet_pictures(request):
+    if not request.user.is_authenticated:
+        return json_response(
+            data={"error": "unauthenticated request. rejected"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
-#     if s3Config == None:
-#         return json_response(
-#             data={"error": "failed to upload picture due to internal error"},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#         )
+    if s3Config == None:
+        return json_response(
+            data={"error": "failed to upload picture due to internal error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
-#     if request.method == "GET":
-#         return __get_user_pet_picture__(request)
+    if request.method == "GET":
+        return __get_user_pet_picture__(request)
 
-#     if request.method == "POST":
-#         return __put_user_pet_picture__(request)
+    if request.method == "POST":
+        return __put_user_pet_picture__(request)
 
-#     if request.method == "DELETE":
-#         return __delete_user_pet_picture__(request)
+    if request.method == "DELETE":
+        return __delete_user_pet_picture__(request)
 
-#     return json_response(
-#         {
-#             "error": "incorrect request method",
-#             "message": 'endpoint only allows only "POST" & "PUT" requests',
-#         },
+    return json_response(
+        {
+            "error": "incorrect request method",
+            "message": 'endpoint only allows only ["GET", "PUT", "DELETE"] requests',
+        },
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )
 
 
 # This class is for the user location(s)
@@ -747,11 +749,11 @@ class JobView(APIView):
 
     def get_queryset(self):
         self.job_status_check()
-        return Jobs.objects.filter(user_id=self.request.user.id)
+        return Jobs.objects.filter(user_id=self.request.user.id)  # type: ignore
 
     def get_object(self, job_id):
         try:
-            if "sitter" in self.request.user.user_type:
+            if "sitter" in self.request.user.user_type:  # type: ignore
                 return Jobs.objects.get(id=job_id)
             else:
                 return Jobs.objects.get(id=job_id, user=self.request.user)
@@ -800,7 +802,7 @@ class JobView(APIView):
 
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         try:
             job = Jobs.objects.get(id=job_id)
             print(job.status)
@@ -817,7 +819,7 @@ class JobView(APIView):
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
         if "owner" in request.user.user_type:
-            pet_id = self.request.data.get("pet")
+            pet_id = self.request.data.get("pet")  # type: ignore
             try:
                 pet = Pets.objects.get(id=pet_id, owner=self.request.user)
             except Pets.DoesNotExist:
@@ -836,7 +838,7 @@ class JobView(APIView):
             raise PermissionDenied("You are not allowed to create a job.")
 
     def delete(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         if job_id:
             job = self.get_object(job_id)
             job.delete()
@@ -868,7 +870,7 @@ class ApplicationView(APIView):
             application = Applications.objects.get(id=application_id)
         except Applications.DoesNotExist:
             raise ValidationError("Application not found.")
-        job_instance = Jobs.objects.get(id=application.job_id)
+        job_instance = Jobs.objects.get(id=application.job_id)  # type: ignore
 
         # Check if the user making the request is the owner of the application
         if request.user == job_instance.user:
@@ -905,7 +907,7 @@ class ApplicationView(APIView):
             )
 
     def post(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         print(request.data)
         print(job_id)
         try:
@@ -929,7 +931,7 @@ class ApplicationView(APIView):
                             "details": {},  # You can add more details if needed
                         }
                         application_serializer = ApplicationSerializer(
-                            data=application_data, context={"request": self.request}
+                            data=application_data, context={"request": self.request}  # type: ignore
                         )
                         application_serializer.is_valid(raise_exception=True)
                         application_serializer.save()
