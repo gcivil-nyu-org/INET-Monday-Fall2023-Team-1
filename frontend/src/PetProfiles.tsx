@@ -22,6 +22,10 @@ interface EditPetFormData {
   species: string;
   breed: string;
   weight: string;
+  color: string;
+  height: string;
+  chip_number: string;
+  health_requirements: string;
   pictures: string[];
 }
 
@@ -37,6 +41,10 @@ const PetProfiles: React.FC = () => {
     species: "",
     breed: "",
     weight: "",
+    color: "",
+    height: "",
+    chip_number: "",
+    health_requirements: "",
   });
 
   useEffect(() => {
@@ -86,6 +94,10 @@ const PetProfiles: React.FC = () => {
       species: pet.species,
       breed: pet.breed,
       weight: pet.weight,
+      color: pet.color,
+      height: pet.height,
+      chip_number: pet.chip_number,
+      health_requirements: pet.health_requirements,
     });
   };
 
@@ -96,6 +108,10 @@ const PetProfiles: React.FC = () => {
       species: "",
       breed: "",
       weight: "",
+      color: "",
+      height: "",
+      chip_number: "",
+      health_requirements: "",
     });
   };
 
@@ -108,6 +124,10 @@ const PetProfiles: React.FC = () => {
           species: editFormData.species,
           breed: editFormData.breed,
           weight: editFormData.weight,
+          color: editFormData.color,
+          height: editFormData.height,
+          chip_number: editFormData.chip_number,
+          health_requirements: editFormData.health_requirements,
         });
 
         if (response.status === 200) {
@@ -120,6 +140,10 @@ const PetProfiles: React.FC = () => {
               species: editFormData.species,
               breed: editFormData.breed,
               weight: editFormData.weight,
+              color: editFormData.color,
+              height: editFormData.height,
+              chip_number: editFormData.chip_number,
+              health_requirements: editFormData.health_requirements,
             };
             setPets(updatedPets);
           }
@@ -180,6 +204,24 @@ const PetProfiles: React.FC = () => {
                       onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
+                    <label htmlFor="edit-color">Color</label>
+                    <input
+                      type="text"
+                      name="color"
+                      id="edit-color"
+                      value={editFormData.color}
+                      onChange={(e) => setEditFormData({...editFormData, color:e.target.value})}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                    <label htmlFor="edit-height">Height</label>
+                    <input
+                      type="text"
+                      name="height"
+                      id="edit-height"
+                      value={editFormData.height}
+                      onChange={(e) => setEditFormData({...editFormData, height:e.target.value})}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
                     <label htmlFor="edit-weight">Weight</label>
                     <input
                       type="text"
@@ -187,6 +229,24 @@ const PetProfiles: React.FC = () => {
                       id="edit-weight"
                       value={editFormData.weight}
                       onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="edit-chip_number">Chip Number</label>
+                    <input
+                      type="text"
+                      name="chip_number"
+                      id="edit-chip_number"
+                      value={editFormData.chip_number}
+                      onChange={(e) => setEditFormData({ ...editFormData, chip_number: e.target.value })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    />
+                    <label htmlFor="edit-health_requirements">Health Requirements</label>
+                    <input
+                      type="text"
+                      name="health_requirements"
+                      id="edit-health_requirements"
+                      value={editFormData.health_requirements}
+                      onChange={(e) => setEditFormData({ ...editFormData, health_requirements: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </form>
@@ -210,9 +270,9 @@ const PetProfiles: React.FC = () => {
                   <p className="font-bold mb-2">Name: {pet.name}</p>
                   <p>Species: {pet.species}</p>
                   <p>Breed: {pet.breed}</p>
-                  <p>Weight: {pet.weight}</p>
                   <p>Color: {pet.color}</p>
                   <p>Height: {pet.height}</p>
+                  <p>Weight: {pet.weight}</p>
                   <p>Chip Number: {pet.chip_number}</p>
                   <p>Health Requirements: {pet.health_requirements}</p>
                 </div>
@@ -305,10 +365,10 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       <Tab.Group>
-        <Tab.List className="flex bg-gray-100 p-4 rounded-t-md">
+        <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -316,7 +376,7 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >
@@ -350,6 +410,17 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   onChange={(e) => setPetFormData({ ...petFormData, species: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
+                <label htmlFor="pet-breed" className="block text-sm font-medium text-gray-700">
+                  Breed
+                </label>
+                <input
+                  type="text"
+                  name="breed"
+                  id="pet-breed"
+                  value={petFormData.breed}
+                  onChange={(e) => setPetFormData({ ...petFormData, breed: e.target.value })}
+                  className="border border-gray-300 rounded-md p-2 mt-1"
+                />
                 <label htmlFor="pet-color" className="block text-sm font-medium text-gray-700">
                   Color
                 </label>
@@ -371,17 +442,6 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
                   id="pet-height"
                   value={petFormData.height}
                   onChange={(e) => setPetFormData({ ...petFormData, height: e.target.value })}
-                  className="border border-gray-300 rounded-md p-2 mt-1"
-                />
-                <label htmlFor="pet-breed" className="block text-sm font-medium text-gray-700">
-                  Breed
-                </label>
-                <input
-                  type="text"
-                  name="breed"
-                  id="pet-breed"
-                  value={petFormData.breed}
-                  onChange={(e) => setPetFormData({ ...petFormData, breed: e.target.value })}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
                 <label htmlFor="pet-weight" className="block text-sm font-medium text-gray-700">

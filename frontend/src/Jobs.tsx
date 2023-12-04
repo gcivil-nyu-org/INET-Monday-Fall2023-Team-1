@@ -35,11 +35,26 @@ interface Pet {
   health_requirements: string;
 }
 
+interface User {
+  id: string;
+  username: string;
+  date_of_birth: string;
+  experience: string;
+}
+
+interface Application {
+  id: string;
+  status: string;
+  user: User;
+  job: string;
+  details: string;
+  // Add more fields as needed
+}
 interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [applications, setApplications] = useState([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
@@ -130,12 +145,43 @@ const Jobs: React.FC = () => {
         const response = await axios.get(API_ROUTES.APPLY, {
           params: { job_id: jobId },
         });
+
         if (response.status !== 200) {
           throw new Error(`Failed to fetch applications. Status: ${response.status}`);
         }
         console.log("Fetched applications:", response.data);
         // Handle the fetched applications as needed
         setApplications(response.data);
+        const selectedJob = jobs.find((job) => job.id === jobId);
+        setSelectedJob(selectedJob || null);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to fetch applications");
+      }
+    }
+  };
+  const viewConfirmedApplication = async (jobId: string) => {
+    const confirmConsent = window.confirm("Confirm to view Applications?");
+    console.log(jobId);
+    if (confirmConsent) {
+      try {
+        const response = await axios.get(API_ROUTES.APPLY, {
+          params: { job_id: jobId },
+        });
+
+        if (response.status !== 200) {
+          throw new Error(`Failed to fetch applications. Status: ${response.status}`);
+        }
+        console.log("Fetched applications:", response.data);
+        // Handle the fetched applications as needed
+        const applications: Application[] = response.data;
+
+        // Filter applications to include only accepted ones
+        const acceptedApplications = applications.filter((app: Application) => app.status === 'accepted');
+
+        setApplications(acceptedApplications);
+
+
         const selectedJob = jobs.find((job) => job.id === jobId);
         setSelectedJob(selectedJob || null);
       } catch (err) {
@@ -185,12 +231,12 @@ const Jobs: React.FC = () => {
               {job.status === 'acceptance_complete' && (
                 <button
                   onClick={() => {
-                    viewApplication(job.id);
+                    viewConfirmedApplication(job.id);
                     openModal();
                   }}
                   className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 >
-                  View Confirmed Pet Sitter
+                  View Confirmed Application
                 </button>
               )}
             </div>
@@ -302,10 +348,10 @@ const JobPage: React.FC<JobPageProps> = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       <Tab.Group>
-        <Tab.List className="flex bg-gray-100 p-4 rounded-t-md">
+        <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -313,7 +359,7 @@ const JobPage: React.FC<JobPageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >
@@ -333,7 +379,7 @@ const JobPage: React.FC<JobPageProps> = () => {
                   name="pet"
                   value={jobFormData.pet}
                   onChange={(e) => setJobFormData({ ...jobFormData, pet: e.target.value })}
-                  className="border border-gray-300 rounded-md p-2 mt-1"
+                  className="border border-gray-300 rounded-md p-2 mt-1 w-1/4"
                 >
                   <option value="" disabled>
                     Select a pet
@@ -344,12 +390,15 @@ const JobPage: React.FC<JobPageProps> = () => {
                     </option>
                   ))}
                 </select>
+                <label htmlFor="location-dropdown" className="block text-sm font-medium text-gray-700">
+                  Select a Location
+                </label>
                 <select
                   id="location-dropdown"
                   name="location"
                   value={jobFormData.location}
                   onChange={(e) => setJobFormData({ ...jobFormData, location: e.target.value })}
-                  className="border border-gray-300 rounded-md p-2 mt-1"
+                  className="border border-gray-300 rounded-md p-2 mt-1 w-1/3"
                 >
                   <option value="" disabled>
                     Select a Location
