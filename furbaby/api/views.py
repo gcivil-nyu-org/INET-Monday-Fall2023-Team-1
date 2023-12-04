@@ -138,6 +138,7 @@ def session_view(request):
     user_response_body = {
         "id": current_user.id,
         "email": current_user.email.lower(),
+        "user_type": current_user.user_type,
     }
 
     if current_user.first_name != None or current_user.last_name != None:
@@ -828,10 +829,17 @@ class ApplicationView(APIView):
 
     def get(self, request, *args, **kwargs):
         job_id = request.query_params.get("job_id")
-        applications = Applications.objects.filter(job_id=job_id)
-        serializer = ApplicationSerializer(applications, many=True)
-        print(serializer.data)
-        return JsonResponse(serializer.data, safe=False)
+
+        if job_id:
+            applications = Applications.objects.filter(job_id=job_id)
+            serializer = ApplicationSerializer(applications, many=True)
+            return JsonResponse(serializer.data, safe=False)
+
+        else:
+            user_id = request.user.id
+            applications = Applications.objects.filter(user_id=user_id)
+            serializer = ApplicationSerializer(applications, many=True)
+            return JsonResponse(serializer.data, safe=False)
 
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data

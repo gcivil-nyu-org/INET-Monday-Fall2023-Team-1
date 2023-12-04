@@ -21,26 +21,48 @@ type HomeProps = {
 
 const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
-  const [navigation, updatePageNavigationState] = useState([
-    {
-      name: "Dashboard",
-      href: ROUTES.PROTECTED_ROUTES.DASHBOARD,
-      keyId: 1,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.DASHBOARD,
-    },
-    {
-      name: "Job Feed",
-      href: ROUTES.PROTECTED_ROUTES.JOBS,
-      keyId: 2,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.JOBS,
-    },
-    {
-      name: "Pet Profiles",
-      href: ROUTES.PROTECTED_ROUTES.PET_PROFILES,
-      keyId: 3,
-      current: location.pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES,
-    },
-  ]);
+
+  const user_type = props.authContext.authenticationState.sessionInformation.user_type;
+  const isPetOwner = user_type?.includes('owner');
+  const isPetSitter = user_type?.includes('sitter');
+
+  // Dynamic navigation links based on user roles isPetSitter and isPetOwner
+  const [navigation, updatePageNavigationState] = useState(() => {
+
+    const petOwnerLinks = [
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 1, current: true },
+      { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 2, current: false },
+    ];
+
+    const petSitterLinks = [
+      { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: true },
+    ];
+
+    const bothLinks = [
+      { name: "Jobs Feed", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: true },
+      { name: "Manage Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: false },
+      { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: false },
+    ];
+
+    if (isPetSitter && isPetOwner) {
+      return bothLinks;
+    }
+    else {
+      return [
+        ...(isPetOwner ? petOwnerLinks : []),
+        ...(isPetSitter ? petSitterLinks : []),
+      ];
+    }
+  });
+
+  React.useEffect(() => {
+    if (!isPetSitter && isPetOwner) {
+      navigate(ROUTES.PROTECTED_ROUTES.JOBS);
+    }
+  },
+    []
+  );
+
   const { pathname } = useLocation();
 
   const onClickNavButton = (keyId: number) => {
