@@ -732,8 +732,9 @@ class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
     def job_status_check(self):
-        to_be_cancelled_queryset = Jobs.objects.filter(status="open").filter(start__lte=datetime.now(timezone.utc)
-                                                                                        - timedelta(hours=5))
+        to_be_cancelled_queryset = Jobs.objects.filter(status="open").filter(
+            start__lte=datetime.now(timezone.utc) - timedelta(hours=5)
+        )
         for job in to_be_cancelled_queryset:
             if job.status == "open":
                 job.status = "cancelled"
@@ -750,7 +751,7 @@ class JobView(APIView):
 
     def get_object(self, job_id):
         try:
-            if 'sitter' in self.request.user.user_type:
+            if "sitter" in self.request.user.user_type:
                 return Jobs.objects.get(id=job_id)
             else:
                 return Jobs.objects.get(id=job_id, user=self.request.user)
