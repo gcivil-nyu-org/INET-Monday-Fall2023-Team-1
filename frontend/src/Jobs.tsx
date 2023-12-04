@@ -349,10 +349,10 @@ const JobPage: React.FC<JobPageProps> = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       <Tab.Group>
-        <Tab.List className="flex bg-gray-100 p-4 rounded-t-md">
+        <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -360,7 +360,7 @@ const JobPage: React.FC<JobPageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-              selected ? "bg-white text-blue-500" : "bg-gray-200 text-gray-600"
+                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >
@@ -380,7 +380,7 @@ const JobPage: React.FC<JobPageProps> = () => {
                   name="pet"
                   value={jobFormData.pet}
                   onChange={(e) => setJobFormData({ ...jobFormData, pet: e.target.value })}
-                  className="border border-gray-300 rounded-md p-2 mt-1"
+                  className="border border-gray-300 rounded-md p-2 mt-1 w-1/4"
                 >
                   <option value="" disabled>
                     Select a pet
@@ -391,12 +391,15 @@ const JobPage: React.FC<JobPageProps> = () => {
                     </option>
                   ))}
                 </select>
+                <label htmlFor="location-dropdown" className="block text-sm font-medium text-gray-700">
+                  Select a Location
+                </label>
                 <select
                   id="location-dropdown"
                   name="location"
                   value={jobFormData.location}
                   onChange={(e) => setJobFormData({ ...jobFormData, location: e.target.value })}
-                  className="border border-gray-300 rounded-md p-2 mt-1"
+                  className="border border-gray-300 rounded-md p-2 mt-1 w-1/3"
                 >
                   <option value="" disabled>
                     Select a Location
