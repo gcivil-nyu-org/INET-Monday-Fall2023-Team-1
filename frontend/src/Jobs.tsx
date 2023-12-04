@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {Tab} from "@headlessui/react";
-import {API_ROUTES} from "./constants";
+import { Tab } from "@headlessui/react";
+import { API_ROUTES } from "./constants";
 import toast from "react-hot-toast";
 import ApplicationModal from "./ApplicationModal";
 
@@ -306,7 +306,7 @@ const JobPage: React.FC<JobPageProps> = () => {
     try {
       checkDates();
     }
-    catch (error){
+    catch (error: any) {
       toast.error(error.message);
       return;
     }
@@ -363,36 +363,30 @@ const JobPage: React.FC<JobPageProps> = () => {
     return `${year}-${month}-${day}T${hour}:${minute}`;
   };
 
-  const handleStartUpdate = (e) => {
-    if (e.target.value)
-    {
+  const handleStartUpdate = (e: any) => {
+    if (e.target.value) {
       const selectedStart = new Date(e.target.value);
       const now = new Date();
 
-      if (selectedStart > now)
-      {
-        setJobFormData({ ...jobFormData, start: e.target.value});
+      if (selectedStart > now) {
+        setJobFormData({ ...jobFormData, start: e.target.value });
       }
-      else
-      {
-        setJobFormData({ ...jobFormData, start: ""});
+      else {
+        setJobFormData({ ...jobFormData, start: "" });
         toast.error("Start datetime must be in the future.");
       }
     }
   };
 
-  const handleEndUpdate = (e) => {
-    if (e.target.value)
-    {
+  const handleEndUpdate = (e: any) => {
+    if (e.target.value) {
       const startDate = new Date(jobFormData.start);
       const selectedEndDate = new Date(e.target.value);
 
-      if (selectedEndDate > startDate)
-      {
-        setJobFormData({ ...jobFormData, end: e.target.value});
+      if (selectedEndDate > startDate) {
+        setJobFormData({ ...jobFormData, end: e.target.value });
       }
-      else
-      {
+      else {
         toast.error("End datetime must be after start.");
       }
     }
@@ -403,12 +397,10 @@ const JobPage: React.FC<JobPageProps> = () => {
     const endDateTime = new Date(jobFormData.end);
     const now = new Date();
 
-    if (startDateTime <= now)
-    {
+    if (startDateTime <= now) {
       throw new Error("Start date time must be in the future.");
     }
-    else if (endDateTime <= startDateTime)
-    {
+    else if (endDateTime <= startDateTime) {
       throw new Error("End date time must be after start.")
     }
   };
@@ -419,7 +411,7 @@ const JobPage: React.FC<JobPageProps> = () => {
         <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
+              selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -427,7 +419,7 @@ const JobPage: React.FC<JobPageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
+              selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >
