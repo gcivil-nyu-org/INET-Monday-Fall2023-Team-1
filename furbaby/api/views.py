@@ -1,5 +1,7 @@
 import json
 import os
+from datetime import datetime, timezone, timedelta
+
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
@@ -729,10 +731,21 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def job_status_check(self):
+        to_be_cancelled_queryset = Jobs.objects.filter(status="open").filter(start__lte=datetime.now(timezone.utc)
+                                                                                        - timedelta(hours=5))
+        for job in to_be_cancelled_queryset:
+            if job.status == "open":
+                job.status = "cancelled"
+                job.save()
+        return
+
     def get_all(self):
-        return Jobs.objects.all()
+        self.job_status_check()
+        return Jobs.objects.filter(status="open")
 
     def get_queryset(self):
+        self.job_status_check()
         return Jobs.objects.filter(user_id=self.request.user.id)
 
     def get_object(self, job_id):
