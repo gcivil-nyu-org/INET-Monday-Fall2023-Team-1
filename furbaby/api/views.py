@@ -730,15 +730,12 @@ class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get_all(self):
-        print('get_all')
         return Jobs.objects.all()
 
     def get_queryset(self):
-        print('get_queryset')
         return Jobs.objects.filter(user_id=self.request.user.id)
 
     def get_object(self, job_id):
-        print('get_object')
         try:
             if 'sitter' in self.request.user.user_type:
                 return Jobs.objects.get(id=job_id)
@@ -749,11 +746,8 @@ class JobView(APIView):
             raise ValidationError("Job not found or you do not have permission to access this job.")
 
     def get(self, request, *args, **kwargs):
-        print(request)
         job_id = request.query_params.get("id")
-        print(job_id)
         if job_id:
-            print("getting job for particular app")
             job = self.get_object(job_id)
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
