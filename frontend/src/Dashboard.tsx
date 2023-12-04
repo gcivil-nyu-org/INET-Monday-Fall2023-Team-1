@@ -41,8 +41,10 @@ interface Application {
   id: string;
   status: string;
   user: User;
-  job: string;
+  job: Job;
   details: string;
+  pet: Pet;
+  location: Location;
   // Add more fields as needed
 }
 
@@ -103,25 +105,29 @@ const Dashboard = () => {
         const myApplicationsWithJobDetails = await Promise.all(
           response.data.map(async (myApplications: Application) => {
             //console.log("myApplications.job", myApplications.job)
-            const jobDetailsResponse = await axios.get(`${API_ROUTES.JOBS}?id=${myApplications.job}`);
-            console.log("job details response", jobDetailsResponse.data)
-            const jobDetail = jobDetailsResponse.data.sitter_jobs;
+            const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
+              params: { id: myApplications.job },
+            });
+            const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
+            const locationDetail = locationDetailsResponse.data;
 
-            //try {
-            //const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet.id}`);
-            //const petDetail = petDetailsResponse.data;
-            //} catch {
-            //console.log("pet details not found")
-            //}
+            console.log("job details response", jobDetailsResponse.data)
+            const jobDetail = jobDetailsResponse.data;
+
+
+            const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
+            const petDetail = petDetailsResponse.data;
+
 
             return {
               ...myApplications,
               job: jobDetail,
-              //pet: petDetail,
+              location: locationDetail.find((location: any) => location.id === jobDetail.location),
+              pet: petDetail,
             };
           })
         );
-        //console.log("my applications with job details", myApplicationsWithJobDetails)
+        console.log("my applications with job details", myApplicationsWithJobDetails)
         setMyApplications(myApplicationsWithJobDetails);
       } catch (error) {
         console.error(error);
@@ -224,7 +230,12 @@ const Dashboard = () => {
                   <li key={myApplications.id} className="border border-gray-300 mb-4 p-4 rounded-md">
                     <div>
                       <p>Application Status: {myApplications.status}</p>
-                      <p>Application id: {myApplications.id}</p>
+                      <p>Pet:{myApplications.pet.name}</p>
+                      <p>Start:{myApplications.job.start}</p>
+                      <p>End:{myApplications.job.end}</p>
+                      <p>Pay:{myApplications.job.pay}</p>
+
+
                     </div>
                   </li>
                 ))}
