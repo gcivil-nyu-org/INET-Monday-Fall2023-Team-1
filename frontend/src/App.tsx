@@ -86,6 +86,23 @@ const AppRouter = () => {
         }
       />
       <Route
+        path="pet-profiles"
+        element={
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+        }
+      />
+      <Route
+        path="jobs"
+        element={
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+        }
+      />
+
+      <Route
         path="locations"
         element={
           <ProtectedRoute>

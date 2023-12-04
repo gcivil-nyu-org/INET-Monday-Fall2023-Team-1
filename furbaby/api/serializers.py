@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Locations, Pets
+from .models import Users, Locations, Pets, Jobs, Applications
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -103,49 +103,31 @@ class PetSerializer(serializers.ModelSerializer):
         exclude = ()
 
 
-class UserLocationSerializer(serializers.Serializer):
+class JobSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    address = serializers.CharField(max_length=200)
-    city = serializers.CharField(max_length=100)
-    country = serializers.CharField(max_length=100)
-    zipcode = serializers.CharField(max_length=20)
-    default_location = serializers.BooleanField()
 
     class Meta:
-        model = Locations
-        fields = [
-            "user_id",
-            "address",
-            "city",
-            "country",
-            "zipcode",
-            "default_location",
-        ]
+        model = Jobs
+        fields = "__all__"
 
-    # TODO: There should be only one default address per user
-    def validate(self, data):
-        city = data.get("city", "")
-        city = str(city).lower()
-        country = data.get("country", "")
-        country = str(country).lower()
 
-        cities_allowed_list = ["new york city", "nyc"]
-        countries_allowed_list = [
-            "united states",
-            "usa",
-            "us",
-            "america",
-            "united states of america",
-        ]
+class UserSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    username = serializers.CharField()
+    date_of_birth = serializers.DateField()
+    experience = serializers.CharField()
+    qualifications = serializers.CharField()
 
-        if city not in cities_allowed_list:
-            raise ValidationError("Users must be located in New York City/NYC")
-        if country not in countries_allowed_list:
-            raise ValidationError("Users must be located in the United States of America/USA")
-        if data.get("default_location", True):
-            # If the user is setting a default location, set all other locations to false
-            Locations.objects.filter(user_id=data.get("user").id).update(default_location=False)
-        return data
 
-    def create(self, validated_data):
-        return Locations.objects.create(**validated_data)
+class ApplicationSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = Applications
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user_representation = UserSerializer(instance.user).data
+        representation["user"] = user_representation
+        return representation

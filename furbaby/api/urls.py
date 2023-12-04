@@ -6,6 +6,8 @@ from .views import (
     UserLoginView,
     PetListCreateView,
     PetRetrieveUpdateDeleteView,
+    JobView,
+    ApplicationView,
 )
 
 # NOTE: We might have to use the decorator csrf_protect to ensure that
@@ -44,4 +46,6 @@ urlpatterns = [
         PetRetrieveUpdateDeleteView.as_view(),
         name="pet-retrieve-update-delete",
     ),
+    path("jobs/", JobView.as_view(), name="custom-job-view"),
+    path("applications/", ApplicationView.as_view(), name="application-list"),
 ]

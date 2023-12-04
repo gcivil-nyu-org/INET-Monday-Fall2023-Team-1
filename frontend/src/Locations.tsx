@@ -2,12 +2,12 @@ import { PlusCircleIcon, ShieldExclamationIcon } from "@heroicons/react/24/outli
 import axios from "axios";
 import React from "react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import { API_ROUTES } from "./constants";
 // import fakeData from "./fakeData.json";
 import Modal from "./Modal";
 import { FurbabyLocation } from "./types";
-import toast from "react-hot-toast";
 
 const Locations = () => {
   const [open, setOpen] = useState(false);
@@ -35,8 +35,7 @@ const Locations = () => {
       )
       .then((response) => {
         // TODO: handle response
-        if (response.status === 201)
-        {
+        if (response.status === 201) {
           onCloseModal();
           toast.success("Location added successfully.");
         }
@@ -44,7 +43,7 @@ const Locations = () => {
       })
       .catch((err) => {
         // TODO: handle error
-          toast.error("Failed to add location.");
+        toast.error("Failed to add location.");
         console.error(err);
       });
   };
@@ -72,7 +71,7 @@ const Locations = () => {
 
   React.useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    getLocations()//.then((response) => {
+    getLocations(); //.then((response) => {
   }, []);
 
   const setAsDefault = (location: FurbabyLocation) => {
