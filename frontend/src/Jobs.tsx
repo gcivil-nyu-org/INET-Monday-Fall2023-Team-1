@@ -50,7 +50,7 @@ interface Application {
   details: string;
   // Add more fields as needed
 }
-interface JobPageProps { }
+interface JobPageProps {}
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -63,7 +63,7 @@ const Jobs: React.FC = () => {
   const handleAccept = (applicationId: string) => {
     // Implement the logic to accept the application
     // For example, make an API call to update the status
-    console.log(`Accepting application with ID: ${applicationId}`);
+    //console.log(`Accepting application with ID: ${applicationId}`);
   };
   const openModal = () => {
     setIsModalOpen(true);
@@ -91,13 +91,13 @@ const Jobs: React.FC = () => {
         const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${job.pet}`);
         const petDetail = petDetailsResponse.data;
 
-        console.log("Fetched pet details:", petDetail);
+        //console.log("Fetched pet details:", petDetail);
 
         const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
         const locationDetail = locationDetailsResponse.data;
 
-        console.log("Fetched Location details:", locationDetail);
-        console.log(locationDetail.find((location: any) => location.id === job.location));
+        //console.log("Fetched Location details:", locationDetail);
+        //console.log(locationDetail.find((location: any) => location.id === job.location));
         jobsWithPetDetails.push({
           ...job,
           pet: petDetail,
@@ -107,7 +107,7 @@ const Jobs: React.FC = () => {
 
       // Wait for all pet details requests to complete
       const resolvedJobs = jobsWithPetDetails;
-      console.log(resolvedJobs);
+      //console.log(resolvedJobs);
       setJobs(resolvedJobs);
     } catch (error: any) {
       console.error("Error fetching pets:", error.message);
@@ -139,7 +139,7 @@ const Jobs: React.FC = () => {
 
   const viewApplication = async (jobId: string) => {
     const confirmConsent = window.confirm("Confirm to view Applications?");
-    console.log(jobId);
+    //console.log(jobId);
     if (confirmConsent) {
       try {
         const response = await axios.get(API_ROUTES.APPLY, {
@@ -149,7 +149,7 @@ const Jobs: React.FC = () => {
         if (response.status !== 200) {
           throw new Error(`Failed to fetch applications. Status: ${response.status}`);
         }
-        console.log("Fetched applications:", response.data);
+        //("Fetched applications:", response.data);
         // Handle the fetched applications as needed
         setApplications(response.data);
         const selectedJob = jobs.find((job) => job.id === jobId);
@@ -162,7 +162,7 @@ const Jobs: React.FC = () => {
   };
   const viewConfirmedApplication = async (jobId: string) => {
     const confirmConsent = window.confirm("Confirm to view Applications?");
-    console.log(jobId);
+    //console.log(jobId);
     if (confirmConsent) {
       try {
         const response = await axios.get(API_ROUTES.APPLY, {
@@ -172,15 +172,16 @@ const Jobs: React.FC = () => {
         if (response.status !== 200) {
           throw new Error(`Failed to fetch applications. Status: ${response.status}`);
         }
-        console.log("Fetched applications:", response.data);
+        //console.log("Fetched applications:", response.data);
         // Handle the fetched applications as needed
         const applications: Application[] = response.data;
 
         // Filter applications to include only accepted ones
-        const acceptedApplications = applications.filter((app: Application) => app.status === 'accepted');
+        const acceptedApplications = applications.filter(
+          (app: Application) => app.status === "accepted"
+        );
 
         setApplications(acceptedApplications);
-
 
         const selectedJob = jobs.find((job) => job.id === jobId);
         setSelectedJob(selectedJob || null);
@@ -217,7 +218,7 @@ const Jobs: React.FC = () => {
                 Delete
               </button>
 
-              {job.status === 'open' && (
+              {job.status === "open" && (
                 <button
                   onClick={() => {
                     viewApplication(job.id);
@@ -228,7 +229,7 @@ const Jobs: React.FC = () => {
                   View Application
                 </button>
               )}
-              {job.status === 'acceptance_complete' && (
+              {job.status === "acceptance_complete" && (
                 <button
                   onClick={() => {
                     viewConfirmedApplication(job.id);
@@ -294,7 +295,7 @@ const JobPage: React.FC<JobPageProps> = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
-        console.log(response, response.data);
+        //console.log(response, response.data);
         setLocations(response?.data ?? []);
         // return response;
       })
@@ -305,7 +306,7 @@ const JobPage: React.FC<JobPageProps> = () => {
   const onClickSave = () => {
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      console.log(jobFormData);
+      //console.log(jobFormData);
       jobFormData.status = "open";
       axios
         .post(API_ROUTES.JOBS, jobFormData)
@@ -351,7 +352,9 @@ const JobPage: React.FC<JobPageProps> = () => {
         <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
+              selected
+                ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg"
+                : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -359,7 +362,9 @@ const JobPage: React.FC<JobPageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
+              selected
+                ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1"
+                : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >
@@ -390,7 +395,10 @@ const JobPage: React.FC<JobPageProps> = () => {
                     </option>
                   ))}
                 </select>
-                <label htmlFor="location-dropdown" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="location-dropdown"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Select a Location
                 </label>
                 <select

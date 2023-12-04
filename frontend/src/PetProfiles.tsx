@@ -29,7 +29,7 @@ interface EditPetFormData {
   pictures: string[];
 }
 
-interface PetProfilePageProps { }
+interface PetProfilePageProps {}
 
 const PetProfiles: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -210,18 +210,18 @@ const PetProfiles: React.FC = () => {
                       name="color"
                       id="edit-color"
                       value={editFormData.color}
-                      onChange={(e) => setEditFormData({...editFormData, color:e.target.value})}
+                      onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
+                    />
                     <label htmlFor="edit-height">Height</label>
                     <input
                       type="text"
                       name="height"
                       id="edit-height"
                       value={editFormData.height}
-                      onChange={(e) => setEditFormData({...editFormData, height:e.target.value})}
+                      onChange={(e) => setEditFormData({ ...editFormData, height: e.target.value })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
+                    />
                     <label htmlFor="edit-weight">Weight</label>
                     <input
                       type="text"
@@ -237,7 +237,9 @@ const PetProfiles: React.FC = () => {
                       name="chip_number"
                       id="edit-chip_number"
                       value={editFormData.chip_number}
-                      onChange={(e) => setEditFormData({ ...editFormData, chip_number: e.target.value })}
+                      onChange={(e) =>
+                        setEditFormData({ ...editFormData, chip_number: e.target.value })
+                      }
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                     <label htmlFor="edit-health_requirements">Health Requirements</label>
@@ -246,7 +248,9 @@ const PetProfiles: React.FC = () => {
                       name="health_requirements"
                       id="edit-health_requirements"
                       value={editFormData.health_requirements}
-                      onChange={(e) => setEditFormData({ ...editFormData, health_requirements: e.target.value })}
+                      onChange={(e) =>
+                        setEditFormData({ ...editFormData, health_requirements: e.target.value })
+                      }
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     />
                   </form>
@@ -368,7 +372,9 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
         <Tab.List className="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200">
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg" : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
+              selected
+                ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg"
+                : "inline-block p-4 bg-gray-50 rounded-t-lg hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("view")}
           >
@@ -376,7 +382,9 @@ const PetProfilePage: React.FC<PetProfilePageProps> = () => {
           </Tab>
           <Tab
             className={({ selected }) =>
-                selected ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1" : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
+              selected
+                ? "inline-block p-4 text-gray-800 bg-gray-300 rounded-t-lg ml-1"
+                : "inline-block p-4 bg-gray-50 rounded-t-lg ml-1 hover:text-gray-600 hover:bg-gray-100 "
             }
             onClick={() => setActiveTab("add")}
           >

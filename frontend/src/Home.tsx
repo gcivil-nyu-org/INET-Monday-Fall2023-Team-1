@@ -23,15 +23,19 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
   const navigate = useNavigate();
 
   const user_type = props.authContext.authenticationState.sessionInformation.user_type;
-  const isPetOwner = user_type?.includes('owner');
-  const isPetSitter = user_type?.includes('sitter');
+  const isPetOwner = user_type?.includes("owner");
+  const isPetSitter = user_type?.includes("sitter");
 
   // Dynamic navigation links based on user roles isPetSitter and isPetOwner
   const [navigation, updatePageNavigationState] = useState(() => {
-
     const petOwnerLinks = [
       { name: "Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 1, current: true },
-      { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 2, current: false },
+      {
+        name: "Pet Profiles",
+        href: ROUTES.PROTECTED_ROUTES.PET_PROFILES,
+        keyId: 2,
+        current: false,
+      },
     ];
 
     const petSitterLinks = [
@@ -41,27 +45,26 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     const bothLinks = [
       { name: "Jobs Feed", href: ROUTES.PROTECTED_ROUTES.DASHBOARD, keyId: 1, current: true },
       { name: "Manage Jobs", href: ROUTES.PROTECTED_ROUTES.JOBS, keyId: 2, current: false },
-      { name: "Pet Profiles", href: ROUTES.PROTECTED_ROUTES.PET_PROFILES, keyId: 3, current: false },
+      {
+        name: "Pet Profiles",
+        href: ROUTES.PROTECTED_ROUTES.PET_PROFILES,
+        keyId: 3,
+        current: false,
+      },
     ];
 
     if (isPetSitter && isPetOwner) {
       return bothLinks;
-    }
-    else {
-      return [
-        ...(isPetOwner ? petOwnerLinks : []),
-        ...(isPetSitter ? petSitterLinks : []),
-      ];
+    } else {
+      return [...(isPetOwner ? petOwnerLinks : []), ...(isPetSitter ? petSitterLinks : [])];
     }
   });
 
   React.useEffect(() => {
-    if (!isPetSitter && isPetOwner) {
+    if (!isPetSitter && isPetOwner && pathname === ROUTES.PROTECTED_ROUTES.HOME) {
       navigate(ROUTES.PROTECTED_ROUTES.JOBS);
     }
-  },
-    []
-  );
+  }, []);
 
   const { pathname } = useLocation();
 
