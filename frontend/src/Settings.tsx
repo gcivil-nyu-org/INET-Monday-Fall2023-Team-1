@@ -95,7 +95,7 @@ const Settings = (props: React.PropsWithChildren<SettingsProps>) => {
                 type="file"
                 name="profile-picture"
                 onChange={onUploadImage}
-                accept="image/jpeg"
+                accept="image/jpeg, image/png"
               />
             </dd>
           </div>
