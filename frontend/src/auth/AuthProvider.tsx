@@ -79,8 +79,7 @@ const AuthProvider = ({ children }: React.PropsWithChildren<unknown>) => {
       .then((response) => {
         if (response.status === 201) {
           toast.success(
-            `An account has been created for ${
-              response.data?.data?.email ?? ""
+            `An account has been created for ${response.data?.data?.email ?? ""
             }. Redirecting to login page...`
           );
           navigate("/login");

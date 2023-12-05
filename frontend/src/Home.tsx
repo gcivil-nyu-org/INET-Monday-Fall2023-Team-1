@@ -5,15 +5,15 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { AuthCtx } from "./auth/AuthProvider";
 import { ROUTES } from "./constants";
-import FurBabyLogo from "./FurbabyLogo";
-import Locations from "./Locations";
-import Profile from "./Profile";
-import PetProfiles from "./PetProfiles";
 import Dashboard from "./Dashboard";
+import FurBabyLogo from "./FurbabyLogo";
 import JobPage from "./Jobs";
+import Locations from "./Locations";
+import PetProfiles from "./PetProfiles";
+import Profile from "./Profile";
 import Settings from "./Settings";
+// import { User, UserTypes } from "./types";
 import { classNames } from "./utils";
-import { User, UserTypes } from "./types";
 
 type HomeProps = {
   authContext: AuthCtx;

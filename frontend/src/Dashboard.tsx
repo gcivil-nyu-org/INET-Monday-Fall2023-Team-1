@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { API_ROUTES } from "./constants";
-import toast from "react-hot-toast";
 import { Tab } from "@headlessui/react";
-import { sortBy } from "lodash";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+import { API_ROUTES } from "./constants";
 
 type Job = {
   id: number;
@@ -41,8 +41,10 @@ interface Application {
   id: string;
   status: string;
   user: User;
-  job: string;
+  job: Job;
   details: string;
+  pet: Pet;
+  location: Location;
   // Add more fields as needed
 }
 
@@ -57,7 +59,7 @@ const Dashboard = () => {
   const [myApplications, setMyApplications] = useState<Application[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [locations, setLocations] = useState<Location[]>([]);
+  // const [locations, setLocations] = useState<Location[]>([]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -106,23 +108,23 @@ const Dashboard = () => {
         const myApplicationsWithJobDetails = await Promise.all(
           response.data.map(async (myApplications: Application) => {
             //console.log("myApplications.job", myApplications.job)
-            const jobDetailsResponse = await axios.get(
-              `${API_ROUTES.JOBS}?id=${myApplications.job}`
-            );
-            //console.log("job details response", jobDetailsResponse.data)
-            const jobDetail = jobDetailsResponse.data.sitter_jobs;
+            const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
+              params: { id: myApplications.job },
+            });
+            const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
+            const locationDetail = locationDetailsResponse.data;
 
-            //try {
-            //const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet.id}`);
-            //const petDetail = petDetailsResponse.data;
-            //} catch {
-            //console.log("pet details not found")
-            //}
+            console.log("job details response", jobDetailsResponse.data);
+            const jobDetail = jobDetailsResponse.data;
+
+            const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
+            const petDetail = petDetailsResponse.data;
 
             return {
               ...myApplications,
               job: jobDetail,
-              //pet: petDetail,
+              location: locationDetail,
+              pet: petDetail,
             };
           })
         );
@@ -139,7 +141,7 @@ const Dashboard = () => {
   const applyForJob = async (jobId: number) => {
     //console.log(jobId);
     try {
-      const response = await axios.post(`${API_ROUTES.APPLY}`, {
+      await axios.post(`${API_ROUTES.APPLY}`, {
         id: jobId,
       });
       //console.log(response.data);
@@ -239,7 +241,10 @@ const Dashboard = () => {
                     >
                       <div>
                         <p>Application Status: {myApplications.status}</p>
-                        <p>Application id: {myApplications.id}</p>
+                        <p>Pet:{myApplications.pet.name}</p>
+                        <p>Start:{myApplications.job.start}</p>
+                        <p>End:{myApplications.job.end}</p>
+                        <p>Pay:{myApplications.job.pay}</p>
                       </div>
                     </li>
                   ))}

@@ -14,9 +14,9 @@ const Locations = () => {
   const [editLocationId, setEditLocationId] = useState("");
 
   const [locations, setLocations] = useState<FurbabyLocation[]>([]);
-  const [state, setState] = useState("");
+  const [state, setState] = useState("NY");
   const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("New York City");
   const [country, setCountry] = useState("usa");
   const [zipcode, setZipcode] = useState("");
 

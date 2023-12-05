@@ -1,5 +1,7 @@
 import json
 import os
+from datetime import datetime, timezone, timedelta
+
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
@@ -749,26 +751,42 @@ class PetRetrieveUpdateDeleteView(RetrieveUpdateDestroyAPIView):
 class JobView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def job_status_check(self):
+        to_be_cancelled_queryset = Jobs.objects.filter(status="open").filter(
+            start__lte=datetime.now(timezone.utc) - timedelta(hours=5)
+        )
+        for job in to_be_cancelled_queryset:
+            if job.status == "open":
+                job.status = "cancelled"
+                job.save()
+        return
+
     def get_all(self):
-        return Jobs.objects.all()
+        self.job_status_check()
+        return Jobs.objects.filter(status="open")
 
     def get_queryset(self):
-        return Jobs.objects.filter(user_id=self.request.user.id)
+        self.job_status_check()
+        return Jobs.objects.filter(user_id=self.request.user.id)  # type: ignore
 
     def get_object(self, job_id):
         try:
-            return Jobs.objects.get(id=job_id, user=self.request.user)
+            if "sitter" in self.request.user.user_type:  # type: ignore
+                return Jobs.objects.get(id=job_id)
+            else:
+                return Jobs.objects.get(id=job_id, user=self.request.user)
+
         except Jobs.DoesNotExist:
             raise ValidationError("Job not found or you do not have permission to access this job.")
 
     def get(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = request.query_params.get("id")
         if job_id:
             job = self.get_object(job_id)
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            # print(request.user.user_type)
+            print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
                 queryset_sitter = self.get_all()
@@ -780,7 +798,7 @@ class JobView(APIView):
                     "owner_jobs": serializer_owner.data,
                     "sitter_jobs": serializer_sitter.data,
                 }
-                # print(response_data)
+                print(response_data)
                 return JsonResponse(response_data, safe=False)
 
             elif "owner" in request.user.user_type:
@@ -792,6 +810,7 @@ class JobView(APIView):
                 return JsonResponse(response_data, safe=False)
 
             elif "sitter" in request.user.user_type:
+                print("here")
                 queryset_sitter = self.get_all()
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
                 response_data = {
@@ -801,7 +820,7 @@ class JobView(APIView):
 
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         try:
             job = Jobs.objects.get(id=job_id)
             # print(job.status)
@@ -818,7 +837,7 @@ class JobView(APIView):
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
         if "owner" in request.user.user_type:
-            pet_id = self.request.data.get("pet")
+            pet_id = self.request.data.get("pet")  # type: ignore
             try:
                 pet = Pets.objects.get(id=pet_id, owner=self.request.user)
             except Pets.DoesNotExist:
@@ -837,7 +856,7 @@ class JobView(APIView):
             raise PermissionDenied("You are not allowed to create a job.")
 
     def delete(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         if job_id:
             job = self.get_object(job_id)
             job.delete()
@@ -869,7 +888,7 @@ class ApplicationView(APIView):
             application = Applications.objects.get(id=application_id)
         except Applications.DoesNotExist:
             raise ValidationError("Application not found.")
-        job_instance = Jobs.objects.get(id=application.job_id)
+        job_instance = Jobs.objects.get(id=application.job_id)  # type: ignore
 
         # Check if the user making the request is the owner of the application
         if request.user == job_instance.user:
@@ -906,7 +925,7 @@ class ApplicationView(APIView):
             )
 
     def post(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         # print(request.data)
         # print(job_id)
         try:
@@ -930,7 +949,7 @@ class ApplicationView(APIView):
                             "details": {},  # You can add more details if needed
                         }
                         application_serializer = ApplicationSerializer(
-                            data=application_data, context={"request": self.request}
+                            data=application_data, context={"request": self.request}  # type: ignore
                         )
                         application_serializer.is_valid(raise_exception=True)
                         application_serializer.save()

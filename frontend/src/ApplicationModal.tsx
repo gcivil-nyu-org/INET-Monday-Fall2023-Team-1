@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { API_ROUTES } from "./constants";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
+
+import { API_ROUTES } from "./constants";
 
 interface User {
   id: string;
@@ -38,7 +38,7 @@ const updateJobStatus = async (jobId: string) => {
     });
 
     if (response.status === 200) {
-      //console.log(`Job with ID ${jobId} updated successfully.`);
+      toast.success(`Job with ID ${jobId} updated successfully`);
     } else {
       console.error("Failed to update job.");
       // Handle the error scenario
@@ -81,6 +81,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         console.error("Failed to accept application.");
         // Handle the error scenario
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error accepting application:", error);
 

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Tab } from "@headlessui/react";
-import { API_ROUTES } from "./constants";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
 import ApplicationModal from "./ApplicationModal";
+import { API_ROUTES } from "./constants";
 
 interface Job {
   id: string;
@@ -50,6 +51,7 @@ interface Application {
   details: string;
   // Add more fields as needed
 }
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface JobPageProps {}
 
 const Jobs: React.FC = () => {
@@ -304,9 +306,15 @@ const JobPage: React.FC<JobPageProps> = () => {
       });
   };
   const onClickSave = () => {
+    try {
+      checkDates();
+    } catch (error: any) {
+      toast.error(error.message);
+      return;
+    }
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      //console.log(jobFormData);
+      console.log(jobFormData);
       jobFormData.status = "open";
       axios
         .post(API_ROUTES.JOBS, jobFormData)
@@ -343,6 +351,56 @@ const JobPage: React.FC<JobPageProps> = () => {
         status: "",
         end: "",
       });
+    }
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, "0");
+    const day = now.getDate().toString().padStart(2, "0");
+    const hour = now.getHours().toString().padStart(2, "0");
+    const minute = now.getMinutes().toString().padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
+  const handleStartUpdate = (e: any) => {
+    if (e.target.value) {
+      const selectedStart = new Date(e.target.value);
+      const now = new Date();
+
+      if (selectedStart > now) {
+        setJobFormData({ ...jobFormData, start: e.target.value });
+      } else {
+        setJobFormData({ ...jobFormData, start: "" });
+        toast.error("Start datetime must be in the future.");
+      }
+    }
+  };
+
+  const handleEndUpdate = (e: any) => {
+    if (e.target.value) {
+      const startDate = new Date(jobFormData.start);
+      const selectedEndDate = new Date(e.target.value);
+
+      if (selectedEndDate > startDate) {
+        setJobFormData({ ...jobFormData, end: e.target.value });
+      } else {
+        toast.error("End datetime must be after start.");
+      }
+    }
+  };
+
+  const checkDates = () => {
+    const startDateTime = new Date(jobFormData.start);
+    const endDateTime = new Date(jobFormData.end);
+    const now = new Date();
+
+    if (startDateTime <= now) {
+      throw new Error("Start date time must be in the future.");
+    } else if (endDateTime <= startDateTime) {
+      throw new Error("End date time must be after start.");
     }
   };
 
@@ -435,9 +493,10 @@ const JobPage: React.FC<JobPageProps> = () => {
                 <input
                   type="datetime-local"
                   name="start"
+                  min={getCurrentDateTime()}
                   id="job-start"
                   value={jobFormData.start}
-                  onChange={(e) => setJobFormData({ ...jobFormData, start: e.target.value })}
+                  onChange={(e) => handleStartUpdate(e)}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
 
@@ -448,8 +507,9 @@ const JobPage: React.FC<JobPageProps> = () => {
                   type="datetime-local"
                   name="end"
                   id="job-end"
+                  min={jobFormData.start}
                   value={jobFormData.end}
-                  onChange={(e) => setJobFormData({ ...jobFormData, end: e.target.value })}
+                  onChange={(e) => handleEndUpdate(e)}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
               </div>

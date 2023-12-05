@@ -26,10 +26,15 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user_type = data.get("user_type", [])
-        email = data.get("email", "")
+        email = data.get("email", "").lower()  # Convert email to lowercase for case insensitivity
+
+        # Check if the email already exists in the database
+        if Users.objects.filter(email__iexact=email).exists():
+            raise serializers.ValidationError("Email already exists")
 
         if "sitter" in user_type and not email.endswith("nyu.edu"):
-            raise ValidationError("Pet sitters must have a nyu.edu email")
+            raise serializers.ValidationError("Pet sitters must have a nyu.edu email")
+
         return data
 
     def create(self, validated_data):

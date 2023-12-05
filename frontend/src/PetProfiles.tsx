@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Tab } from "@headlessui/react";
-import { API_ROUTES } from "./constants";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+import { API_ROUTES } from "./constants";
 
 interface Pet {
   id: string;
@@ -29,6 +30,7 @@ interface EditPetFormData {
   pictures: string[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface PetProfilePageProps {}
 
 const PetProfiles: React.FC = () => {
