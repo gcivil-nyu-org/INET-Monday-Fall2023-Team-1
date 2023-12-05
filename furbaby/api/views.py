@@ -761,8 +761,10 @@ class JobView(APIView):
                 job.save()
         return
 
-    def get_all(self):
+    def get_all(self, owner_id=None):
         self.job_status_check()
+        if owner_id:
+            return Jobs.objects.filter(status="open").exclude(user=owner_id)
         return Jobs.objects.filter(status="open")
 
     def get_queryset(self):
@@ -789,7 +791,7 @@ class JobView(APIView):
             print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
-                queryset_sitter = self.get_all()
+                queryset_sitter = self.get_all(request.user.id)
 
                 serializer_owner = JobSerializer(queryset_owner, many=True)
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
