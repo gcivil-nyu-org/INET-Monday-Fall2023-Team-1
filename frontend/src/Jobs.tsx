@@ -314,7 +314,7 @@ const JobPage: React.FC<JobPageProps> = () => {
     }
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      console.log(jobFormData);
+      //console.log(jobFormData);
       jobFormData.status = "open";
       axios
         .post(API_ROUTES.JOBS, jobFormData)

@@ -114,7 +114,7 @@ const Dashboard = () => {
             const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
             const locationDetail = locationDetailsResponse.data;
 
-            console.log("job details response", jobDetailsResponse.data);
+            //console.log("job details response", jobDetailsResponse.data);
             const jobDetail = jobDetailsResponse.data;
 
             const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
