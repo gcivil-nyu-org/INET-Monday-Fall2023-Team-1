@@ -39,7 +39,7 @@ const Locations = () => {
           onCloseModal();
           toast.success("Location added successfully.");
         }
-        console.log(response);
+        //console.log(response);
       })
       .catch((err) => {
         // TODO: handle error
@@ -60,7 +60,7 @@ const Locations = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
-        console.log(response, response.data);
+        //(response, response.data);
         setLocations(response?.data ?? []);
         // return response;
       })
@@ -96,7 +96,7 @@ const Locations = () => {
   };
 
   const renderCards = React.useMemo(() => {
-    console.log(locations);
+    //console.log(locations);
 
     if (locations.length) {
       return (
@@ -150,7 +150,7 @@ const Locations = () => {
       )
       .then((response) => {
         // TODO: handle response
-        console.log(response);
+        //console.log(response);
       })
       .catch((err) => {
         // TODO: handle error

@@ -7,7 +7,11 @@ from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    GenericAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from .utils import json_response, make_s3_path
@@ -425,6 +429,11 @@ class UserLocationView(APIView):  # type: ignore
         }
 
     # takes as input a user_id and returns a JSON of all the locations for that user
+    def get_user_location_by_id(self, request):
+        locations = Locations.objects.filter(id=request.GET["location_id"])
+        return self.get_location_record(locations.first())
+
+    # takes as input a user_id and returns a JSON of all the locations for that user
     def get_user_locations(self, request):
         locations = Locations.objects.filter(user_id=request.user.id)
         location_list = [
@@ -545,12 +554,24 @@ def user_location_view(request):
     if not request.user.is_authenticated:
         return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # fetch all user locations for the user
     if request.method == "GET":
-        locations_list = location_view.get_user_locations(request)
-        return json_response(
-            locations_list, status=status.HTTP_200_OK, safe=False, include_data=False
-        )
+        try:
+            l = request.GET["location_id"]
+            if l != None:
+                return json_response(
+                    location_view.get_user_location_by_id(request),
+                    status=status.HTTP_200_OK,
+                    safe=False,
+                    include_data=False,
+                )
+        except:
+            locations_list = location_view.get_user_locations(request)
+            return json_response(
+                locations_list,
+                status=status.HTTP_200_OK,
+                safe=False,
+                include_data=False,
+            )
 
     # insert a new location record for the user
     if request.method in ["POST"]:
@@ -714,7 +735,6 @@ class PetListCreateView(ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         request.data["owner_id"] = request.user.id
-        print(request.user.user_type)
         if "owner" in request.user.user_type:
             request.data["owner_id"] = request.user.id
             return super().create(request, *args, **kwargs)
@@ -747,11 +767,11 @@ class JobView(APIView):
 
     def get_queryset(self):
         self.job_status_check()
-        return Jobs.objects.filter(user_id=self.request.user.id)
+        return Jobs.objects.filter(user_id=self.request.user.id)  # type: ignore
 
     def get_object(self, job_id):
         try:
-            if "sitter" in self.request.user.user_type:
+            if "sitter" in self.request.user.user_type:  # type: ignore
                 return Jobs.objects.get(id=job_id)
             else:
                 return Jobs.objects.get(id=job_id, user=self.request.user)
@@ -800,10 +820,10 @@ class JobView(APIView):
 
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         try:
             job = Jobs.objects.get(id=job_id)
-            print(job.status)
+            # print(job.status)
             if job.status == "open":
                 job.status = "acceptance_complete"
                 job.save()
@@ -817,7 +837,7 @@ class JobView(APIView):
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
         if "owner" in request.user.user_type:
-            pet_id = self.request.data.get("pet")
+            pet_id = self.request.data.get("pet")  # type: ignore
             try:
                 pet = Pets.objects.get(id=pet_id, owner=self.request.user)
             except Pets.DoesNotExist:
@@ -836,7 +856,7 @@ class JobView(APIView):
             raise PermissionDenied("You are not allowed to create a job.")
 
     def delete(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
+        job_id = self.request.data.get("id")  # type: ignore
         if job_id:
             job = self.get_object(job_id)
             job.delete()
@@ -863,16 +883,16 @@ class ApplicationView(APIView):
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
         application_id = request.data.get("id")
-        print(application_id)
+        # print(application_id)
         try:
             application = Applications.objects.get(id=application_id)
         except Applications.DoesNotExist:
             raise ValidationError("Application not found.")
-        job_instance = Jobs.objects.get(id=application.job_id)
+        job_instance = Jobs.objects.get(id=application.job_id)  # type: ignore
 
         # Check if the user making the request is the owner of the application
         if request.user == job_instance.user:
-            print(request.user)
+            # print(request.user)
             # Check if the job status is "open"
             if job_instance.status == "open":
                 # Update the application status based on your requirements
@@ -905,9 +925,9 @@ class ApplicationView(APIView):
             )
 
     def post(self, request, *args, **kwargs):
-        job_id = self.request.data.get("id")
-        print(request.data)
-        print(job_id)
+        job_id = self.request.data.get("id")  # type: ignore
+        # print(request.data)
+        # print(job_id)
         try:
             job = Jobs.objects.get(id=job_id)
         except Jobs.DoesNotExist:
@@ -929,7 +949,7 @@ class ApplicationView(APIView):
                             "details": {},  # You can add more details if needed
                         }
                         application_serializer = ApplicationSerializer(
-                            data=application_data, context={"request": self.request}
+                            data=application_data, context={"request": self.request}  # type: ignore
                         )
                         application_serializer.is_valid(raise_exception=True)
                         application_serializer.save()
@@ -956,5 +976,6 @@ class ApplicationView(APIView):
                 )
         else:
             return Response(
-                {"detail": "Only pet sitters can apply for jobs."}, status=status.HTTP_403_FORBIDDEN
+                {"detail": "Only pet sitters can apply for jobs."},
+                status=status.HTTP_403_FORBIDDEN,
             )
