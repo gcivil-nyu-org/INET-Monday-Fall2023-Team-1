@@ -31,7 +31,7 @@ interface EditPetFormData {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface PetProfilePageProps {}
+interface PetProfilePageProps { }
 
 const PetProfiles: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -169,140 +169,145 @@ const PetProfiles: React.FC = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       {error && <p className="text-red-500">{error}</p>}
-      <ul className="list-none p-0">
-        {pets.map((pet: Pet) => (
-          <li key={pet.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-            <div>
-              {editingPet === pet ? (
-                <div className="mt-4">
-                  <h3 className="text-xl font-bold mb-2">Edit Pet Profile</h3>
-                  <form>
-                    <label htmlFor="edit-name">Name:</label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="edit-name"
-                      value={editFormData.name}
-                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-species">Species</label>
-                    <input
-                      type="text"
-                      name="species"
-                      id="edit-species"
-                      value={editFormData.species}
-                      onChange={(e) =>
-                        setEditFormData({ ...editFormData, species: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-breed">Breed</label>
-                    <input
-                      type="text"
-                      name="breed"
-                      id="edit-breed"
-                      value={editFormData.breed}
-                      onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-color">Color</label>
-                    <input
-                      type="text"
-                      name="color"
-                      id="edit-color"
-                      value={editFormData.color}
-                      onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-height">Height</label>
-                    <input
-                      type="text"
-                      name="height"
-                      id="edit-height"
-                      value={editFormData.height}
-                      onChange={(e) => setEditFormData({ ...editFormData, height: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-weight">Weight</label>
-                    <input
-                      type="text"
-                      name="weight"
-                      id="edit-weight"
-                      value={editFormData.weight}
-                      onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-chip_number">Chip Number</label>
-                    <input
-                      type="text"
-                      name="chip_number"
-                      id="edit-chip_number"
-                      value={editFormData.chip_number}
-                      onChange={(e) =>
-                        setEditFormData({ ...editFormData, chip_number: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                    <label htmlFor="edit-health_requirements">Health Requirements</label>
-                    <input
-                      type="text"
-                      name="health_requirements"
-                      id="edit-health_requirements"
-                      value={editFormData.health_requirements}
-                      onChange={(e) =>
-                        setEditFormData({ ...editFormData, health_requirements: e.target.value })
-                      }
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </form>
-                  <div className="mt-4 flex">
-                    <button
-                      onClick={() => handleEditSave(pet.id)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-md mr-2"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={handleEditCancel}
-                      className="bg-gray-400 text-white px-4 py-2 rounded-md"
-                    >
-                      Cancel
-                    </button>
+      {pets.length === 0 ? (
+        <p className="text-gray-600">No pets available.</p>
+      ) : (
+        <ul className="list-none p-0">
+          {pets.map((pet: Pet) => (
+            <li key={pet.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+              <div>
+                {editingPet === pet ? (
+                  <div className="mt-4">
+                    <h3 className="text-xl font-bold mb-2">Edit Pet Profile</h3>
+                    <form>
+                      <label htmlFor="edit-name">Name:</label>
+                      <input
+                        type="text"
+                        name="name"
+                        id="edit-name"
+                        value={editFormData.name}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-species">Species</label>
+                      <input
+                        type="text"
+                        name="species"
+                        id="edit-species"
+                        value={editFormData.species}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, species: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-breed">Breed</label>
+                      <input
+                        type="text"
+                        name="breed"
+                        id="edit-breed"
+                        value={editFormData.breed}
+                        onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-color">Color</label>
+                      <input
+                        type="text"
+                        name="color"
+                        id="edit-color"
+                        value={editFormData.color}
+                        onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-height">Height</label>
+                      <input
+                        type="text"
+                        name="height"
+                        id="edit-height"
+                        value={editFormData.height}
+                        onChange={(e) => setEditFormData({ ...editFormData, height: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-weight">Weight</label>
+                      <input
+                        type="text"
+                        name="weight"
+                        id="edit-weight"
+                        value={editFormData.weight}
+                        onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-chip_number">Chip Number</label>
+                      <input
+                        type="text"
+                        name="chip_number"
+                        id="edit-chip_number"
+                        value={editFormData.chip_number}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, chip_number: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                      <label htmlFor="edit-health_requirements">Health Requirements</label>
+                      <input
+                        type="text"
+                        name="health_requirements"
+                        id="edit-health_requirements"
+                        value={editFormData.health_requirements}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, health_requirements: e.target.value })
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      />
+                    </form>
+                    <div className="mt-4 flex">
+                      <button
+                        onClick={() => handleEditSave(pet.id)}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md mr-2"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={handleEditCancel}
+                        className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div>
-                  <p className="font-bold mb-2">Name: {pet.name}</p>
-                  <p>Species: {pet.species}</p>
-                  <p>Breed: {pet.breed}</p>
-                  <p>Color: {pet.color}</p>
-                  <p>Height: {pet.height}</p>
-                  <p>Weight: {pet.weight}</p>
-                  <p>Chip Number: {pet.chip_number}</p>
-                  <p>Health Requirements: {pet.health_requirements}</p>
-                </div>
-              )}
-              <div className="mt-4 flex">
-                {!editingPet && (
-                  <button
-                    onClick={() => handleEdit(pet)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  >
-                    Edit
-                  </button>
+                ) : (
+                  <div>
+                    <p className="font-bold mb-2">Name: {pet.name}</p>
+                    <p>Species: {pet.species}</p>
+                    <p>Breed: {pet.breed}</p>
+                    <p>Color: {pet.color}</p>
+                    <p>Height: {pet.height}</p>
+                    <p>Weight: {pet.weight}</p>
+                    <p>Chip Number: {pet.chip_number}</p>
+                    <p>Health Requirements: {pet.health_requirements}</p>
+                  </div>
                 )}
-                <button
-                  onClick={() => handleDelete(pet.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
-                >
-                  Delete
-                </button>
+
+                <div className="mt-4 flex">
+                  {!editingPet && (
+                    <button
+                      onClick={() => handleEdit(pet)}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                    >
+                      Edit
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(pet.id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-md"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

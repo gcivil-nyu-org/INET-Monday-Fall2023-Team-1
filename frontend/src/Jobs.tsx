@@ -55,7 +55,7 @@ interface Application {
   // Add more fields as needed
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JobPageProps {}
+interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -204,51 +204,55 @@ const Jobs: React.FC = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       {error && <p className="text-red-500">{error}</p>}
-      <ul className="list-none p-0">
-        {jobs.map((job: Job) => (
-          <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-            <div>
-              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-              <p>Status: {job.status}</p>
-              <p>Location: {job?.location?.address ?? ""}</p>
-              <p>Pay: {job.pay}</p>
-              <p>Start: {job.start}</p>
-              <p>End: {job.end}</p>
-            </div>
-            <div className="mt-4 flex">
-              <button
-                onClick={() => handleDelete(job.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-              >
-                Delete
-              </button>
+      {jobs.length === 0 ? (
+        <p className="text-gray-600">No jobs available.</p>
+      ) : (
+        <ul className="list-none p-0">
+          {jobs.map((job: Job) => (
+            <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+              <div>
+                <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                <p>Status: {job.status}</p>
+                <p>Location: {job?.location?.address ?? ""}</p>
+                <p>Pay: {job.pay}</p>
+                <p>Start: {job.start}</p>
+                <p>End: {job.end}</p>
+              </div>
+              <div className="mt-4 flex">
+                <button
+                  onClick={() => handleDelete(job.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Delete
+                </button>
 
-              {job.status === "open" && (
-                <button
-                  onClick={() => {
-                    viewApplication(job.id);
-                    openModal();
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  View Application
-                </button>
-              )}
-              {job.status === "acceptance_complete" && (
-                <button
-                  onClick={() => {
-                    viewConfirmedApplication(job.id);
-                    openModal();
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  View Confirmed Application
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+                {job.status === "open" && (
+                  <button
+                    onClick={() => {
+                      viewApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Application
+                  </button>
+                )}
+                {job.status === "acceptance_complete" && (
+                  <button
+                    onClick={() => {
+                      viewConfirmedApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Confirmed Application
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
       <ApplicationModal
         isOpen={isModalOpen}
         onClose={closeModal}

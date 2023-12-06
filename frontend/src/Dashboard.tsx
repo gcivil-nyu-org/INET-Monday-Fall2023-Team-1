@@ -146,6 +146,7 @@ const Dashboard = () => {
       });
       //console.log(response.data);
       toast.success("Application submitted successfully!");
+      window.location.reload();
     } catch (error) {
       console.error(error);
       toast.error("Failed to apply for the job.");
