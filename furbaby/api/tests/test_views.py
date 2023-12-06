@@ -13,21 +13,33 @@ class UserRegistrationViewTest(TestCase):
     def test_user_registration_invalid_email_owner(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "invalid_email", "password": "test1231", "user_type": ["owner"]}
+        data = {
+            "email": "invalid_email",
+            "password": "test1231",
+            "user_type": ["owner"],
+        }
         response = client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_registration_invalid_email_sitter(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "invalid_email", "password": "test1231", "user_type": ["sitter"]}
+        data = {
+            "email": "invalid_email",
+            "password": "test1231",
+            "user_type": ["sitter"],
+        }
         response = client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_registration_invalid_password(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "test@example.com", "password": "short", "user_type": ["owner"]}
+        data = {
+            "email": "test@example.com",
+            "password": "short",
+            "user_type": ["owner"],
+        }
         response = client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -41,7 +53,11 @@ class UserRegistrationViewTest(TestCase):
     def test_user_registration_valid_email_owner(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "valid@example.com", "password": "test1231", "user_type": ["owner"]}
+        data = {
+            "email": "valid@example.com",
+            "password": "test1231",
+            "user_type": ["owner"],
+        }
         response = client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Users.objects.count(), 1)
@@ -50,7 +66,11 @@ class UserRegistrationViewTest(TestCase):
     def test_user_registration_valid_email_sitter(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "valid@nyu.edu", "password": "test1231", "user_type": ["sitter"]}
+        data = {
+            "email": "valid@nyu.edu",
+            "password": "test1231",
+            "user_type": ["sitter"],
+        }
         response = client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Users.objects.count(), 1)
@@ -61,7 +81,11 @@ class UserLoginViewTest(TestCase):
     def setUp(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "test@example.com", "password": "test1234", "user_type": ["owner"]}
+        data = {
+            "email": "test@example.com",
+            "password": "test1234",
+            "user_type": ["owner"],
+        }
         response = client.post(url, data, format="json")
 
     def test_user_login_successful(self):
@@ -83,7 +107,11 @@ class LogoutViewTest(TestCase):
     def setUp(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "test@example.com", "password": "test1234", "user_type": ["owner"]}
+        data = {
+            "email": "test@example.com",
+            "password": "test1234",
+            "user_type": ["owner"],
+        }
         _ = client.post(url, data, format="json")
 
     def test_user_logout_successful(self):
@@ -100,7 +128,11 @@ class SessionViewTest(TestCase):
     def setUp(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "test@example.com", "password": "test1234", "user_type": ["owner"]}
+        data = {
+            "email": "test@example.com",
+            "password": "test1234",
+            "user_type": ["owner"],
+        }
         _ = client.post(url, data, format="json")
 
     def test_session_view_authenticated_user(self):
@@ -123,7 +155,11 @@ class WhoAmIViewTest(TestCase):
     def setUp(self):
         client = APIClient()
         url = reverse("user-registration")
-        data = {"email": "test@example.com", "password": "test1234", "user_type": ["owner"]}
+        data = {
+            "email": "test@example.com",
+            "password": "test1234",
+            "user_type": ["owner"],
+        }
         _ = client.post(url, data, format="json")
 
     def test_whoami_view_authenticated_user(self):

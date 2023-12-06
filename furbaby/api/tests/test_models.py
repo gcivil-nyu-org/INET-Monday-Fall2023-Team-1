@@ -30,7 +30,11 @@ class ModelTests(TestCase):
 
     def test_create_pet(self):
         pet = Pets.objects.create(
-            owner=self.user, name="Fluffy", breed="Golden Retriever", weight="50", pictures=["pic"]
+            owner=self.user,
+            name="Fluffy",
+            breed="Golden Retriever",
+            weight="50",
+            pictures=["pic"],
         )
         self.assertEqual(Pets.objects.count(), 1)
         self.assertEqual(pet.name, "Fluffy")
@@ -45,7 +49,11 @@ class ModelTests(TestCase):
             default_location=False,
         )
         pet = Pets.objects.create(
-            owner=self.user, name="Fluffy", breed="Golden Retriever", weight="50", pictures=["pic"]
+            owner=self.user,
+            name="Fluffy",
+            breed="Golden Retriever",
+            weight="50",
+            pictures=["pic"],
         )
         job = Jobs.objects.create(
             pet=pet,
@@ -69,7 +77,11 @@ class ModelTests(TestCase):
             default_location=False,
         )
         pet = Pets.objects.create(
-            owner=self.user, name="Fluffy", breed="Golden Retriever", weight="50", pictures=["pic"]
+            owner=self.user,
+            name="Fluffy",
+            breed="Golden Retriever",
+            weight="50",
+            pictures=["pic"],
         )
         job = Jobs.objects.create(
             pet=pet,
@@ -81,7 +93,10 @@ class ModelTests(TestCase):
             end="2023-01-02T00:00:00Z",
         )
         application = Applications.objects.create(
-            user=self.user, job=job, status="accepted", details={"note": "I am interested"}
+            user=self.user,
+            job=job,
+            status="accepted",
+            details={"note": "I am interested"},
         )
         self.assertEqual(Applications.objects.count(), 1)
         self.assertEqual(application.status, "accepted")

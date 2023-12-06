@@ -196,7 +196,7 @@ class Applications(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE, to_field="id")
     status = models.TextField(
         # note: use the application_status enum values while referencing this field in the API
-        null=False,
+        null=True,
         editable=True,
     )
     details = models.JSONField()
