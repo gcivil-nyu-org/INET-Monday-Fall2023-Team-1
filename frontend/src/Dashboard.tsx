@@ -210,7 +210,10 @@ const Dashboard = () => {
                           <div>
                             <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                             <p>Job Status: {job.status}</p>
-                            <p>Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}</p>
+                            <p>
+                              Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                              {job?.location?.zipcode ?? ""}
+                            </p>
                             <p>Pay: ${job.pay}</p>
                             <p>Start: {job.start}</p>
                             <p>End: {job.end}</p>
@@ -241,13 +244,20 @@ const Dashboard = () => {
                       key={myApplications.id}
                       className="border border-gray-300 mb-4 p-4 rounded-md"
                     >
-                      <div >
+                      <div>
                         <p className="font-bold mb-2">Pet Name : {myApplications.pet.name}</p>
-                        <p>Location: {myApplications?.location?.address ?? ""}, {myApplications?.location?.city ?? ""}, {myApplications?.location?.zipcode ?? ""}</p>
+                        <p>
+                          Location: {myApplications?.location?.address ?? ""},{" "}
+                          {myApplications?.location?.city ?? ""},{" "}
+                          {myApplications?.location?.zipcode ?? ""}
+                        </p>
                         <p>Pay: ${myApplications.job.pay}</p>
                         <p>Start: {myApplications.job.start}</p>
                         <p>End: {myApplications.job.end}</p>
-                        <p className="font-bold mb-2">Application Status: {!myApplications.status ? "No Decision" : myApplications.status}</p>
+                        <p className="font-bold mb-2">
+                          Application Status:{" "}
+                          {!myApplications.status ? "No Decision" : myApplications.status}
+                        </p>
                       </div>
                     </li>
                   ))}

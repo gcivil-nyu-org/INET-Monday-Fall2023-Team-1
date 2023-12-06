@@ -53,7 +53,7 @@ interface Application {
   // Add more fields as needed
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JobPageProps { }
+interface JobPageProps {}
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -208,7 +208,10 @@ const Jobs: React.FC = () => {
             <div>
               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
               <p>Status: {job.status}</p>
-              <p>Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}</p>
+              <p>
+                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                {job?.location?.zipcode ?? ""}
+              </p>
               <p>Pay: {job.pay}</p>
               <p>Start: {job.start}</p>
               <p>End: {job.end}</p>
