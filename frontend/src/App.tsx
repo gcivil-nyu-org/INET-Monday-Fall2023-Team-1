@@ -27,7 +27,7 @@ const AppRouter = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (authenticationState.isSessionSet) {
+    if (authenticationState.isSessionSet && ROUTES.FORGOT_PASSWORD !== pathname) {
       if (Object.values(ROUTES.PROTECTED_ROUTES).find((route) => route === pathname)) {
         navigate(pathname, { replace: true });
       } else {
@@ -77,6 +77,33 @@ const AppRouter = () => {
       />
       <Route
         path="settings"
+        element={
+          <ProtectedRoute>
+            <Home
+              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="pet-profiles"
+        element={
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+        }
+      />
+      <Route
+        path="jobs"
+        element={
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
+        }
+      />
+
+      <Route
+        path="locations"
         element={
           <ProtectedRoute>
             <Home

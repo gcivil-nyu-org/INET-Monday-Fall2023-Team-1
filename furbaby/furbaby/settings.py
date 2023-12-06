@@ -12,19 +12,41 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
+# from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
+from botocore.config import Config as AWSConfig
+
+# load_dotenv(find_dotenv(".eb_env", True, False)) - when using this settings file locally or deploying manually
 load_dotenv()
 
+CURRENT_BRANCH = os.environ.get("TRAVIS_BRANCH", "").lower()
 
-def get_password_reset_host():
-    if os.environ.get("TRAVIS_BRANCH", "").lower() == "master":
-        return "https://ui.furbabyapi.net"
-    return "https://staging-ui.furbabyapi.net"
 
+# def get_password_reset_host():
+#     if CURRENT_BRANCH == "master":
+#         return "https://ui.furbabyapi.net"
+#     return "https://staging-ui.furbabyapi.net"
+
+
+def get_s3_assets_path():
+    if CURRENT_BRANCH == "master":
+        return "production-assets"
+    return "staging-assets"
+
+
+S3_CONFIG = AWSConfig(
+    region_name="us-east-1",
+    retries={"max_attempts": 10, "mode": "standard"},
+    signature_version="v4",
+)
+
+AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME", "")
+
+ASSETS_PATH = get_s3_assets_path()
 
 # NOTE: perhaps very few opportunities to test this feature...but nevertheless it would mostly work
-os.environ.setdefault("FORGOT_PASSWORD_HOST", get_password_reset_host())
+os.environ.setdefault("FORGOT_PASSWORD_HOST", "https://ui.furbabyapi.net")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -93,12 +115,12 @@ WSGI_APPLICATION = "furbaby.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-database_name = "ebdb" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "ebdb_master"
+# database_name = "db" if os.environ.get("TRAVIS_BRANCH", "").lower() != "master" else "db_master"
 
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": database_name,
+        "NAME": "db",
         "USER": "root",
         "PASSWORD": os.environ.get("AWS_RDS_DATABASE_PASSWORD", ""),
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",

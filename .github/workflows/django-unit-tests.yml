@@ -24,6 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           cd furbaby
           pip install -r requirements.txt
+      - name: Check Format
+        run: |
+          black .
+      - name: Check Link
+        run: |
+          pylint **/*.py --exit-zero
       - name: Run Tests
         run: |
           cd furbaby
@@ -31,4 +37,7 @@ jobs:
           export DJANGO_SECRET_KEY="dummy-secret-key"
           export EMAIL_APP_PASSWORD="dummy-user-email-password"
           export EMAIL_APP_USERNAME="dummy-user-email"
+          export AWS_ACCESS_KEY_ID="dummy-user-key-id"
+          export AWS_SECRET_ACCESS_KEY="dummy-secret-access-key"
+          export AWS_BUCKET_NAME="dummy-aws-bucket-name"
           python manage.py test
