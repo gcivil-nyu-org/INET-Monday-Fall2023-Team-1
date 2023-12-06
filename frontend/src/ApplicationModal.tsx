@@ -122,10 +122,11 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
                     {application.user.username}
                   </span>
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${application.status === "accepted"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                      }`}
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                      application.status === "accepted"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
                   >
                     {application.status}
                   </span>
@@ -133,16 +134,21 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
                 {selectedApplicationId === application.id && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-600">Email: {application.user.email}</p>
-                    <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
+                    <p className="text-sm text-gray-600">
+                      Date of Birth: {application.user.date_of_birth}
+                    </p>
                     <p className="text-sm text-gray-600">About: {application.user.experience}</p>
-                    <p className="text-sm text-gray-600">Qualification: {application.user.qualifications}</p>
+                    <p className="text-sm text-gray-600">
+                      Qualification: {application.user.qualifications}
+                    </p>
                     <p className="text-sm text-gray-600">Cell: {application.user.phone_number}</p>
                     {/* Add more fields as needed */}
                     {application.status == "accepted" && (
                       <div className="mt-2">
                         <p className="text-sm text-gray-600">
                           You can contact the pet sitter at their email:
-                          <span className="contact-info">{application.user.email}</span> or phone number:
+                          <span className="contact-info">{application.user.email}</span> or phone
+                          number:
                           <span className="contact-info">{application.user.phone_number}</span>.
                         </p>
                       </div>
@@ -161,8 +167,6 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
               </div>
             ))
           )}
-
-
         </div>
 
         <div className="px-4 py-3 bg-gray-200 text-right">

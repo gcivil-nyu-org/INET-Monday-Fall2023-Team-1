@@ -123,7 +123,7 @@ class UserSerializer(serializers.Serializer):
     date_of_birth = serializers.DateField()
     experience = serializers.CharField()
     qualifications = serializers.CharField()
-    phone_number =  serializers.CharField()
+    phone_number = serializers.CharField()
 
 
 class ApplicationSerializer(serializers.ModelSerializer):

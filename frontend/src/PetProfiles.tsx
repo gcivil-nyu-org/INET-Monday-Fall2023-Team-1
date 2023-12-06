@@ -31,7 +31,7 @@ interface EditPetFormData {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface PetProfilePageProps { }
+interface PetProfilePageProps {}
 
 const PetProfiles: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
@@ -206,7 +206,9 @@ const PetProfiles: React.FC = () => {
                         name="breed"
                         id="edit-breed"
                         value={editFormData.breed}
-                        onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, breed: e.target.value })
+                        }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                       <label htmlFor="edit-color">Color</label>
@@ -215,7 +217,9 @@ const PetProfiles: React.FC = () => {
                         name="color"
                         id="edit-color"
                         value={editFormData.color}
-                        onChange={(e) => setEditFormData({ ...editFormData, color: e.target.value })}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, color: e.target.value })
+                        }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                       <label htmlFor="edit-height">Height</label>
@@ -224,7 +228,9 @@ const PetProfiles: React.FC = () => {
                         name="height"
                         id="edit-height"
                         value={editFormData.height}
-                        onChange={(e) => setEditFormData({ ...editFormData, height: e.target.value })}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, height: e.target.value })
+                        }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                       <label htmlFor="edit-weight">Weight</label>
@@ -233,7 +239,9 @@ const PetProfiles: React.FC = () => {
                         name="weight"
                         id="edit-weight"
                         value={editFormData.weight}
-                        onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
+                        onChange={(e) =>
+                          setEditFormData({ ...editFormData, weight: e.target.value })
+                        }
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                       <label htmlFor="edit-chip_number">Chip Number</label>
