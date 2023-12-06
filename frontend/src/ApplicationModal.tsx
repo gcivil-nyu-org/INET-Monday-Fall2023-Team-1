@@ -77,7 +77,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         );
         setTimeout(() => {
           window.location.reload();
-        }, 700);
+        }, 800);
 
         // Perform any additional actions upon successful acceptance
       } else {
@@ -109,55 +109,58 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         </div>
 
         <div className="px-4 py-5 sm:p-6">
-          {applications.map((application) => (
-            <div key={application.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span
-                  className="text-indigo-600 font-medium"
-                  onClick={() => toggleApplicationDetails(application.id)}
-                >
-                  {application.user.username}
-                </span>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                    application.status === "accepted"
+          {applications.length === 0 ? (
+            <p>No applications available at the moment.</p>
+          ) : (
+            applications.map((application) => (
+              <div key={application.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span
+                    className="text-indigo-600 font-medium"
+                    onClick={() => toggleApplicationDetails(application.id)}
+                  >
+                    {application.user.username}
+                  </span>
+                  <span
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${application.status === "accepted"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {application.status}
-                </span>
-              </div>
-              {selectedApplicationId === application.id && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600">Email: {application.user.email}</p>
-                  <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
-                  <p className="text-sm text-gray-600">About: {application.user.experience}</p>
-                  <p className="text-sm text-gray-600">Qualification: {application.user.qualifications}</p>
-                  <p className="text-sm text-gray-600">Cell: {application.user.phone_number}</p>
-                  {/* Add more fields as needed */}
-                  {application.status == "accepted" && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-600">
-                        You can contact the pet sitter at their email:
-                        <span className="contact-info">{application.user.email}</span> or phone number:
-                        <span className="contact-info">{application.user.phone_number}</span>.
-                      </p>
-                    </div>
-                  )}
+                      }`}
+                  >
+                    {application.status}
+                  </span>
                 </div>
-              )}
-              {application.status !== "accepted" && (
-                <button
-                  onClick={() => handleAccept(application.id, application.job)}
-                  type="button"
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
-                >
-                  Accept
-                </button>
-              )}
-            </div>
-          ))}
+                {selectedApplicationId === application.id && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">Email: {application.user.email}</p>
+                    <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
+                    <p className="text-sm text-gray-600">About: {application.user.experience}</p>
+                    <p className="text-sm text-gray-600">Qualification: {application.user.qualifications}</p>
+                    <p className="text-sm text-gray-600">Cell: {application.user.phone_number}</p>
+                    {/* Add more fields as needed */}
+                    {application.status == "accepted" && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600">
+                          You can contact the pet sitter at their email:
+                          <span className="contact-info">{application.user.email}</span> or phone number:
+                          <span className="contact-info">{application.user.phone_number}</span>.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {application.status !== "accepted" && (
+                  <button
+                    onClick={() => handleAccept(application.id, application.job)}
+                    type="button"
+                    className="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
+                  >
+                    Accept
+                  </button>
+                )}
+              </div>
+            ))
+          )}
 
 
         </div>

@@ -146,7 +146,9 @@ const Dashboard = () => {
       });
       //console.log(response.data);
       toast.success("Application submitted successfully!");
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 600);
     } catch (error) {
       console.error(error);
       toast.error("Failed to apply for the job.");
@@ -201,31 +203,36 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div>
-                  {filteredJobs.map((job) => (
-                    <div key={job.id} className="max-w-screen-md mx-auto p-6">
-                      {error && <p className="text-red-500">{error}</p>}
-                      <ul className="list-none p-0">
-                        <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-                          <div>
-                            <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-                            <p>Job Status: {job.status}</p>
-                            <p>Location: {job?.location?.address ?? ""}</p>
-                            <p>Pay: ${job.pay}</p>
-                            <p>Start: {job.start}</p>
-                            <p>End: {job.end}</p>
-                            {job.status === "open" && (
-                              <button
-                                onClick={() => applyForJob(job.id)}
-                                className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
-                              >
-                                Apply Now
-                              </button>
-                            )}
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  ))}
+                  {filteredJobs.length === 0 ? (
+                    <p>No jobs available at the moment.</p>
+                  ) : (
+                    filteredJobs.map((job) => (
+                      <div key={job.id} className="max-w-screen-md mx-auto p-6">
+                        {error && <p className="text-red-500">{error}</p>}
+                        <ul className="list-none p-0">
+                          <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+                            <div>
+                              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                              <p>Job Status: {job.status}</p>
+                              <p>Location: {job?.location?.address ?? ""}</p>
+                              <p>Pay: ${job.pay}</p>
+                              <p>Start: {job.start}</p>
+                              <p>End: {job.end}</p>
+                              {job.status === "open" && (
+                                <button
+                                  onClick={() => applyForJob(job.id)}
+                                  className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
+                                >
+                                  Apply Now
+                                </button>
+                              )}
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    ))
+                  )}
+
                 </div>
               </div>
             )}
@@ -241,7 +248,7 @@ const Dashboard = () => {
                       className="border border-gray-300 mb-4 p-4 rounded-md"
                     >
                       <div>
-                        <p>Application Status: {myApplications.status}</p>
+                        <p>Application Status: {myApplications.status || "Pending"}</p>
                         <p>Pet:{myApplications.pet.name}</p>
                         <p>Start:{myApplications.job.start}</p>
                         <p>End:{myApplications.job.end}</p>

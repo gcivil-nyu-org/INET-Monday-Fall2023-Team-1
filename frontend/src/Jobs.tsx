@@ -21,6 +21,7 @@ interface Location {
   address: string;
   city: string;
   country: string;
+  zipcode: string;
 }
 
 interface Pet {
