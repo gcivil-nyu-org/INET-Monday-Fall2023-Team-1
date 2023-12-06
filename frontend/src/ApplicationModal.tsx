@@ -9,6 +9,9 @@ interface User {
   username: string;
   date_of_birth: string;
   experience: string;
+  qualifications: string;
+  phone_number: string;
+  email: string;
 }
 
 interface Application {
@@ -103,6 +106,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         <div className="bg-indigo-700 text-white px-4 py-4 text-lg leading-6 font-bold">
           Applications
         </div>
+
         <div className="px-4 py-5 sm:p-6">
           {applications.map((application) => (
             <div key={application.id} className="mb-4 p-4 bg-gray-50 rounded-lg">
@@ -119,9 +123,21 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
               </div>
               {selectedApplicationId === application.id && (
                 <div className="mt-2">
+                  <p className="text-sm text-gray-600">Email: {application.user.email}</p>
                   <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
-                  <p className="text-sm text-gray-600">Experience: {application.user.experience}</p>
+                  <p className="text-sm text-gray-600">About: {application.user.experience}</p>
+                  <p className="text-sm text-gray-600">Qualification: {application.user.qualifications}</p>
+                  <p className="text-sm text-gray-600">Cell: {application.user.phone_number}</p>
                   {/* Add more fields as needed */}
+                  {application.status == "accepted" && (
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-600">
+                        You can contact the pet sitter at their email:
+                        <span className="contact-info">{application.user.email}</span> or phone number:
+                        <span className="contact-info">{application.user.phone_number}</span>.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               {application.status !== "accepted" && (
@@ -135,7 +151,10 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
               )}
             </div>
           ))}
+
+
         </div>
+
         <div className="px-4 py-3 bg-gray-200 text-right">
           <button
             onClick={onClose}

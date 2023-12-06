@@ -40,6 +40,9 @@ interface User {
   username: string;
   date_of_birth: string;
   experience: string;
+  qualifications: string;
+  phone_number: string;
+  email: string;
 }
 
 interface Application {
