@@ -247,11 +247,7 @@ const Dashboard = () => {
                         <p>Pay: ${myApplications.job.pay}</p>
                         <p>Start: {myApplications.job.start}</p>
                         <p>End: {myApplications.job.end}</p>
-                        {
-                          (myApplications.status === null)
-                            ? <div className="font-bold mb-2"> <p>Application Status: No Decision Yet </p></div>
-                            : <div className="font-bold mb-2"> <p> Application Status: {myApplications.status} </p> </div>
-                        }
+                        <p className="font-bold mb-2">Application Status: {!myApplications.status ? "No Decision" : myApplications.status}</p>
                       </div>
                     </li>
                   ))}
