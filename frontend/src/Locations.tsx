@@ -19,13 +19,6 @@ const Locations = () => {
   const [zipcode, setZipcode] = useState("");
 
   const onClickConfirm = () => {
-  // Validate the city
-  const validCities = ["new york city", "nyc"];
-  if (!validCities.includes(city.toLowerCase())) {
-    // Show an error message to the user
-    toast.error("Invalid city. Please enter 'nyc' or 'new york city'.");
-    return; // Stop further execution
-  }
     axios
       .post(
         API_ROUTES.USER.LOCATION,
