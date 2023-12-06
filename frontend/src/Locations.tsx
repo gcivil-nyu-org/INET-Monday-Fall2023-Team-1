@@ -47,7 +47,6 @@ const Locations = () => {
       })
       .catch((err) => {
         // TODO: handle error
-        console.log("you are here!")
         toast.error("Failed to add location.");
         console.error(err);
       });
