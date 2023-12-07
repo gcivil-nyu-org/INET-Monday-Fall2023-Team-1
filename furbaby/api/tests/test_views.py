@@ -24,6 +24,7 @@ def get_current_date_time(delta):
 
     return f"{year}-{month}-{day}T{hour}:{minute}"
 
+
 class UserRegistrationViewTest(TestCase):
     def test_user_registration_invalid_email_owner(self):
         client = APIClient()
@@ -185,7 +186,6 @@ class UserViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertFalse(data["data"]["isAuthenticated"])
 
-
     def test_user_update_info_successful(self):
         user = Users.objects.create(
             email="test_owner_sitter@nyu.edu",
@@ -234,7 +234,6 @@ class UserViewTest(TestCase):
         self.assertEqual(data["data"]["first_name"], user.first_name)
 
 
-
 class JobViewTest(TestCase):
     def setUp(self):
         self.user_owner = Users.objects.create(
@@ -261,7 +260,7 @@ class JobViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         self.pet = Pets.objects.create(
             owner=self.user_owner,
@@ -321,51 +320,51 @@ class JobViewTest(TestCase):
         self.assertEqual(data["sitter_jobs"][0]["id"], str(job.id))
 
     def test_fetch_all_jobs_owner(self):
-            job = Jobs.objects.create(
-                pet=self.pet,
-                location=self.location,
-                user=self.user_owner,
-                pay="525",
-                start=get_current_date_time(5),
-                end=get_current_date_time(15),
-                status="open",
-            )
-            client = APIClient()
-            url_login = reverse("user-login")
-            data_login = {"email": self.user_owner.email, "password": "testpassword"}
-            _ = client.post(url_login, data_login, format="json")
-            url = reverse("custom-job-view")
-            data = {
-                "user": self.user_owner,
-            }
-            response = client.get(url, data, format="json")
-            data = json.loads(response.content)
-            self.assertEqual(len(data["owner_jobs"]), 1)
-            self.assertEqual(data["owner_jobs"][0]["id"], str(job.id))
+        job = Jobs.objects.create(
+            pet=self.pet,
+            location=self.location,
+            user=self.user_owner,
+            pay="525",
+            start=get_current_date_time(5),
+            end=get_current_date_time(15),
+            status="open",
+        )
+        client = APIClient()
+        url_login = reverse("user-login")
+        data_login = {"email": self.user_owner.email, "password": "testpassword"}
+        _ = client.post(url_login, data_login, format="json")
+        url = reverse("custom-job-view")
+        data = {
+            "user": self.user_owner,
+        }
+        response = client.get(url, data, format="json")
+        data = json.loads(response.content)
+        self.assertEqual(len(data["owner_jobs"]), 1)
+        self.assertEqual(data["owner_jobs"][0]["id"], str(job.id))
 
     def test_fetch_all_jobs_feed_except_own_jobs(self):
-            job = Jobs.objects.create(
-                pet=self.pet,
-                location=self.location,
-                user=self.user_owner_sitter,
-                pay="525",
-                start=get_current_date_time(5),
-                end=get_current_date_time(15),
-                status="open",
-            )
-            client = APIClient()
-            url_login = reverse("user-login")
-            data_login = {"email": self.user_owner_sitter.email, "password": "testpasswordownersitter"}
-            _ = client.post(url_login, data_login, format="json")
-            url = reverse("custom-job-view")
-            data = {
-                "user": self.user_owner_sitter,
-            }
-            response = client.get(url, data, format="json")
-            data = json.loads(response.content)
-            self.assertEqual(len(data["owner_jobs"]), 1)
-            self.assertEqual(len(data["sitter_jobs"]), 0)
-            self.assertEqual(data["owner_jobs"][0]["id"], str(job.id))
+        job = Jobs.objects.create(
+            pet=self.pet,
+            location=self.location,
+            user=self.user_owner_sitter,
+            pay="525",
+            start=get_current_date_time(5),
+            end=get_current_date_time(15),
+            status="open",
+        )
+        client = APIClient()
+        url_login = reverse("user-login")
+        data_login = {"email": self.user_owner_sitter.email, "password": "testpasswordownersitter"}
+        _ = client.post(url_login, data_login, format="json")
+        url = reverse("custom-job-view")
+        data = {
+            "user": self.user_owner_sitter,
+        }
+        response = client.get(url, data, format="json")
+        data = json.loads(response.content)
+        self.assertEqual(len(data["owner_jobs"]), 1)
+        self.assertEqual(len(data["sitter_jobs"]), 0)
+        self.assertEqual(data["owner_jobs"][0]["id"], str(job.id))
 
     def test_job_update_status_invalid_job_id(self):
         client = APIClient()
@@ -411,6 +410,7 @@ class WhoAmIViewTest(TestCase):
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class ApplicationViewTest(TestCase):
     def setUp(self):
         self.user_owner = Users.objects.create(
@@ -437,7 +437,7 @@ class ApplicationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         self.pet = Pets.objects.create(
             owner=self.user_owner,
@@ -679,10 +679,7 @@ class ApplicationViewTest(TestCase):
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
         _ = client.post(url_login, data_login, format="json")
         url = reverse("application-list")
-        data = {
-            "id": application.id,
-            "status": "accepted"
-        }
+        data = {"id": application.id, "status": "accepted"}
         response = client.put(url, data, format="json")
         data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -749,8 +746,8 @@ class ApplicationViewTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(data), 2)
 
-class LocationViewTest(TestCase):
 
+class LocationViewTest(TestCase):
     def setUp(self):
         self.user_owner = Users.objects.create(
             email="test_owner_job@gmail.com",
@@ -806,7 +803,9 @@ class LocationViewTest(TestCase):
         response = client.post(url, data, format="json")
         data = json.loads(response.content)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(data["data"]["non_field_errors"][0], "Users must be located in New York City/NYC")
+        self.assertEqual(
+            data["data"]["non_field_errors"][0], "Users must be located in New York City/NYC"
+        )
 
     def test_get_location_by_id(self):
         location = Locations.objects.create(
@@ -815,7 +814,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         location2 = Locations.objects.create(
             user=self.user_owner,
@@ -823,7 +822,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=False
+            default_location=False,
         )
         client = APIClient()
         url_login = reverse("user-login")
@@ -845,7 +844,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         location2 = Locations.objects.create(
             user=self.user_owner,
@@ -853,7 +852,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=False
+            default_location=False,
         )
         client = APIClient()
         url_login = reverse("user-login")
@@ -874,7 +873,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
@@ -901,7 +900,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
@@ -928,7 +927,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
@@ -956,7 +955,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
@@ -978,7 +977,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="USA",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}
@@ -1000,7 +999,7 @@ class LocationViewTest(TestCase):
             city="New York City",
             country="US",
             zipcode="12345",
-            default_location=True
+            default_location=True,
         )
         location2 = Locations.objects.create(
             user=self.user_owner,
@@ -1008,7 +1007,7 @@ class LocationViewTest(TestCase):
             city="NYC",
             country="US",
             zipcode="12345",
-            default_location=False
+            default_location=False,
         )
         url_login = reverse("user-login")
         data_login = {"email": self.user_owner.email, "password": "testpassword"}

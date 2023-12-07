@@ -221,7 +221,9 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs): # pragma: no cover
+def password_reset_token_created(
+    sender, instance, reset_password_token, *args, **kwargs
+):  # pragma: no cover
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -262,7 +264,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 @csrf_protect
 @api_view(["GET", "POST", "OPTIONS"])
-def handle_profile_picture(request): # pragma: no cover
+def handle_profile_picture(request):  # pragma: no cover
     if not request.user.is_authenticated:
         return json_response(
             data={"error": "unauthenticated request. rejected"},
@@ -284,7 +286,7 @@ def handle_profile_picture(request): # pragma: no cover
     )
 
 
-def __get_user_profile_picture__(request): # pragma: no cover
+def __get_user_profile_picture__(request):  # pragma: no cover
     profile_picture_path = make_s3_path(
         s3AssetsFolder, str(request.user.id), "profile-picture", "picture"
     )
@@ -315,7 +317,7 @@ def __get_user_profile_picture__(request): # pragma: no cover
         )
 
 
-def __upload_profile_picture__(request): # pragma: no cover
+def __upload_profile_picture__(request):  # pragma: no cover
     if s3Config == None:
         return json_response(
             data={"error": "failed to upload profile picture due to internal error"},
@@ -591,7 +593,7 @@ def user_location_view(request):
     )
 
 
-def __get_user_pet_picture__(request): # pragma: no cover
+def __get_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -631,7 +633,7 @@ def __get_user_pet_picture__(request): # pragma: no cover
         )
 
 
-def __put_user_pet_picture__(request): # pragma: no cover
+def __put_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -680,7 +682,7 @@ def __put_user_pet_picture__(request): # pragma: no cover
     )
 
 
-def __delete_user_pet_picture__(request): # pragma: no cover
+def __delete_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()

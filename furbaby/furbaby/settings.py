@@ -129,7 +129,7 @@ DATABASES = {
         "TEST": {
             "NAME": "tests_migrated",
             "MIGRATE": False,
-        }
+        },
     }
 }
 
