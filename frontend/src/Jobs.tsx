@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { formatDate } from "./utils";
 import ApplicationModal from "./ApplicationModal";
 import { API_ROUTES } from "./constants";
 
@@ -12,8 +12,8 @@ interface Job {
   location: Location;
   status: string;
   pay: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
 }
 
 interface Location {
@@ -213,8 +213,8 @@ const Jobs: React.FC = () => {
                 {job?.location?.zipcode ?? ""}
               </p>
               <p>Pay: {job.pay}</p>
-              <p>Start: {job.start}</p>
-              <p>End: {job.end}</p>
+              <p>Start: {formatDate(job.start)}</p>
+              <p>End: {formatDate(job.end)}</p>
             </div>
             <div className="mt-4 flex">
               <button
