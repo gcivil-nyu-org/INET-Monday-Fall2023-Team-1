@@ -35,6 +35,8 @@ interface Location {
   address: string;
   city: string;
   country: string;
+  zipcode: string;
+
 }
 
 interface Application {
@@ -96,45 +98,47 @@ const Dashboard = () => {
     fetchJobs();
   }, []);
 
-  useEffect(() => {
-    const fetchMyApplications = async () => {
-      try {
-        const response = await axios.get(`${API_ROUTES.APPLY}`);
-        if (response.status !== 200) {
-          throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
-        }
-        //console.log("my applications", response.data)
 
-        const myApplicationsWithJobDetails = await Promise.all(
-          response.data.map(async (myApplications: Application) => {
-            //console.log("myApplications.job", myApplications.job)
-            const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
-              params: { id: myApplications.job },
-            });
-            const locationDetailsResponse = await axios.get(`${API_ROUTES.USER.LOCATION}`);
-            const locationDetail = locationDetailsResponse.data;
-
-            //console.log("job details response", jobDetailsResponse.data);
-            const jobDetail = jobDetailsResponse.data;
-
-            const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
-            const petDetail = petDetailsResponse.data;
-
-            return {
-              ...myApplications,
-              job: jobDetail,
-              location: locationDetail,
-              pet: petDetail,
-            };
-          })
-        );
-        //console.log("my applications with job details", myApplicationsWithJobDetails)
-        setMyApplications(myApplicationsWithJobDetails);
-      } catch (error) {
-        console.error(error);
+  const fetchMyApplications = async () => {
+    try {
+      const response = await axios.get(`${API_ROUTES.APPLY}`);
+      if (response.status !== 200) {
+        throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
       }
-    };
+      //console.log("my applications", response.data)
 
+      const myApplicationsWithJobDetails = await Promise.all(
+        response.data.map(async (myApplications: Application) => {
+          //console.log("myApplications.job", myApplications.job)
+          const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
+            params: { id: myApplications.job },
+          });
+          const jobDetail = jobDetailsResponse.data;
+
+          const locationDetailsResponse = await axios.get(
+            `${API_ROUTES.USER.LOCATION}?location_id=${jobDetail.location}`
+          );
+          const locationDetail = locationDetailsResponse.data;
+
+
+          const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
+          const petDetail = petDetailsResponse.data;
+
+          return {
+            ...myApplications,
+            job: jobDetail,
+            location: locationDetail,
+            pet: petDetail,
+          };
+        })
+      );
+      //console.log("my applications with job details", myApplicationsWithJobDetails)
+      setMyApplications(myApplicationsWithJobDetails);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
     fetchMyApplications();
   }, []);
 
@@ -144,11 +148,10 @@ const Dashboard = () => {
       await axios.post(`${API_ROUTES.APPLY}`, {
         id: jobId,
       });
+
       //console.log(response.data);
       toast.success("Application submitted successfully!");
-      setTimeout(() => {
-        window.location.reload();
-      }, 600);
+      fetchMyApplications();
     } catch (error) {
       console.error(error);
       toast.error("Failed to apply for the job.");
@@ -214,7 +217,10 @@ const Dashboard = () => {
                             <div>
                               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                               <p>Job Status: {job.status}</p>
-                              <p>Location: {job?.location?.address ?? ""}</p>
+                              <p>
+                                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                                {job?.location?.zipcode ?? ""}
+                              </p>
                               <p>Pay: ${job.pay}</p>
                               <p>Start: {job.start}</p>
                               <p>End: {job.end}</p>
@@ -246,13 +252,19 @@ const Dashboard = () => {
                       key={myApplications.id}
                       className="border border-gray-300 mb-4 p-4 rounded-md"
                     >
-                      <div>
-                        <p>Application Status: {myApplications.status || "Pending"}</p>
-                        <p>Pet:{myApplications.pet.name}</p>
-                        <p>Start:{myApplications.job.start}</p>
-                        <p>End:{myApplications.job.end}</p>
-                        <p>Pay:{myApplications.job.pay}</p>
-                      </div>
+                      <p className="font-bold mb-2">Pet Name : {myApplications.pet.name}</p>
+                      <p>
+                        Location: {myApplications?.location?.address ?? ""},{" "}
+                        {myApplications?.location?.city ?? ""},{" "}
+                        {myApplications?.location?.zipcode ?? ""}
+                      </p>
+                      <p>Pay: ${myApplications.job.pay}</p>
+                      <p>Start: {myApplications.job.start}</p>
+                      <p>End: {myApplications.job.end}</p>
+                      <p className="font-bold mb-2">
+                        Application Status:{" "}
+                        {!myApplications.status ? "No Decision" : myApplications.status}
+                      </p>
                     </li>
                   ))}
                 </ul>

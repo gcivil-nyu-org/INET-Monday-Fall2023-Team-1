@@ -56,7 +56,7 @@ interface Application {
   // Add more fields as needed
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JobPageProps {}
+interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -77,6 +77,7 @@ const Jobs: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    fetchJobs();
   };
 
   useEffect(() => {
@@ -124,21 +125,21 @@ const Jobs: React.FC = () => {
   };
 
   const handleDelete = async (jobId: string) => {
-    const deleteConsent = window.confirm("Are you sure you want to delete this pet?");
+    const deleteConsent = window.confirm("Are you sure you want to delete this job?");
     if (deleteConsent) {
       try {
         const response = await axios.delete(API_ROUTES.JOBS, {
           data: { id: jobId },
         });
         if (response.status === 200) {
-          window.location.reload();
-          toast.success("Pet profile deleted successfully");
+          toast.success("Job profile deleted successfully");
+          fetchJobs();
         } else {
-          throw new Error("Failed to delete pet profile");
+          throw new Error("Failed to delete job");
         }
       } catch (err) {
         console.error(err);
-        toast.error("Failed to delete pet profile");
+        toast.error("Failed to delete job");
       }
     }
   };
