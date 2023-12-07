@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { format } from "date-fns";
+import { formatDate } from "./utils";
 import ApplicationModal from "./ApplicationModal";
 import { API_ROUTES } from "./constants";
 
@@ -198,10 +198,6 @@ const Jobs: React.FC = () => {
   if (loading) {
     return <p className="text-center">Loading...</p>;
   }
-
-  const formatDate = (date: Date) => {
-    return format(new Date(date), "MM/dd/yyyy HH:mm a");
-  };
 
   return (
     <div className="max-w-screen-md mx-auto p-6">
