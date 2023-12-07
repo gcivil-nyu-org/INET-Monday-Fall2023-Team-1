@@ -56,7 +56,7 @@ interface Application {
   // Add more fields as needed
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JobPageProps { }
+interface JobPageProps {}
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);

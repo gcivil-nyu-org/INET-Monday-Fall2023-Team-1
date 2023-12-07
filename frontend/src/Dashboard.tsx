@@ -36,7 +36,6 @@ interface Location {
   city: string;
   country: string;
   zipcode: string;
-
 }
 
 interface Application {
@@ -98,7 +97,6 @@ const Dashboard = () => {
     fetchJobs();
   }, []);
 
-
   const fetchMyApplications = async () => {
     try {
       const response = await axios.get(`${API_ROUTES.APPLY}`);
@@ -119,7 +117,6 @@ const Dashboard = () => {
             `${API_ROUTES.USER.LOCATION}?location_id=${jobDetail.location}`
           );
           const locationDetail = locationDetailsResponse.data;
-
 
           const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
           const petDetail = petDetailsResponse.data;
@@ -218,8 +215,8 @@ const Dashboard = () => {
                               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                               <p>Job Status: {job.status}</p>
                               <p>
-                                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
-                                {job?.location?.zipcode ?? ""}
+                                Location: {job?.location?.address ?? ""},{" "}
+                                {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
                               </p>
                               <p>Pay: ${job.pay}</p>
                               <p>Start: {job.start}</p>

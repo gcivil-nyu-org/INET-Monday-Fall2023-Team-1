@@ -122,10 +122,11 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
                     {application.user.username}
                   </span>
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${application.status === "accepted"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                      }`}
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                      application.status === "accepted"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
                   >
                     {application.status}
                   </span>
