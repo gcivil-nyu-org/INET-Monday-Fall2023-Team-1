@@ -949,7 +949,7 @@ class ApplicationView(APIView):
                         application_data = {
                             "user": request.user.id,
                             "job": job_id,
-                            "status": "rejected",  # You can set an initial status here
+                            "status": None,  # You can set an initial status here
                             "details": {},  # You can add more details if needed
                         }
                         application_serializer = ApplicationSerializer(
