@@ -126,6 +126,10 @@ DATABASES = {
         "HOST": "awseb-e-n3h4ykpptm-stack-awsebrdsdatabase-5tlrcwj3rs0l.ckzyhv20mvw0.us-east-1.rds.amazonaws.com",
         "PORT": "5432",
         "ATOMIC_REQUESTS": True,
+        "TEST": {
+            "NAME": "tests_migrated",
+            "MIGRATE": False,
+        }
     }
 }
 

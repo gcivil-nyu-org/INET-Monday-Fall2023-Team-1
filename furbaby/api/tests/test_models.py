@@ -20,8 +20,8 @@ class ModelTests(TestCase):
         location = Locations.objects.create(
             user=self.user,
             address="123 Main St",
-            city="City",
-            country="Country",
+            city="New York City",
+            country="USA",
             zipcode="12345",
             default_location=False,
         )
@@ -34,7 +34,6 @@ class ModelTests(TestCase):
             name="Fluffy",
             breed="Golden Retriever",
             weight="50",
-            pictures=["pic"],
         )
         self.assertEqual(Pets.objects.count(), 1)
         self.assertEqual(pet.name, "Fluffy")
@@ -53,7 +52,6 @@ class ModelTests(TestCase):
             name="Fluffy",
             breed="Golden Retriever",
             weight="50",
-            pictures=["pic"],
         )
         job = Jobs.objects.create(
             pet=pet,
@@ -81,7 +79,6 @@ class ModelTests(TestCase):
             name="Fluffy",
             breed="Golden Retriever",
             weight="50",
-            pictures=["pic"],
         )
         job = Jobs.objects.create(
             pet=pet,

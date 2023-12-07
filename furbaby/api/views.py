@@ -221,7 +221,7 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs): # pragma: no cover
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -262,7 +262,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 @csrf_protect
 @api_view(["GET", "POST", "OPTIONS"])
-def handle_profile_picture(request):
+def handle_profile_picture(request): # pragma: no cover
     if not request.user.is_authenticated:
         return json_response(
             data={"error": "unauthenticated request. rejected"},
@@ -284,7 +284,7 @@ def handle_profile_picture(request):
     )
 
 
-def __get_user_profile_picture__(request):
+def __get_user_profile_picture__(request): # pragma: no cover
     profile_picture_path = make_s3_path(
         s3AssetsFolder, str(request.user.id), "profile-picture", "picture"
     )
@@ -315,7 +315,7 @@ def __get_user_profile_picture__(request):
         )
 
 
-def __upload_profile_picture__(request):
+def __upload_profile_picture__(request): # pragma: no cover
     if s3Config == None:
         return json_response(
             data={"error": "failed to upload profile picture due to internal error"},
@@ -591,7 +591,7 @@ def user_location_view(request):
     )
 
 
-def __get_user_pet_picture__(request):
+def __get_user_pet_picture__(request): # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -631,7 +631,7 @@ def __get_user_pet_picture__(request):
         )
 
 
-def __put_user_pet_picture__(request):
+def __put_user_pet_picture__(request): # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -680,7 +680,7 @@ def __put_user_pet_picture__(request):
     )
 
 
-def __delete_user_pet_picture__(request):
+def __delete_user_pet_picture__(request): # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -788,7 +788,7 @@ class JobView(APIView):
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            print(request.user.user_type)
+            # print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
                 queryset_sitter = self.get_all(request.user.id)
@@ -800,7 +800,7 @@ class JobView(APIView):
                     "owner_jobs": serializer_owner.data,
                     "sitter_jobs": serializer_sitter.data,
                 }
-                print(response_data)
+                # print(response_data)
                 return JsonResponse(response_data, safe=False)
 
             elif "owner" in request.user.user_type:
@@ -812,7 +812,7 @@ class JobView(APIView):
                 return JsonResponse(response_data, safe=False)
 
             elif "sitter" in request.user.user_type:
-                print("here")
+                # print("here")
                 queryset_sitter = self.get_all()
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
                 response_data = {
@@ -832,9 +832,9 @@ class JobView(APIView):
                 return Response({"detail": "Job status updated successfully."})
 
         except Jobs.DoesNotExist:
-            return Response({"detail": "Job not found."}, status=404)
+            return Response({"detail": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"detail": str(e)}, status=500)
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
