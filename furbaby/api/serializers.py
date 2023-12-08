@@ -99,6 +99,14 @@ class UserLocationSerializer(serializers.Serializer):
     def create(self, validated_data):
         return Locations.objects.create(**validated_data)
 
+    def update(self, instance, validated_data):
+        instance.address = validated_data.get("address", instance.address)
+        instance.city = validated_data.get("city", instance.city)
+        instance.country = validated_data.get("country", instance.country)
+        instance.zipcode = validated_data.get("zipcode", instance.zipcode)
+        instance.save()
+        return instance
+
 
 class PetSerializer(serializers.ModelSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())

@@ -435,7 +435,7 @@ class UserLocationView(APIView):  # type: ignore
 
     # takes as input a user_id and returns a JSON of all the locations for that user
     def get_user_locations(self, request):
-        locations = Locations.objects.filter(user_id=request.user.id)
+        locations = Locations.objects.filter(user_id=request.user.id).order_by("created_at")
         location_list = [
             {
                 "id": location.id,
@@ -460,36 +460,53 @@ class UserLocationView(APIView):  # type: ignore
             )
 
         try:
-            updated_fields = []
             location = Locations.objects.get(id=location_id)
-            if "address" in request.data:
-                location.address = request.data["address"]
-                updated_fields.append("address")
-            if "city" in request.data:
-                location.city = request.data["city"]
-                updated_fields.append("city")
-            if "country" in request.data:
-                location.country = request.data["country"]
-                updated_fields.append("country")
-            if "zipcode" in request.data:
-                location.zipcode = request.data["zipcode"]
-                updated_fields.append("zipcode")
-            if "default_location" in request.data:
-                if request.data["default_location"] == True:
-                    # unset all other locations as default
-                    Locations.objects.filter(user_id=request.user.id).update(default_location=False)
-                location.default_location = request.data["default_location"]
-                updated_fields.append("default_location")
+            request.data.pop("id")
+            request.data["default_location"] = location.default_location
+            serializer = self.serializer_class(
+                location, data=request.data, partial=True, context={"request": request}
+            )
+            if not serializer.is_valid():
+                return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            # location.save()
-            location.save(update_fields=updated_fields)
-
+            serializer.save()
+            print(request.data)
             return json_response(
-                self.get_location_record(location),
+                location.id,
                 status.HTTP_200_OK,
                 safe=False,
                 include_data=False,
             )
+
+            # updated_fields = []
+            # if "address" in request.data:
+            #     location.address = request.data["address"]
+            #     updated_fields.append("address")
+            # if "city" in request.data:
+            #     location.city = request.data["city"]
+            #     updated_fields.append("city")
+            # if "country" in request.data:
+            #     location.country = request.data["country"]
+            #     updated_fields.append("country")
+            # if "zipcode" in request.data:
+            #     location.zipcode = request.data["zipcode"]
+            #     updated_fields.append("zipcode")
+            # if "default_location" in request.data:
+            #     if request.data["default_location"] == True:
+            #         # unset all other locations as default
+            #         Locations.objects.filter(user_id=request.user.id).update(default_location=False)
+            #     location.default_location = request.data["default_location"]
+            #     updated_fields.append("default_location")
+            #
+            # # location.save()
+            # location.save(update_fields=updated_fields)
+            #
+            # return json_response(
+            #     self.get_location_record(location),
+            #     status.HTTP_200_OK,
+            #     safe=False,
+            #     include_data=False,
+            # )
         except Locations.DoesNotExist:
             return json_response(
                 data={
@@ -812,7 +829,6 @@ class JobView(APIView):
                 return JsonResponse(response_data, safe=False)
 
             elif "sitter" in request.user.user_type:
-                print("here")
                 queryset_sitter = self.get_all()
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
                 response_data = {
@@ -825,7 +841,6 @@ class JobView(APIView):
         job_id = self.request.data.get("id")  # type: ignore
         try:
             job = Jobs.objects.get(id=job_id)
-            # print(job.status)
             if job.status == "open":
                 job.status = "acceptance_complete"
                 job.save()
@@ -885,7 +900,6 @@ class ApplicationView(APIView):
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
         application_id = request.data.get("id")
-        # print(application_id)
         try:
             application = Applications.objects.get(id=application_id)
         except Applications.DoesNotExist:
@@ -894,7 +908,6 @@ class ApplicationView(APIView):
 
         # Check if the user making the request is the owner of the application
         if request.user == job_instance.user:
-            # print(request.user)
             # Check if the job status is "open"
             if job_instance.status == "open":
                 # Update the application status based on your requirements
@@ -928,7 +941,6 @@ class ApplicationView(APIView):
 
     def post(self, request, *args, **kwargs):
         job_id = self.request.data.get("id")  # type: ignore
-        # print(request.data)
         # print(job_id)
         try:
             job = Jobs.objects.get(id=job_id)

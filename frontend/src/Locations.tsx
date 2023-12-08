@@ -15,7 +15,7 @@ const Locations = () => {
   const [locations, setLocations] = useState<FurbabyLocation[]>([]);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("New York City");
-  const [country, setCountry] = useState("usa");
+  const [country, setCountry] = useState("USA");
   const [zipcode, setZipcode] = useState("");
 
   const onClickConfirm = () => {
@@ -46,9 +46,11 @@ const Locations = () => {
   };
 
   const onCloseModal = () => {
+    setEditLocationId("");
     setAddress("");
-    setCity("");
-    setCountry("");
+    setCity("New York City");
+    setCountry("USA");
+    setZipcode("");
     setOpen(false);
   };
 
@@ -131,23 +133,28 @@ const Locations = () => {
   }, [locations]);
 
   const onClickEditConfirm = () => {
+    console.log(editLocationId);
     axios
       .put(
         API_ROUTES.USER.LOCATION,
-        JSON.stringify({
+          {
           id: editLocationId,
           address,
           city,
-          zipcode,
           country,
-        })
+          zipcode,
+        }
       )
       .then((response) => {
         // TODO: handle response
-        //console.log(response);
+        if (response.status === 200) {
+          onCloseModal();
+          toast.success("Location updated successfully.");
+        }
       })
       .catch((err) => {
         // TODO: handle error
+        toast.error("Failed to update location.");
         console.error(err);
       });
   };
@@ -184,10 +191,9 @@ const Locations = () => {
                   autoComplete="country-name"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  defaultValue="usa"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  <option value="usa">United States</option>
+                  <option value="USA">USA</option>
                 </select>
               </div>
             </div>
