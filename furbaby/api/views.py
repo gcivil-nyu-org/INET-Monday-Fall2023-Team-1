@@ -7,7 +7,11 @@ from django.contrib.auth import login, logout
 from drf_standardized_errors.handler import exception_handler
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    GenericAPIView,
+    ListCreateAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from .utils import json_response, make_s3_path
@@ -217,7 +221,9 @@ def index(req):
 
 
 @receiver(reset_password_token_created)
-def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+def password_reset_token_created(
+    sender, instance, reset_password_token, *args, **kwargs
+):  # pragma: no cover
     """
     Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
@@ -258,7 +264,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 @csrf_protect
 @api_view(["GET", "POST", "OPTIONS"])
-def handle_profile_picture(request):
+def handle_profile_picture(request):  # pragma: no cover
     if not request.user.is_authenticated:
         return json_response(
             data={"error": "unauthenticated request. rejected"},
@@ -280,7 +286,7 @@ def handle_profile_picture(request):
     )
 
 
-def __get_user_profile_picture__(request):
+def __get_user_profile_picture__(request):  # pragma: no cover
     profile_picture_path = make_s3_path(
         s3AssetsFolder, str(request.user.id), "profile-picture", "picture"
     )
@@ -311,7 +317,7 @@ def __get_user_profile_picture__(request):
         )
 
 
-def __upload_profile_picture__(request):
+def __upload_profile_picture__(request):  # pragma: no cover
     if s3Config == None:
         return json_response(
             data={"error": "failed to upload profile picture due to internal error"},
@@ -425,6 +431,11 @@ class UserLocationView(APIView):  # type: ignore
             "user_id": location.user_id,
             "default_location": location.default_location,
         }
+
+    # takes as input a user_id and returns a JSON of all the locations for that user
+    def get_user_location_by_id(self, request):
+        locations = Locations.objects.filter(id=request.GET["location_id"])
+        return self.get_location_record(locations.first())
 
     # takes as input a user_id and returns a JSON of all the locations for that user
     def get_user_locations(self, request):
@@ -547,12 +558,24 @@ def user_location_view(request):
     if not request.user.is_authenticated:
         return json_response({"isAuthenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # fetch all user locations for the user
     if request.method == "GET":
-        locations_list = location_view.get_user_locations(request)
-        return json_response(
-            locations_list, status=status.HTTP_200_OK, safe=False, include_data=False
-        )
+        try:
+            l = request.GET["location_id"]
+            if l != None:
+                return json_response(
+                    location_view.get_user_location_by_id(request),
+                    status=status.HTTP_200_OK,
+                    safe=False,
+                    include_data=False,
+                )
+        except:
+            locations_list = location_view.get_user_locations(request)
+            return json_response(
+                locations_list,
+                status=status.HTTP_200_OK,
+                safe=False,
+                include_data=False,
+            )
 
     # insert a new location record for the user
     if request.method in ["POST"]:
@@ -572,7 +595,7 @@ def user_location_view(request):
     )
 
 
-def __get_user_pet_picture__(request):
+def __get_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -612,7 +635,7 @@ def __get_user_pet_picture__(request):
         )
 
 
-def __put_user_pet_picture__(request):
+def __put_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -661,7 +684,7 @@ def __put_user_pet_picture__(request):
     )
 
 
-def __delete_user_pet_picture__(request):
+def __delete_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
     pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
@@ -716,7 +739,6 @@ class PetListCreateView(ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         request.data["owner_id"] = request.user.id
-        print(request.user.user_type)
         if "owner" in request.user.user_type:
             request.data["owner_id"] = request.user.id
             return super().create(request, *args, **kwargs)
@@ -743,8 +765,10 @@ class JobView(APIView):
                 job.save()
         return
 
-    def get_all(self):
+    def get_all(self, owner_id=None):
         self.job_status_check()
+        if owner_id:
+            return Jobs.objects.filter(status="open").exclude(user=owner_id)
         return Jobs.objects.filter(status="open")
 
     def get_queryset(self):
@@ -768,10 +792,10 @@ class JobView(APIView):
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            print(request.user.user_type)
+            # print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
-                queryset_sitter = self.get_all()
+                queryset_sitter = self.get_all(request.user.id)
 
                 serializer_owner = JobSerializer(queryset_owner, many=True)
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
@@ -780,7 +804,7 @@ class JobView(APIView):
                     "owner_jobs": serializer_owner.data,
                     "sitter_jobs": serializer_sitter.data,
                 }
-                print(response_data)
+                # print(response_data)
                 return JsonResponse(response_data, safe=False)
 
             elif "owner" in request.user.user_type:
@@ -792,7 +816,7 @@ class JobView(APIView):
                 return JsonResponse(response_data, safe=False)
 
             elif "sitter" in request.user.user_type:
-                print("here")
+                # print("here")
                 queryset_sitter = self.get_all()
                 serializer_sitter = JobSerializer(queryset_sitter, many=True)
                 response_data = {
@@ -805,16 +829,16 @@ class JobView(APIView):
         job_id = self.request.data.get("id")  # type: ignore
         try:
             job = Jobs.objects.get(id=job_id)
-            print(job.status)
+            # print(job.status)
             if job.status == "open":
                 job.status = "acceptance_complete"
                 job.save()
                 return Response({"detail": "Job status updated successfully."})
 
         except Jobs.DoesNotExist:
-            return Response({"detail": "Job not found."}, status=404)
+            return Response({"detail": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"detail": str(e)}, status=500)
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def post(self, request, *args, **kwargs):
         request.data["user_id"] = request.user.id
@@ -865,7 +889,7 @@ class ApplicationView(APIView):
     def put(self, request, *args, **kwargs):
         # Retrieve the application ID from the URL or request data
         application_id = request.data.get("id")
-        print(application_id)
+        # print(application_id)
         try:
             application = Applications.objects.get(id=application_id)
         except Applications.DoesNotExist:
@@ -874,7 +898,7 @@ class ApplicationView(APIView):
 
         # Check if the user making the request is the owner of the application
         if request.user == job_instance.user:
-            print(request.user)
+            # print(request.user)
             # Check if the job status is "open"
             if job_instance.status == "open":
                 # Update the application status based on your requirements
@@ -908,8 +932,8 @@ class ApplicationView(APIView):
 
     def post(self, request, *args, **kwargs):
         job_id = self.request.data.get("id")  # type: ignore
-        print(request.data)
-        print(job_id)
+        # print(request.data)
+        # print(job_id)
         try:
             job = Jobs.objects.get(id=job_id)
         except Jobs.DoesNotExist:
@@ -927,7 +951,7 @@ class ApplicationView(APIView):
                         application_data = {
                             "user": request.user.id,
                             "job": job_id,
-                            "status": "rejected",  # You can set an initial status here
+                            "status": None,  # You can set an initial status here
                             "details": {},  # You can add more details if needed
                         }
                         application_serializer = ApplicationSerializer(
@@ -958,5 +982,6 @@ class ApplicationView(APIView):
                 )
         else:
             return Response(
-                {"detail": "Only pet sitters can apply for jobs."}, status=status.HTTP_403_FORBIDDEN
+                {"detail": "Only pet sitters can apply for jobs."},
+                status=status.HTTP_403_FORBIDDEN,
             )

@@ -12,9 +12,7 @@ import { FurbabyLocation } from "./types";
 const Locations = () => {
   const [open, setOpen] = useState(false);
   const [editLocationId, setEditLocationId] = useState("");
-
   const [locations, setLocations] = useState<FurbabyLocation[]>([]);
-  const [state, setState] = useState("NY");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("New York City");
   const [country, setCountry] = useState("usa");
@@ -25,7 +23,6 @@ const Locations = () => {
       .post(
         API_ROUTES.USER.LOCATION,
         JSON.stringify({
-          // state,
           address,
           city,
           zipcode,
@@ -39,7 +36,7 @@ const Locations = () => {
           onCloseModal();
           toast.success("Location added successfully.");
         }
-        console.log(response);
+        //console.log(response);
       })
       .catch((err) => {
         // TODO: handle error
@@ -49,7 +46,6 @@ const Locations = () => {
   };
 
   const onCloseModal = () => {
-    setState("");
     setAddress("");
     setCity("");
     setCountry("");
@@ -60,7 +56,7 @@ const Locations = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
-        console.log(response, response.data);
+        //(response, response.data);
         setLocations(response?.data ?? []);
         // return response;
       })
@@ -91,12 +87,11 @@ const Locations = () => {
     setAddress(location.address);
     setCity(location.city);
     setCountry(location.country);
-    setState(location.state);
     setZipcode(location.zipcode);
   };
 
   const renderCards = React.useMemo(() => {
-    console.log(locations);
+    //console.log(locations);
 
     if (locations.length) {
       return (
@@ -107,7 +102,7 @@ const Locations = () => {
                 <h2 className="card-title">Location {index + 1}</h2>
                 <p className="prose">{loc.address}</p>
                 <p className="prose">
-                  {loc.city}, {loc.state}, {loc.country} - {loc.zipcode}
+                  {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
                 <div className="card-actions justify-between items-center">
                   {loc.default_location && <div className="badge badge-outline">Default</div>}
@@ -141,7 +136,6 @@ const Locations = () => {
         API_ROUTES.USER.LOCATION,
         JSON.stringify({
           id: editLocationId,
-          state,
           address,
           city,
           zipcode,
@@ -150,7 +144,7 @@ const Locations = () => {
       )
       .then((response) => {
         // TODO: handle response
-        console.log(response);
+        //console.log(response);
       })
       .catch((err) => {
         // TODO: handle error
@@ -230,23 +224,6 @@ const Locations = () => {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   autoComplete="address-level2"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div className="sm:col-span-2">
-              <label htmlFor="region" className="block text-sm font-medium leading-6 text-gray-900">
-                State / Province
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  name="region"
-                  id="region"
-                  autoComplete="address-level1"
-                  value={state}
-                  onChange={(e) => setState(e.target.value)}
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>

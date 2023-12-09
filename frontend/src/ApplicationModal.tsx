@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
-import { API_ROUTES } from "./constants";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
+
+import { API_ROUTES } from "./constants";
 
 interface User {
   id: string;
@@ -38,7 +38,7 @@ const updateJobStatus = async (jobId: string) => {
     });
 
     if (response.status === 200) {
-      console.log(`Job with ID ${jobId} updated successfully.`);
+      toast.success(`Job with ID ${jobId} updated successfully`);
     } else {
       console.error("Failed to update job.");
       // Handle the error scenario
@@ -55,7 +55,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
 
   const toggleApplicationDetails = (applicationId: string) => {
     setSelectedApplicationId(selectedApplicationId === applicationId ? null : applicationId);
-  }
+  };
   const handleAccept = async (applicationId: string, jobId: string) => {
     try {
       const newStatus = "accepted";
@@ -65,7 +65,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
       });
 
       if (response.status === 200) {
-        console.log(`Application with ID ${applicationId} accepted successfully.`);
+        //console.log(`Application with ID ${applicationId} accepted successfully.`);
         setAcceptedApplications((prevAccepted) => [...prevAccepted, applicationId]);
         updateJobStatus(jobId);
         toast.success(
@@ -81,6 +81,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
         console.error("Failed to accept application.");
         // Handle the error scenario
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error accepting application:", error);
 
@@ -113,13 +114,21 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
                 >
                   {application.user.username}
                 </span>
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${application.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                    application.status === "accepted"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
                   {application.status}
                 </span>
               </div>
               {selectedApplicationId === application.id && (
                 <div className="mt-2">
-                  <p className="text-sm text-gray-600">Date of Birth: {application.user.date_of_birth}</p>
+                  <p className="text-sm text-gray-600">
+                    Date of Birth: {application.user.date_of_birth}
+                  </p>
                   <p className="text-sm text-gray-600">Experience: {application.user.experience}</p>
                   {/* Add more fields as needed */}
                 </div>
@@ -148,7 +157,6 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
       </div>
     </div>
   );
-
 };
 
 export default ApplicationModal;
