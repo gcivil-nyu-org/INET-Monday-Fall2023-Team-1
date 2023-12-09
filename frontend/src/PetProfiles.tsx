@@ -18,21 +18,6 @@ interface Pet {
   health_requirements: string;
 }
 
-interface EditPetFormData {
-  name: string;
-  species: string;
-  breed: string;
-  weight: string;
-  color: string;
-  height: string;
-  chip_number: string;
-  health_requirements: string;
-  pictures: string[];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface PetProfilePageProps {}
-
 const PetProfiles: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
@@ -307,7 +292,7 @@ const PetProfiles: React.FC = () => {
   );
 };
 
-const PetProfilePage: React.FC<PetProfilePageProps> = () => {
+const PetProfilePage = () => {
   const [activeTab, setActiveTab] = useState("view");
   const [petFormData, setPetFormData] = useState({
     name: "",
