@@ -2,9 +2,10 @@ import { Tab } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { formatDate } from "./utils";
+
 import ApplicationModal from "./ApplicationModal";
 import { API_ROUTES } from "./constants";
+import { formatDate } from "./utils";
 
 interface Job {
   id: string;
