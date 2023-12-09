@@ -215,8 +215,8 @@ const Dashboard = () => {
                               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                               <p>Job Status: {job.status}</p>
                               <p>
-                                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
-                                {job?.location?.zipcode ?? ""}
+                                Location: {job?.location?.address ?? ""},{" "}
+                                {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
                               </p>
                               <p>Pay: ${job.pay}</p>
                               <p>Start: {formatDate(job.start)}</p>
@@ -235,7 +235,6 @@ const Dashboard = () => {
                       </div>
                     ))
                   )}
-
                 </div>
               </div>
             )}
@@ -265,15 +264,15 @@ const Dashboard = () => {
                           {!myApplications.status ? "No Decision" : myApplications.status}
                         </p>
                       </div>
-                    </li >
+                    </li>
                   ))}
-                </ul >
-              </div >
+                </ul>
+              </div>
             )}
-          </Tab.Panel >
-        </Tab.Panels >
-      </Tab.Group >
-    </div >
+          </Tab.Panel>
+        </Tab.Panels>
+      </Tab.Group>
+    </div>
   );
 };
 
