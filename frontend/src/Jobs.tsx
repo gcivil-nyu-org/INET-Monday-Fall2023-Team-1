@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { formatDate } from "./utils";
 import ApplicationModal from "./ApplicationModal";
 import { API_ROUTES } from "./constants";
 
@@ -12,8 +12,8 @@ interface Job {
   location: Location;
   status: string;
   pay: string;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
 }
 
 interface Location {
@@ -56,7 +56,7 @@ interface Application {
   // Add more fields as needed
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface JobPageProps {}
+interface JobPageProps { }
 
 const Jobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -215,18 +215,22 @@ const Jobs: React.FC = () => {
               <div>
                 <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                 <p>Status: {job.status}</p>
-                <p>Location: {job?.location?.address ?? ""}</p>
+                <p>
+                  Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                  {job?.location?.zipcode ?? ""}
+                </p>
                 <p>Pay: {job.pay}</p>
-                <p>Start: {job.start}</p>
-                <p>End: {job.end}</p>
+                <p>Start: {formatDate(job.start)}</p>
+                <p>End: {formatDate(job.end)}</p>
               </div>
               <div className="mt-4 flex">
                 <button
                   onClick={() => handleDelete(job.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                  className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
                 >
                   Delete
                 </button>
+
 
                 {job.status === "open" && (
                   <button

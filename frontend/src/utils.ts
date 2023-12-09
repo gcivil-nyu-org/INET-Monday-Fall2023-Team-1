@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -23,4 +25,8 @@ const getCurrentAge = (date: string) => {
   return Math.floor(((today as any) - (dob as any)) / 31557600000);
 };
 
-export { classNames, getCurrentAge, isJSONString, validateEmail };
+const formatDate = (date: Date) => {
+  return format(new Date(date), "MM/dd/yyyy HH:mm a");
+};
+
+export { classNames, formatDate, getCurrentAge, isJSONString, validateEmail };

@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { formatDate } from "./utils";
 import { API_ROUTES } from "./constants";
 
 type Job = {
@@ -13,8 +13,8 @@ type Job = {
   status: string;
   location: Location;
   pay: number;
-  start: string;
-  end: string;
+  start: Date;
+  end: Date;
 };
 
 interface Pet {
@@ -215,12 +215,12 @@ const Dashboard = () => {
                               <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
                               <p>Job Status: {job.status}</p>
                               <p>
-                                Location: {job?.location?.address ?? ""},{" "}
-                                {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
+                                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                                {job?.location?.zipcode ?? ""}
                               </p>
                               <p>Pay: ${job.pay}</p>
-                              <p>Start: {job.start}</p>
-                              <p>End: {job.end}</p>
+                              <p>Start: {formatDate(job.start)}</p>
+                              <p>End: {formatDate(job.end)}</p>
                               {job.status === "open" && (
                                 <button
                                   onClick={() => applyForJob(job.id)}
@@ -235,6 +235,7 @@ const Dashboard = () => {
                       </div>
                     ))
                   )}
+
                 </div>
               </div>
             )}
@@ -249,28 +250,30 @@ const Dashboard = () => {
                       key={myApplications.id}
                       className="border border-gray-300 mb-4 p-4 rounded-md"
                     >
-                      <p className="font-bold mb-2">Pet Name : {myApplications.pet.name}</p>
-                      <p>
-                        Location: {myApplications?.location?.address ?? ""},{" "}
-                        {myApplications?.location?.city ?? ""},{" "}
-                        {myApplications?.location?.zipcode ?? ""}
-                      </p>
-                      <p>Pay: ${myApplications.job.pay}</p>
-                      <p>Start: {myApplications.job.start}</p>
-                      <p>End: {myApplications.job.end}</p>
-                      <p className="font-bold mb-2">
-                        Application Status:{" "}
-                        {!myApplications.status ? "No Decision" : myApplications.status}
-                      </p>
-                    </li>
+                      <div>
+                        <p className="font-bold mb-2">Pet Name : {myApplications.pet.name}</p>
+                        <p>
+                          Location: {myApplications?.location?.address ?? ""},{" "}
+                          {myApplications?.location?.city ?? ""},{" "}
+                          {myApplications?.location?.zipcode ?? ""}
+                        </p>
+                        <p>Pay: ${myApplications.job.pay}</p>
+                        <p>Start: {formatDate(myApplications.job.start)}</p>
+                        <p>End: {formatDate(myApplications.job.end)}</p>
+                        <p className="font-bold mb-2">
+                          Application Status:{" "}
+                          {!myApplications.status ? "No Decision" : myApplications.status}
+                        </p>
+                      </div>
+                    </li >
                   ))}
-                </ul>
-              </div>
+                </ul >
+              </div >
             )}
-          </Tab.Panel>
-        </Tab.Panels>
-      </Tab.Group>
-    </div>
+          </Tab.Panel >
+        </Tab.Panels >
+      </Tab.Group >
+    </div >
   );
 };
 
