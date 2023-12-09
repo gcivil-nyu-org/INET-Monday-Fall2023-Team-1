@@ -97,46 +97,45 @@ const Dashboard = () => {
     fetchJobs();
   }, []);
 
-  useEffect(() => {
-    const fetchMyApplications = async () => {
-      try {
-        const response = await axios.get(`${API_ROUTES.APPLY}`);
-        if (response.status !== 200) {
-          throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
-        }
-        //console.log("my applications", response.data)
-
-        const myApplicationsWithJobDetails = await Promise.all(
-          response.data.map(async (myApplications: Application) => {
-            //console.log("myApplications.job", myApplications.job)
-            const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
-              params: { id: myApplications.job },
-            });
-            const jobDetail = jobDetailsResponse.data;
-
-            const locationDetailsResponse = await axios.get(
-              `${API_ROUTES.USER.LOCATION}?location_id=${jobDetail.location}`
-            );
-            const locationDetail = locationDetailsResponse.data;
-
-            const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
-            const petDetail = petDetailsResponse.data;
-
-            return {
-              ...myApplications,
-              job: jobDetail,
-              location: locationDetail,
-              pet: petDetail,
-            };
-          })
-        );
-        //console.log("my applications with job details", myApplicationsWithJobDetails)
-        setMyApplications(myApplicationsWithJobDetails);
-      } catch (error) {
-        console.error(error);
+  const fetchMyApplications = async () => {
+    try {
+      const response = await axios.get(`${API_ROUTES.APPLY}`);
+      if (response.status !== 200) {
+        throw new Error(`Failed to fetch my applications. Status: ${response.status}`);
       }
-    };
+      //console.log("my applications", response.data)
 
+      const myApplicationsWithJobDetails = await Promise.all(
+        response.data.map(async (myApplications: Application) => {
+          //console.log("myApplications.job", myApplications.job)
+          const jobDetailsResponse = await axios.get(API_ROUTES.JOBS, {
+            params: { id: myApplications.job },
+          });
+          const jobDetail = jobDetailsResponse.data;
+
+          const locationDetailsResponse = await axios.get(
+            `${API_ROUTES.USER.LOCATION}?location_id=${jobDetail.location}`
+          );
+          const locationDetail = locationDetailsResponse.data;
+
+          const petDetailsResponse = await axios.get(`${API_ROUTES.PETS}${jobDetail.pet}`);
+          const petDetail = petDetailsResponse.data;
+
+          return {
+            ...myApplications,
+            job: jobDetail,
+            location: locationDetail,
+            pet: petDetail,
+          };
+        })
+      );
+      //console.log("my applications with job details", myApplicationsWithJobDetails)
+      setMyApplications(myApplicationsWithJobDetails);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
     fetchMyApplications();
   }, []);
 
@@ -146,8 +145,10 @@ const Dashboard = () => {
       await axios.post(`${API_ROUTES.APPLY}`, {
         id: jobId,
       });
+
       //console.log(response.data);
       toast.success("Application submitted successfully!");
+      fetchMyApplications();
     } catch (error) {
       console.error(error);
       toast.error("Failed to apply for the job.");
@@ -202,34 +203,38 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div>
-                  {filteredJobs.map((job) => (
-                    <div key={job.id} className="max-w-screen-md mx-auto p-6">
-                      {error && <p className="text-red-500">{error}</p>}
-                      <ul className="list-none p-0">
-                        <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-                          <div>
-                            <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-                            <p>Job Status: {job.status}</p>
-                            <p>
-                              Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
-                              {job?.location?.zipcode ?? ""}
-                            </p>
-                            <p>Pay: ${job.pay}</p>
-                            <p>Start: {formatDate(job.start)}</p>
-                            <p>End: {formatDate(job.end)}</p>
-                            {job.status === "open" && (
-                              <button
-                                onClick={() => applyForJob(job.id)}
-                                className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
-                              >
-                                Apply Now
-                              </button>
-                            )}
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  ))}
+                  {filteredJobs.length === 0 ? (
+                    <p>No jobs available at the moment.</p>
+                  ) : (
+                    filteredJobs.map((job) => (
+                      <div key={job.id} className="max-w-screen-md mx-auto p-6">
+                        {error && <p className="text-red-500">{error}</p>}
+                        <ul className="list-none p-0">
+                          <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+                            <div>
+                              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                              <p>Job Status: {job.status}</p>
+                              <p>
+                                Location: {job?.location?.address ?? ""},{" "}
+                                {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
+                              </p>
+                              <p>Pay: ${job.pay}</p>
+                              <p>Start: {formatDate(job.start)}</p>
+                              <p>End: {formatDate(job.end)}</p>
+                              {job.status === "open" && (
+                                <button
+                                  onClick={() => applyForJob(job.id)}
+                                  className="bg-blue-500 text-white py-2 px-4 rounded mt-4 hover:bg-blue-600"
+                                >
+                                  Apply Now
+                                </button>
+                              )}
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}

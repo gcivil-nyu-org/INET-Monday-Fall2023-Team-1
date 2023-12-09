@@ -42,6 +42,9 @@ interface User {
   username: string;
   date_of_birth: string;
   experience: string;
+  qualifications: string;
+  phone_number: string;
+  email: string;
 }
 
 interface Application {
@@ -74,6 +77,7 @@ const Jobs: React.FC = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    fetchJobs();
   };
 
   useEffect(() => {
@@ -121,21 +125,21 @@ const Jobs: React.FC = () => {
   };
 
   const handleDelete = async (jobId: string) => {
-    const deleteConsent = window.confirm("Are you sure you want to delete this pet?");
+    const deleteConsent = window.confirm("Are you sure you want to delete this job?");
     if (deleteConsent) {
       try {
         const response = await axios.delete(API_ROUTES.JOBS, {
           data: { id: jobId },
         });
         if (response.status === 200) {
-          window.location.reload();
-          toast.success("Pet profile deleted successfully");
+          toast.success("Job profile deleted successfully");
+          fetchJobs();
         } else {
-          throw new Error("Failed to delete pet profile");
+          throw new Error("Failed to delete job");
         }
       } catch (err) {
         console.error(err);
-        toast.error("Failed to delete pet profile");
+        toast.error("Failed to delete job");
       }
     }
   };
@@ -202,54 +206,58 @@ const Jobs: React.FC = () => {
   return (
     <div className="max-w-screen-md mx-auto p-6">
       {error && <p className="text-red-500">{error}</p>}
-      <ul className="list-none p-0">
-        {jobs.map((job: Job) => (
-          <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
-            <div>
-              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-              <p>Status: {job.status}</p>
-              <p>
-                Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
-                {job?.location?.zipcode ?? ""}
-              </p>
-              <p>Pay: {job.pay}</p>
-              <p>Start: {formatDate(job.start)}</p>
-              <p>End: {formatDate(job.end)}</p>
-            </div>
-            <div className="mt-4 flex">
-              <button
-                onClick={() => handleDelete(job.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
-              >
-                Delete
-              </button>
+      {jobs.length === 0 ? (
+        <p className="text-gray-600">No jobs available.</p>
+      ) : (
+        <ul className="list-none p-0">
+          {jobs.map((job: Job) => (
+            <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
+              <div>
+                <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
+                <p>Status: {job.status}</p>
+                <p>
+                  Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
+                  {job?.location?.zipcode ?? ""}
+                </p>
+                <p>Pay: {job.pay}</p>
+                <p>Start: {formatDate(job.start)}</p>
+                <p>End: {formatDate(job.end)}</p>
+              </div>
+              <div className="mt-4 flex">
+                <button
+                  onClick={() => handleDelete(job.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+                >
+                  Delete
+                </button>
 
-              {job.status === "open" && (
-                <button
-                  onClick={() => {
-                    viewApplication(job.id);
-                    openModal();
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  View Application
-                </button>
-              )}
-              {job.status === "acceptance_complete" && (
-                <button
-                  onClick={() => {
-                    viewConfirmedApplication(job.id);
-                    openModal();
-                  }}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  View Confirmed Application
-                </button>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+                {job.status === "open" && (
+                  <button
+                    onClick={() => {
+                      viewApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Application
+                  </button>
+                )}
+                {job.status === "acceptance_complete" && (
+                  <button
+                    onClick={() => {
+                      viewConfirmedApplication(job.id);
+                      openModal();
+                    }}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    View Confirmed Application
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
       <ApplicationModal
         isOpen={isModalOpen}
         onClose={closeModal}

@@ -105,11 +105,9 @@ const AppRouter = () => {
       <Route
         path="locations"
         element={
-          <ProtectedRoute>
-            <Home
-              authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
-            />
-          </ProtectedRoute>
+          <Home
+            authContext={{ onLogin, onRegister, passwordReset, authenticationState, ...rest }}
+          />
         }
       />
       <Route path="*" element={<NotFound />} />
