@@ -596,9 +596,9 @@ def user_location_view(request):
 
 
 def __get_user_pet_picture__(request):  # pragma: no cover
-    pet_id = request.data["pet_id"]
+    pet_id = request.GET["id"]
 
-    pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
+    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
 
     if pet_info == None:
         return json_response(
@@ -638,7 +638,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
 def __put_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
-    pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
+    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
 
     if pet_info == None:
         return json_response(
@@ -646,7 +646,7 @@ def __put_user_pet_picture__(request):  # pragma: no cover
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    picture = request.FILES["picture"]
+    picture = request.FILES["pet_picture"]
 
     if picture == None:
         return json_response(
