@@ -465,8 +465,8 @@ class UserLocationView(APIView):  # type: ignore
 
         try:
             location = Locations.objects.get(id=location_id)
-            request.data.pop("id")
-            request.data["default_location"] = location.default_location
+            if "default_location" not in request.data:
+                request.data["default_location"] = location.default_location
             serializer = self.serializer_class(
                 location, data=request.data, partial=True, context={"request": request}
             )
@@ -474,7 +474,6 @@ class UserLocationView(APIView):  # type: ignore
                 return json_response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             serializer.save()
-            print(request.data)
             return json_response(
                 location.id,
                 status.HTTP_200_OK,

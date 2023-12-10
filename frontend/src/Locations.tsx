@@ -75,7 +75,7 @@ const Locations = () => {
 
   const setAsDefault = (location: FurbabyLocation) => {
     axios
-      .put(API_ROUTES.USER.LOCATION, JSON.stringify({ ...location, default_location: true }))
+      .put(API_ROUTES.USER.LOCATION, { ...location, default_location: true })
       .then((resp) => {
         console.log(resp);
       })
@@ -146,8 +146,7 @@ const Locations = () => {
           zipcode,
         }
       )
-      .then(() => {
-        toast.success("your changes have been saved");
+      .then((response) => {
         // TODO: handle response
         if (response.status === 200) {
           onCloseModal();

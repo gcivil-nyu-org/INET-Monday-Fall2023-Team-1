@@ -885,7 +885,6 @@ class LocationViewTest(TestCase):
             "city": "New York City",
             "country": "USA",
             "zipcode": "12345",
-            "default_location": True,
         }
         response = client.put(url, data, format="json")
         data = json.loads(response.content)
@@ -912,7 +911,6 @@ class LocationViewTest(TestCase):
             "city": "New York City",
             "country": "USA",
             "zipcode": "12345",
-            "default_location": True,
         }
         response = client.put(url, data, format="json")
         data = json.loads(response.content)
@@ -937,9 +935,8 @@ class LocationViewTest(TestCase):
             "id": location.id,
             "address": "456 Main St",
             "city": "NYC",
-            "country": "US",
+            "country": "USA",
             "zipcode": "45678",
-            "default_location": True,
         }
         response = client.put(url, data, format="json")
         data = json.loads(response.content)
