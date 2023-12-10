@@ -364,35 +364,37 @@ def __upload_profile_picture__(request):  # pragma: no cover
     )
 
 
-# @csrf_protect
-# @api_view(["POST", "GET", "OPTIONS", "DELETE"])
-# def handle_pet_pictures(request):
-#     if not request.user.is_authenticated:
-#         return json_response(
-#             data={"error": "unauthenticated request. rejected"},
-#             status=status.HTTP_401_UNAUTHORIZED,
-#         )
+@csrf_protect
+@api_view(["POST", "GET", "OPTIONS", "DELETE"])
+def handle_pet_pictures(request):
+    if not request.user.is_authenticated:
+        return json_response(
+            data={"error": "unauthenticated request. rejected"},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
 
-#     if s3Config == None:
-#         return json_response(
-#             data={"error": "failed to upload picture due to internal error"},
-#             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#         )
+    if s3Config == None:
+        return json_response(
+            data={"error": "failed to upload picture due to internal error"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
-#     if request.method == "GET":
-#         return __get_user_pet_picture__(request)
+    if request.method == "GET":
+        return __get_user_pet_picture__(request)
 
-#     if request.method == "POST":
-#         return __put_user_pet_picture__(request)
+    if request.method == "POST":
+        return __put_user_pet_picture__(request)
 
-#     if request.method == "DELETE":
-#         return __delete_user_pet_picture__(request)
+    if request.method == "DELETE":
+        return __delete_user_pet_picture__(request)
 
-#     return json_response(
-#         {
-#             "error": "incorrect request method",
-#             "message": 'endpoint only allows only "POST" & "PUT" requests',
-#         },
+    return json_response(
+        {
+            "error": "incorrect request method",
+            "message": 'endpoint only allows only ["GET", "PUT", "DELETE"] requests',
+        },
+        status=status.HTTP_405_METHOD_NOT_ALLOWED,
+    )
 
 
 # This class is for the user location(s)
@@ -594,9 +596,9 @@ def user_location_view(request):
 
 
 def __get_user_pet_picture__(request):  # pragma: no cover
-    pet_id = request.data["pet_id"]
+    pet_id = request.GET["id"]
 
-    pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
+    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
 
     if pet_info == None:
         return json_response(
@@ -636,7 +638,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
 def __put_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.data["pet_id"]
 
-    pet_info = Pets.objects.filter(name=pet_id, owner=request.user.id).first()
+    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
 
     if pet_info == None:
         return json_response(
@@ -644,7 +646,7 @@ def __put_user_pet_picture__(request):  # pragma: no cover
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    picture = request.FILES["picture"]
+    picture = request.FILES["pet_picture"]
 
     if picture == None:
         return json_response(

@@ -55,6 +55,7 @@ export const API_ROUTES = {
     USER_ROOT: "api/user",
     PROFILE_PICTURE: "api/user/profile_picture",
     LOCATION: "api/user/locations",
+    PET_PICTURE: "api/user/pet/pictures",
   },
   PETS: "pets/",
   JOBS: "jobs/",
