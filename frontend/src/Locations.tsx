@@ -143,7 +143,8 @@ const Locations = () => {
           country,
         })
       )
-      .then((response) => {
+      .then(() => {
+        toast.success("your changes have been saved");
         // TODO: handle response
         //console.log(response);
       })
