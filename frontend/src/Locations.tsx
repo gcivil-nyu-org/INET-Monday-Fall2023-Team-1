@@ -108,10 +108,10 @@ const Locations = () => {
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
                 <div className="card-actions justify-between items-center">
-                  {loc.default_location && <div className="badge badge-outline">Default</div>}
                   <button className="btn btn-secondary" onClick={() => onClickEdit(loc)}>
                     Edit
                   </button>
+                  {loc.default_location && <div className="badge badge-outline">Default</div>}
                   {!loc.default_location && (
                     <button className="btn btn-primary" onClick={() => setAsDefault(loc)}>
                       Set as default

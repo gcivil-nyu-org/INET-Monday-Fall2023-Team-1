@@ -23,6 +23,7 @@ interface Location {
   city: string;
   country: string;
   zipcode: string;
+  default_location: boolean;
 }
 
 interface Pet {
@@ -310,9 +311,11 @@ const JobPage: React.FC<JobPageProps> = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
-        //console.log(response, response.data);
         setLocations(response?.data ?? []);
-        // return response;
+        const default_location = response.data.filter((location: Location) => location.default_location);
+        if (default_location.length > 0) {
+          setJobFormData({ ...jobFormData, location: default_location[0].id });
+        }
       })
       .catch((err) => {
         console.error("failed to fetch locations", err);
@@ -333,7 +336,7 @@ const JobPage: React.FC<JobPageProps> = () => {
         .post(API_ROUTES.JOBS, jobFormData)
         .then((response) => {
           if (response.status === 201) {
-            toast.success("Job Addedd Successfully");
+            toast.success("Job Added Successfully");
             setJobFormData({
               pet: "",
               location: "",
