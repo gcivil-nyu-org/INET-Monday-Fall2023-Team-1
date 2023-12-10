@@ -26,6 +26,11 @@ jobs:
       - coverage run --source=api manage.py test --keepdb
 
     after_script:
+      - export CI_NAME=travis-ci
+      - export CI_BUILD_NUMBER=$TRAVIS_BUILD_ID
+      - export CI_BUILD_URL=$TRAVIS_BUILD_WEB_URL
+      - export CI_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+      - export CI_PULL_REQUEST=$TRAVIS_PULL_REQUEST
       - coveralls
 
     deploy:
