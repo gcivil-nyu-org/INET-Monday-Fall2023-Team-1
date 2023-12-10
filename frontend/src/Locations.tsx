@@ -35,6 +35,7 @@ const Locations = () => {
         if (response.status === 201) {
           onCloseModal();
           toast.success("Location added successfully.");
+          getLocations();
         }
         //console.log(response);
       })
