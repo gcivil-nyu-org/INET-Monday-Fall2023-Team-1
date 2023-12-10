@@ -103,9 +103,9 @@ class UserLocationSerializer(serializers.Serializer):
         instance.zipcode = validated_data.get("zipcode", instance.zipcode)
         if validated_data.get("default_location"):
             Locations.objects.filter(user=instance.user).update(default_location=False)
-            instance.default_location = True;
+            instance.default_location = True
         if not validated_data.get("default_location"):
-            instance.default_location = False;
+            instance.default_location = False
         instance.save()
         return instance
 
