@@ -73,9 +73,9 @@ const Locations = () => {
     getLocations(); //.then((response) => {
   }, []);
 
-  const setAsDefault = (location: FurbabyLocation) => {
+  const updateDefault = (location: FurbabyLocation, newDefault: boolean) => {
     axios
-      .put(API_ROUTES.USER.LOCATION, { ...location, default_location: true })
+      .put(API_ROUTES.USER.LOCATION, { ...location, default_location: newDefault })
       .then((resp) => {
         console.log(resp);
       })
@@ -101,19 +101,32 @@ const Locations = () => {
         <div className="grid gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {locations.map((loc, index) => (
             <div className="card w-96 bg-base-100 shadow-md" key={loc.id}>
+              {loc.default_location && (
+                <div className="absolute top-7 right-7">
+                  <div className="badge badge-outline">
+                    Default
+                  </div>
+                </div>
+              )}
               <div className="card-body">
                 <h2 className="card-title">Location {index + 1}</h2>
                 <p className="prose">{loc.address}</p>
                 <p className="prose">
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
-                <div className="card-actions justify-between items-center">
-                  <button className="btn btn-secondary" onClick={() => onClickEdit(loc)}>
+                <div className="card-actions justify-between items-center mt-4">
+                  <button className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
+                    onClick={() => onClickEdit(loc)}>
                     Edit
                   </button>
-                  {loc.default_location && <div className="badge badge-outline">Default</div>}
-                  {!loc.default_location && (
-                    <button className="btn btn-primary" onClick={() => setAsDefault(loc)}>
+                  {loc.default_location ? (
+                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, false)}>
+                      Remove Default
+                    </button>
+                  ) : (
+                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, true)}>
                       Set as default
                     </button>
                   )}
