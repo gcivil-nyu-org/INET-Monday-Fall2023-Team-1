@@ -24,9 +24,15 @@ jobs:
       - black --check .
       - pylint **/*.py --exit-zero
       - coverage run --source=api manage.py test --keepdb
+      - coverage report
 
     after_script:
-      - coveralls
+      - export CI_NAME=travis-ci
+      - export CI_BUILD_NUMBER=$TRAVIS_BUILD_ID
+      - export CI_BUILD_URL=$TRAVIS_BUILD_WEB_URL
+      - export CI_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+      - export CI_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+      - curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls
 
     deploy:
       - provider: elasticbeanstalk

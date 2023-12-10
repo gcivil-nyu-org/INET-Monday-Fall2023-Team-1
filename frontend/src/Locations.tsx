@@ -35,6 +35,7 @@ const Locations = () => {
         if (response.status === 201) {
           onCloseModal();
           toast.success("Location added successfully.");
+          getLocations();
         }
         //console.log(response);
       })
@@ -145,7 +146,8 @@ const Locations = () => {
           zipcode,
         }
       )
-      .then((response) => {
+      .then(() => {
+        toast.success("your changes have been saved");
         // TODO: handle response
         if (response.status === 200) {
           onCloseModal();

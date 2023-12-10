@@ -34,11 +34,11 @@ urlpatterns = [
         views.handle_profile_picture,
         name="user-info-profile-picture",
     ),
-    # path(
-    #     "api/user/pet/pictures",
-    #     views.handle_pet_pictures,
-    #     name="user-info-pet-pictures",
-    # ),
+    path(
+        "api/user/pet/pictures",
+        views.handle_pet_pictures,
+        name="user-info-pet-pictures",
+    ),
     path("api/user/locations", views.user_location_view, name="user-location"),
     path("pets/", PetListCreateView.as_view(), name="pet-list-create"),
     path(
