@@ -221,7 +221,7 @@ const Jobs: React.FC = () => {
                   Location: {job?.location?.address ?? ""}, {job?.location?.city ?? ""},{" "}
                   {job?.location?.zipcode ?? ""}
                 </p>
-                <p>Pay: {job.pay}</p>
+                <p>Pay: ${job.pay}</p>
                 <p>Start: {formatDate(job.start)}</p>
                 <p>End: {formatDate(job.end)}</p>
               </div>

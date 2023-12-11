@@ -55,6 +55,17 @@ interface User {
   username: string;
 }
 
+const PetCardChip = (props: { title: string; value: string }) => {
+  return (
+    <div className="flex flex-row border rounded-md truncate">
+      <span className="uppercase border-r-black font-light border-r-2 p-1 bg-slate-200 w-1/2 text-center">
+        {props.title}
+      </span>
+      <span className="flex flex-row items-center py-1 w-1/2 px-2">{props.value}</span>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("available jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -213,8 +224,18 @@ const Dashboard = () => {
                         <ul className="list-none p-0">
                           <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
                             <div>
-                              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-                              <p>Job Status: {job.status}</p>
+                                <h5 className="font-bold mb-2">Pet Name: {job.pet.name}</h5>
+                              <div className="mb-3 font-normal text-gray-700 grid grid-cols-2 gap-2">
+                                  <PetCardChip title="Species" value={job.pet.species} />
+                                  <PetCardChip title="Breed" value={job.pet.breed} />
+                                  <PetCardChip title="Color" value={job.pet.color} />
+                                  <PetCardChip title="Height" value={job.pet.height} />
+                                  <PetCardChip title="Weight" value={job.pet.weight} />
+                                  <PetCardChip title="Chip" value={job.pet.chip_number} />
+                                <p className="font-bold mb-2">Health Requirements: {job.pet.health_requirements}</p>
+                              </div>
+                              <hr />
+                              <p className="mt-4">Job Status: {job.status}</p>
                               <p>
                                 Location: {job?.location?.address ?? ""},{" "}
                                 {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
