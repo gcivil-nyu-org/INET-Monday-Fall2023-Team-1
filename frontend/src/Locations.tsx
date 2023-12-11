@@ -76,8 +76,8 @@ const Locations = () => {
   const updateDefault = (location: FurbabyLocation, newDefault: boolean) => {
     axios
       .put(API_ROUTES.USER.LOCATION, { ...location, default_location: newDefault })
-      .then((resp) => {
-        console.log(resp);
+      .then(() => {
+        toast.success(`updated default location to ${location.address}`);
         getLocations();
       })
       .catch((err) => {
@@ -104,7 +104,7 @@ const Locations = () => {
       .catch((err) => {
         console.error(err);
       });
-  }
+  };
 
   const renderCards = React.useMemo(() => {
     //console.log(locations);
@@ -112,44 +112,60 @@ const Locations = () => {
     if (locations.length) {
       return (
         <div className="grid gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          {locations.map((loc, index) => (
+          {locations.map((loc) => (
             <div className="card w-96 bg-base-100 shadow-md" key={loc.id}>
               {loc.default_location && (
                 <div className="absolute top-7 right-7">
-                  <div className="badge badge-outline">
-                    Default
-                  </div>
+                  <div className="badge badge-outline">Default</div>
                 </div>
               )}
               <div className="card-body">
-                <h2 className="card-title">Location {index + 1}</h2>
-                <p className="prose">{loc.address}</p>
+                <h2 className="card-title">{loc.address}</h2>
                 <p className="prose">
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
                 <div className="card-actions justify-between items-center mt-4">
                   <div className="flex flex-row align-center space-x-4">
-                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => onClickEdit(loc)}>
+                    <button
+                      className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => onClickEdit(loc)}
+                    >
                       Edit
                     </button>
-                    <button className="px-2 py-1.5 text-xs font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => onClickDelete(loc)}>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244
+                    <button
+                      className="px-2 py-1.5 text-xs font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => onClickDelete(loc)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244
                           2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5
-                          0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                        />
                       </svg>
                     </button>
                   </div>
                   {loc.default_location ? (
-                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => updateDefault(loc, false)}>
+                    <button
+                      className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, false)}
+                    >
                       Remove as Default
                     </button>
                   ) : (
-                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => updateDefault(loc, true)}>
+                    <button
+                      className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, true)}
+                    >
                       Set as default
                     </button>
                   )}
@@ -172,16 +188,13 @@ const Locations = () => {
   const onClickEditConfirm = () => {
     console.log(editLocationId);
     axios
-      .put(
-        API_ROUTES.USER.LOCATION,
-          {
-          id: editLocationId,
-          address,
-          city,
-          country,
-          zipcode,
-        }
-      )
+      .put(API_ROUTES.USER.LOCATION, {
+        id: editLocationId,
+        address,
+        city,
+        country,
+        zipcode,
+      })
       .then((response) => {
         // TODO: handle response
         if (response.status === 200) {

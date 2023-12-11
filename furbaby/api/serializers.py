@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Users, Locations, Pets, Jobs, Applications
+from .models import Notifications, Users, Locations, Pets, Jobs, Applications
 from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 
@@ -120,8 +120,8 @@ class PetSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    start = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")
-    end = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")
+    start = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")  # type: ignore
+    end = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")  # type: ignore
 
     class Meta:
         model = Jobs
@@ -150,3 +150,14 @@ class ApplicationSerializer(serializers.ModelSerializer):
         user_representation = UserSerializer(instance.user).data
         representation["user"] = user_representation
         return representation
+
+
+class NotificationsSerializer(serializers.Serializer):
+    data = serializers.CharField(max_length=1200)  # type: ignore
+
+    class Meta:
+        model = Notifications
+        fields = ["data"]
+
+    def create(self, data):
+        return Notifications.objects.create(**data)

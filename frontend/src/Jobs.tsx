@@ -353,7 +353,7 @@ const JobPage: React.FC<JobPageProps> = () => {
               start: "",
               status: "",
               end: "",
-            })
+            });
           } else {
             throw new Error("Failed to save Job");
           }

@@ -60,4 +60,5 @@ export const API_ROUTES = {
   PETS: "pets/",
   JOBS: "jobs/",
   APPLY: "applications/",
+  NOTIFICATIONS: "notifications/",
 } as const;
