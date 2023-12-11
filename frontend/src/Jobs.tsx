@@ -312,7 +312,9 @@ const JobPage: React.FC<JobPageProps> = () => {
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
         setLocations(response?.data ?? []);
-        const default_location = response.data.filter((location: Location) => location.default_location);
+        const default_location = response.data.filter(
+          (location: Location) => location.default_location
+        );
         if (default_location.length > 0) {
           setJobFormData({ ...jobFormData, location: default_location[0].id });
         }

@@ -207,3 +207,10 @@ class Applications(models.Model):
         constraints = [
             models.UniqueConstraint(fields=("user_id", "job_id"), name="user_id_job_id_constraint")
         ]
+
+
+class Notifications(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    data = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

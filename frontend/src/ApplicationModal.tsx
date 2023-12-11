@@ -53,7 +53,6 @@ const updateJobStatus = async (jobId: string) => {
 };
 
 const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, applications }) => {
-  const [acceptedApplications, setAcceptedApplications] = useState<string[]>([]);
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
 
   const toggleApplicationDetails = (applicationId: string) => {
@@ -68,8 +67,6 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, ap
       });
 
       if (response.status === 200) {
-        //console.log(`Application with ID ${applicationId} accepted successfully.`);
-        setAcceptedApplications((prevAccepted) => [...prevAccepted, applicationId]);
         updateJobStatus(jobId);
         toast.success(
           `Application accepted for user: ${applications.find((app) => app.id === applicationId)
