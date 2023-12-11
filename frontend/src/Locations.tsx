@@ -76,8 +76,9 @@ const Locations = () => {
   const updateDefault = (location: FurbabyLocation, newDefault: boolean) => {
     axios
       .put(API_ROUTES.USER.LOCATION, { ...location, default_location: newDefault })
-      .then((resp) => {
-        console.log(resp);
+      .then(() => {
+        toast.success(`updated default location to ${location.address}`);
+        getLocations();
       })
       .catch((err) => {
         console.error(err);
@@ -99,7 +100,7 @@ const Locations = () => {
     if (locations.length) {
       return (
         <div className="grid gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          {locations.map((loc, index) => (
+          {locations.map((loc) => (
             <div className="card w-96 bg-base-100 shadow-md" key={loc.id}>
               {loc.default_location && (
                 <div className="absolute top-7 right-7">
@@ -107,8 +108,7 @@ const Locations = () => {
                 </div>
               )}
               <div className="card-body">
-                <h2 className="card-title">Location {index + 1}</h2>
-                <p className="prose">{loc.address}</p>
+                <h2 className="card-title">{loc.address}</h2>
                 <p className="prose">
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
