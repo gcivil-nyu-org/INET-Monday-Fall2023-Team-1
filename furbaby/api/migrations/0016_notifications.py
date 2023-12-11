@@ -5,19 +5,23 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0015_alter_applications_status'),
+        ("api", "0015_alter_applications_status"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Notifications',
+            name="Notifications",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('data', models.JSONField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("data", models.JSONField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]
