@@ -307,20 +307,30 @@ const JobPage: React.FC<JobPageProps> = () => {
     }
   };
 
+  const getDefaultLocation = (locations: Location[]) => {
+    const default_location = locations.filter((location: Location) => location.default_location);
+    if (default_location.length > 0) {
+      setJobFormData({ ...jobFormData, location: default_location[0].id });
+    }
+  };
+
   const getLocations = () => {
     return axios
       .get(API_ROUTES.USER.LOCATION)
       .then((response) => {
         setLocations(response?.data ?? []);
-        const default_location = response.data.filter((location: Location) => location.default_location);
-        if (default_location.length > 0) {
-          setJobFormData({ ...jobFormData, location: default_location[0].id });
-        }
       })
       .catch((err) => {
         console.error("failed to fetch locations", err);
       });
   };
+
+  useEffect(() => {
+    if (jobFormData.location.length === 0) {
+      getDefaultLocation(locations);
+    }
+  }, [getLocations]);
+
   const onClickSave = () => {
     try {
       checkDates();
@@ -330,7 +340,6 @@ const JobPage: React.FC<JobPageProps> = () => {
     }
     const saveConsent = window.confirm("Are you sure you want to make these changes?");
     if (saveConsent) {
-      //console.log(jobFormData);
       jobFormData.status = "open";
       axios
         .post(API_ROUTES.JOBS, jobFormData)
@@ -344,7 +353,7 @@ const JobPage: React.FC<JobPageProps> = () => {
               start: "",
               status: "",
               end: "",
-            });
+            })
           } else {
             throw new Error("Failed to save Job");
           }
@@ -372,13 +381,8 @@ const JobPage: React.FC<JobPageProps> = () => {
 
   const getCurrentDateTime = () => {
     const now = new Date();
-    const year = now.getFullYear();
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const hour = now.getHours().toString().padStart(2, "0");
-    const minute = now.getMinutes().toString().padStart(2, "0");
-
-    return `${year}-${month}-${day}T${hour}:${minute}`;
+    const ISOString = now.toISOString();
+    return ISOString.slice(0, 16);
   };
 
   const handleStartUpdate = (e: any) => {
@@ -387,7 +391,7 @@ const JobPage: React.FC<JobPageProps> = () => {
       const now = new Date();
 
       if (selectedStart > now) {
-        setJobFormData({ ...jobFormData, start: e.target.value });
+        setJobFormData({ ...jobFormData, start: selectedStart.toISOString() });
       } else {
         setJobFormData({ ...jobFormData, start: "" });
         toast.error("Start datetime must be in the future.");
@@ -401,7 +405,7 @@ const JobPage: React.FC<JobPageProps> = () => {
       const selectedEndDate = new Date(e.target.value);
 
       if (selectedEndDate > startDate) {
-        setJobFormData({ ...jobFormData, end: e.target.value });
+        setJobFormData({ ...jobFormData, end: selectedEndDate.toISOString() });
       } else {
         toast.error("End datetime must be after start.");
       }
@@ -418,6 +422,12 @@ const JobPage: React.FC<JobPageProps> = () => {
     } else if (endDateTime <= startDateTime) {
       throw new Error("End date time must be after start.");
     }
+  };
+
+  const displayDate = (date: string) => {
+    const newDate = new Date(date);
+    newDate.setTime(newDate.getTime() - 5 * 60 * 60 * 1000);
+    return newDate.toISOString().slice(0, 16);
   };
 
   return (
@@ -506,12 +516,13 @@ const JobPage: React.FC<JobPageProps> = () => {
                 <label htmlFor="job-start" className="block text-sm font-medium text-gray-700">
                   Start
                 </label>
+                <input type="hidden" id="timezone" name="timezone" value="-05:00" />
                 <input
                   type="datetime-local"
                   name="start"
                   min={getCurrentDateTime()}
                   id="job-start"
-                  value={jobFormData.start}
+                  value={jobFormData.start ? displayDate(jobFormData.start) : jobFormData.start}
                   onChange={(e) => handleStartUpdate(e)}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />
@@ -523,8 +534,8 @@ const JobPage: React.FC<JobPageProps> = () => {
                   type="datetime-local"
                   name="end"
                   id="job-end"
-                  min={jobFormData.start}
-                  value={jobFormData.end}
+                  min={jobFormData.start ? displayDate(jobFormData.start) : getCurrentDateTime()}
+                  value={jobFormData.end ? displayDate(jobFormData.end) : jobFormData.end}
                   onChange={(e) => handleEndUpdate(e)}
                   className="border border-gray-300 rounded-md p-2 mt-1"
                 />

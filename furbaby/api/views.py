@@ -808,7 +808,6 @@ class JobView(APIView):
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            # print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
                 queryset_sitter = self.get_all(request.user.id)
@@ -867,6 +866,7 @@ class JobView(APIView):
             if pet.owner != self.request.user:
                 raise PermissionDenied("You do not have permission to create a job for this pet.")
             # Now, create the job with the specified pet
+            # print(request.data)
             serializer = JobSerializer(data=request.data, context={"request": request})
             serializer.is_valid(raise_exception=True)
             serializer.save(user=self.request.user, pet=pet)
