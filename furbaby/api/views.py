@@ -602,7 +602,7 @@ def user_location_view(request):
         return location_view.update_location_record(request)
 
     # delete a location record for the user
-    if request.method == "DELETE":
+    if request.method in ["DELETE"]:
         return location_view.delete_location_record(request)
 
     return json_response(
