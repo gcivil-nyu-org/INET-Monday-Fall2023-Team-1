@@ -19,12 +19,13 @@ from django.conf import settings
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Locations
+from .models import Locations, Notifications
 from api.auth_backends import EmailBackend
 from .models import Pets, Users, Locations, Jobs, Applications
 from .utils import json_response
 from api.auth_backends import EmailBackend
 from .serializers import (
+    NotificationsSerializer,
     RegistrationSerializer,
     UserLocationSerializer,
     UserLoginSerializer,
@@ -918,6 +919,23 @@ class ApplicationView(APIView):
                 if new_status:
                     application.status = new_status
                     application.save()
+
+                    notification_serializer = NotificationsSerializer()
+                    notification_serializer.create(
+                        data=json.dumps(
+                            {
+                                "job_id": job_instance.id,
+                                "owner_id": job_instance.user.id,
+                                "sitter_id": application.user.id,
+                                "content": json.dumps(
+                                    {
+                                        "data": f"Your Job application to sit {application.job.user.first_name}'s {application.job.pet.name} has been accepted",
+                                        "content": f"Please connect with the owner on phone number {application.job.user.phone_number} to discuss other details",
+                                    }
+                                ),
+                            }
+                        )
+                    )
 
                     # You can perform additional actions based on the new status if needed
                     # For example, update the job status or send notifications
