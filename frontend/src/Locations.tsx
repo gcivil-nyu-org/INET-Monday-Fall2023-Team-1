@@ -103,9 +103,7 @@ const Locations = () => {
             <div className="card w-96 bg-base-100 shadow-md" key={loc.id}>
               {loc.default_location && (
                 <div className="absolute top-7 right-7">
-                  <div className="badge badge-outline">
-                    Default
-                  </div>
+                  <div className="badge badge-outline">Default</div>
                 </div>
               )}
               <div className="card-body">
@@ -115,18 +113,24 @@ const Locations = () => {
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
                 <div className="card-actions justify-between items-center mt-4">
-                  <button className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
-                    onClick={() => onClickEdit(loc)}>
+                  <button
+                    className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
+                    onClick={() => onClickEdit(loc)}
+                  >
                     Edit
                   </button>
                   {loc.default_location ? (
-                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => updateDefault(loc, false)}>
+                    <button
+                      className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, false)}
+                    >
                       Remove Default
                     </button>
                   ) : (
-                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
-                      onClick={() => updateDefault(loc, true)}>
+                    <button
+                      className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, true)}
+                    >
                       Set as default
                     </button>
                   )}
@@ -149,16 +153,13 @@ const Locations = () => {
   const onClickEditConfirm = () => {
     console.log(editLocationId);
     axios
-      .put(
-        API_ROUTES.USER.LOCATION,
-          {
-          id: editLocationId,
-          address,
-          city,
-          country,
-          zipcode,
-        }
-      )
+      .put(API_ROUTES.USER.LOCATION, {
+        id: editLocationId,
+        address,
+        city,
+        country,
+        zipcode,
+      })
       .then((response) => {
         // TODO: handle response
         if (response.status === 200) {
