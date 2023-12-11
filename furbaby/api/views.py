@@ -927,7 +927,7 @@ class ApplicationView(APIView):
                                 "owner_id": str(job_instance.user.id),
                                 "sitter_id": str(application.user.id),
                                 "content": {
-                                    "title": f"Job application to sit {'' if application.job.user.first_name is None else application.job.user.first_name}'s {application.job.pet.name} has been accepted",
+                                    "title": f"Job application to sit {'' if application.job.user.first_name is None else f'{application.job.user.first_name}s'} {application.job.pet.name} has been accepted",
                                     "message": f"Please connect with the owner on phone number {'' if application.job.user.phone_number is None else application.job.user.phone_number} to discuss other details",
                                 },
                             }
