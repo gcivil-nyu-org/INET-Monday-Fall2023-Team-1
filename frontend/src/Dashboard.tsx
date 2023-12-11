@@ -38,6 +38,7 @@ interface Location {
   city: string;
   country: string;
   zipcode: string;
+  user_id: string;
 }
 
 interface Application {
