@@ -15,7 +15,7 @@ const Locations = () => {
   const [locations, setLocations] = useState<FurbabyLocation[]>([]);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("New York City");
-  const [country, setCountry] = useState("usa");
+  const [country, setCountry] = useState("USA");
   const [zipcode, setZipcode] = useState("");
 
   const onClickConfirm = () => {
@@ -47,9 +47,11 @@ const Locations = () => {
   };
 
   const onCloseModal = () => {
+    setEditLocationId("");
     setAddress("");
-    setCity("");
-    setCountry("");
+    setCity("New York City");
+    setCountry("USA");
+    setZipcode("");
     setOpen(false);
   };
 
@@ -71,9 +73,9 @@ const Locations = () => {
     getLocations(); //.then((response) => {
   }, []);
 
-  const setAsDefault = (location: FurbabyLocation) => {
+  const updateDefault = (location: FurbabyLocation, newDefault: boolean) => {
     axios
-      .put(API_ROUTES.USER.LOCATION, JSON.stringify({ ...location, default_location: true }))
+      .put(API_ROUTES.USER.LOCATION, { ...location, default_location: newDefault })
       .then((resp) => {
         console.log(resp);
       })
@@ -99,19 +101,32 @@ const Locations = () => {
         <div className="grid gap-x-8 gap-y-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           {locations.map((loc, index) => (
             <div className="card w-96 bg-base-100 shadow-md" key={loc.id}>
+              {loc.default_location && (
+                <div className="absolute top-7 right-7">
+                  <div className="badge badge-outline">
+                    Default
+                  </div>
+                </div>
+              )}
               <div className="card-body">
                 <h2 className="card-title">Location {index + 1}</h2>
                 <p className="prose">{loc.address}</p>
                 <p className="prose">
                   {loc.city}, {loc.country} - {loc.zipcode}
                 </p>
-                <div className="card-actions justify-between items-center">
-                  {loc.default_location && <div className="badge badge-outline">Default</div>}
-                  <button className="btn btn-secondary" onClick={() => onClickEdit(loc)}>
+                <div className="card-actions justify-between items-center mt-4">
+                  <button className="px-3 py-2 text-sm font-medium text-center text-white bg-blue-400 rounded-lg hover:bg-blue-600 focus:outline-none transition ease-in-out duration-150"
+                    onClick={() => onClickEdit(loc)}>
                     Edit
                   </button>
-                  {!loc.default_location && (
-                    <button className="btn btn-primary" onClick={() => setAsDefault(loc)}>
+                  {loc.default_location ? (
+                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-red-300 rounded-lg hover:bg-red-400 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, false)}>
+                      Remove Default
+                    </button>
+                  ) : (
+                    <button className="px-3 py-2 text-sm font-medium text-center text-white bg-green-400 rounded-lg hover:bg-green-600 focus:outline-none transition ease-in-out duration-150"
+                      onClick={() => updateDefault(loc, true)}>
                       Set as default
                     </button>
                   )}
@@ -132,24 +147,28 @@ const Locations = () => {
   }, [locations]);
 
   const onClickEditConfirm = () => {
+    console.log(editLocationId);
     axios
       .put(
         API_ROUTES.USER.LOCATION,
-        JSON.stringify({
+          {
           id: editLocationId,
           address,
           city,
-          zipcode,
           country,
-        })
+          zipcode,
+        }
       )
-      .then(() => {
-        toast.success("your changes have been saved");
+      .then((response) => {
         // TODO: handle response
-        //console.log(response);
+        if (response.status === 200) {
+          onCloseModal();
+          toast.success("Location updated successfully.");
+        }
       })
       .catch((err) => {
         // TODO: handle error
+        toast.error("Failed to update location.");
         console.error(err);
       });
   };
@@ -186,10 +205,9 @@ const Locations = () => {
                   autoComplete="country-name"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  defaultValue="usa"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  <option value="usa">United States</option>
+                  <option value="USA">USA</option>
                 </select>
               </div>
             </div>

@@ -91,13 +91,23 @@ class UserLocationSerializer(serializers.Serializer):
             raise ValidationError("Users must be located in New York City/NYC")
         if country not in countries_allowed_list:
             raise ValidationError("Users must be located in the United States of America/USA")
-        if data.get("default_location", True):
-            # If the user is setting a default location, set all other locations to false
-            Locations.objects.filter(user_id=data.get("user").id).update(default_location=False)
         return data
 
     def create(self, validated_data):
         return Locations.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.address = validated_data.get("address", instance.address)
+        instance.city = validated_data.get("city", instance.city)
+        instance.country = validated_data.get("country", instance.country)
+        instance.zipcode = validated_data.get("zipcode", instance.zipcode)
+        if validated_data.get("default_location"):
+            Locations.objects.filter(user=instance.user).update(default_location=False)
+            instance.default_location = True
+        if not validated_data.get("default_location"):
+            instance.default_location = False
+        instance.save()
+        return instance
 
 
 class PetSerializer(serializers.ModelSerializer):
