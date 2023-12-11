@@ -603,7 +603,7 @@ def user_location_view(request):
         return location_view.update_location_record(request)
 
     # delete a location record for the user
-    if request.method == "DELETE":
+    if request.method in ["DELETE"]:
         return location_view.delete_location_record(request)
 
     return json_response(
@@ -614,8 +614,10 @@ def user_location_view(request):
 
 def __get_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.GET["id"]
-
-    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
+    owner_id = request.GET["owner_id"]
+    if owner_id is None:
+        owner_id = request.user.id
+    pet_info = Pets.objects.filter(id=pet_id, owner=owner_id).first()
 
     if pet_info == None:
         return json_response(
@@ -625,7 +627,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    pet_picture_path = make_s3_path(s3AssetsFolder, str(request.user.id), "pets", str(pet_info.id))
+    pet_picture_path = make_s3_path(s3AssetsFolder, str(owner_id), "pets", str(pet_info.id))
 
     try:
         image_object = s3Client.get_object(Bucket=s3BucketName, Key=pet_picture_path)
@@ -637,7 +639,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
                 {
                     "data": {
                         "message": "no pet picture present with current user({}) and pet({})".format(
-                            request.user.id, pet_info.name
+                            owner_id, pet_info.name
                         )
                     }
                 },
@@ -809,7 +811,6 @@ class JobView(APIView):
             serializer = JobSerializer(job)
             return JsonResponse(serializer.data)
         else:
-            # print(request.user.user_type)
             if "owner" in request.user.user_type and "sitter" in request.user.user_type:
                 queryset_owner = self.get_queryset()
                 queryset_sitter = self.get_all(request.user.id)
@@ -868,6 +869,7 @@ class JobView(APIView):
             if pet.owner != self.request.user:
                 raise PermissionDenied("You do not have permission to create a job for this pet.")
             # Now, create the job with the specified pet
+            # print(request.data)
             serializer = JobSerializer(data=request.data, context={"request": request})
             serializer.is_valid(raise_exception=True)
             serializer.save(user=self.request.user, pet=pet)

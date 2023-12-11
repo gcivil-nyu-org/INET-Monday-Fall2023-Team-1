@@ -16,6 +16,7 @@ type Job = {
   pay: number;
   start: Date;
   end: Date;
+  user_id: string;
 };
 
 interface Pet {
@@ -37,6 +38,7 @@ interface Location {
   city: string;
   country: string;
   zipcode: string;
+  user_id: string;
 }
 
 interface Application {
@@ -55,6 +57,17 @@ interface User {
   username: string;
 }
 
+const PetCardChip = (props: { title: string; value: string }) => {
+  return (
+    <div className="flex flex-row border rounded-md truncate">
+      <span className="uppercase border-r-black font-light border-r-2 p-1 bg-slate-200 w-1/2 text-center">
+        {props.title}
+      </span>
+      <span className="flex flex-row items-center py-1 w-1/2 px-2">{props.value}</span>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("available jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -62,6 +75,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   // const [locations, setLocations] = useState<Location[]>([]);
+  const [petPictures, updatePetPictures] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -97,6 +111,31 @@ const Dashboard = () => {
 
     fetchJobs();
   }, []);
+
+  useEffect(() => {
+    if (jobs.length) {
+      jobs.forEach(async (job: Job) => {
+        const petID = job.pet.id;
+        console.log(job);
+        axios
+          .get(`${API_ROUTES.USER.PET_PICTURE}?id=${petID}&owner_id=${job.location.user_id}`, {
+            responseType: "blob",
+          })
+          .then((response) => {
+            if (response.status === 200) {
+              const newPetPicture = URL.createObjectURL(response.data);
+              updatePetPictures((state) => ({
+                ...state,
+                [petID]: newPetPicture,
+              }));
+            }
+          })
+          .catch((err) => {
+            console.error(`failed to fetch user pet picture with id: ${petID}`, err);
+          });
+      });
+    }
+  }, [jobs.length]);
 
   const fetchMyApplications = async () => {
     try {
@@ -213,15 +252,36 @@ const Dashboard = () => {
                         <ul className="list-none p-0">
                           <li key={job.id} className="border border-gray-300 mb-4 p-4 rounded-md">
                             <div>
-                              <p className="font-bold mb-2">Pet Name: {job.pet.name}</p>
-                              <p>Job Status: {job.status}</p>
-                              <p>
-                                Location: {job?.location?.address ?? ""},{" "}
-                                {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
-                              </p>
-                              <p>Pay: ${job.pay}</p>
-                              <p>Start: {formatDate(job.start)}</p>
-                              <p>End: {formatDate(job.end)}</p>
+                              <h5 className="font-bold mb-2">Pet Name: {job.pet.name}</h5>
+                              <div className="mb-3 font-normal text-gray-700 grid grid-cols-2 gap-2">
+                                <PetCardChip title="Species" value={job.pet.species} />
+                                <PetCardChip title="Breed" value={job.pet.breed} />
+                                <PetCardChip title="Color" value={job.pet.color} />
+                                <PetCardChip title="Height" value={job.pet.height} />
+                                <PetCardChip title="Weight" value={job.pet.weight} />
+                                <PetCardChip title="Chip" value={job.pet.chip_number} />
+                                <p className="font-bold mb-2">
+                                  Health Requirements: {job.pet.health_requirements}
+                                </p>
+                              </div>
+                              <hr />
+                              <div className="flex flex-row justify-evenly items-center">
+                                <div>
+                                  <p className="mt-4">Job Status: {job.status}</p>
+                                  <p>
+                                    Location: {job?.location?.address ?? ""},{" "}
+                                    {job?.location?.city ?? ""}, {job?.location?.zipcode ?? ""}
+                                  </p>
+                                  <p>Pay: ${job.pay}</p>
+                                  <p>Start: {formatDate(job.start)}</p>
+                                  <p>End: {formatDate(job.end)}</p>
+                                </div>
+                                <img
+                                  className="object-cover w-full mt-4 rounded-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg"
+                                  src={petPictures[job.pet.id]}
+                                  alt={`${job.pet.name} picture`}
+                                />
+                              </div>
                               {job.status === "open" && (
                                 <button
                                   onClick={() => applyForJob(job.id)}

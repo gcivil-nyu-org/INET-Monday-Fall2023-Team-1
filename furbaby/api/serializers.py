@@ -120,6 +120,8 @@ class PetSerializer(serializers.ModelSerializer):
 
 class JobSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    start = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")  # type: ignore
+    end = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S%z")  # type: ignore
 
     class Meta:
         model = Jobs

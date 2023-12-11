@@ -26,7 +26,7 @@ const getCurrentAge = (date: string) => {
 };
 
 const formatDate = (date: Date) => {
-  return format(new Date(date), "MM/dd/yyyy HH:mm a");
+  return format(new Date(date), "MM/dd/yyyy hh:mm a");
 };
 
 export { classNames, formatDate, getCurrentAge, isJSONString, validateEmail };

@@ -314,10 +314,10 @@ const PetProfiles: React.FC = () => {
                         alt={`${pet.name} picture`}
                       />
                       <div className="flex flex-col justify-between p-4 leading-normal">
-                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900">
                           {pet.name}
                         </h5>
-                        <div className="mb-3 font-normal text-gray-700 dark:text-gray-400 grid grid-cols-2 gap-2">
+                        <div className="mb-3 font-normal text-gray-700 grid grid-cols-2 gap-2">
                           <PetCardChip title="Species" value={pet.species} />
                           <PetCardChip title="Breed" value={pet.breed} />
                           <PetCardChip title="Color" value={pet.color} />
