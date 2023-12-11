@@ -613,8 +613,10 @@ def user_location_view(request):
 
 def __get_user_pet_picture__(request):  # pragma: no cover
     pet_id = request.GET["id"]
-
-    pet_info = Pets.objects.filter(id=pet_id, owner=request.user.id).first()
+    owner_id = request.GET["owner_id"]
+    if owner_id is None:
+        owner_id = request.user.id
+    pet_info = Pets.objects.filter(id=pet_id, owner=owner_id).first()
 
     if pet_info == None:
         return json_response(
@@ -624,7 +626,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    pet_picture_path = make_s3_path(s3AssetsFolder, str(request.user.id), "pets", str(pet_info.id))
+    pet_picture_path = make_s3_path(s3AssetsFolder, str(owner_id), "pets", str(pet_info.id))
 
     try:
         image_object = s3Client.get_object(Bucket=s3BucketName, Key=pet_picture_path)
@@ -636,7 +638,7 @@ def __get_user_pet_picture__(request):  # pragma: no cover
                 {
                     "data": {
                         "message": "no pet picture present with current user({}) and pet({})".format(
-                            request.user.id, pet_info.name
+                            owner_id, pet_info.name
                         )
                     }
                 },
