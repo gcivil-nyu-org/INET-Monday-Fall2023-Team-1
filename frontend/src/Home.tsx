@@ -9,6 +9,7 @@ import Dashboard from "./Dashboard";
 import FurBabyLogo from "./FurbabyLogo";
 import JobPage from "./Jobs";
 import Locations from "./Locations";
+import NotificationsView from "./Notifications";
 import PetProfiles from "./PetProfiles";
 import Profile from "./Profile";
 import Settings from "./Settings";
@@ -196,15 +197,9 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                      <button
-                        type="button"
-                        className="relative rounded-full p-1 text-gray-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                      >
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">View notifications</span>
-                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
-
+                      <NotificationsView
+                        currentUserId={props.authContext.authenticationState.sessionInformation.id}
+                      />
                       {/* Profile dropdown */}
                       <Menu as="div" className="relative ml-3">
                         <div>
