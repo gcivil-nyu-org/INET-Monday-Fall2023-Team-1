@@ -33,7 +33,7 @@ const PetCardChip = (props: { title: string; value: string }) => {
   );
 };
 
-const PetProfiles: React.FC = () => {
+const PetProfiles = (props: { userId: string }) => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +68,7 @@ const PetProfiles: React.FC = () => {
       if (response.data.length) {
         response.data.forEach((pet: Pet) => {
           axios
-            .get(`${API_ROUTES.USER.PET_PICTURE}?id=${pet.id}`, {
+            .get(`${API_ROUTES.USER.PET_PICTURE}?id=${pet.id}&owner_id=${props.userId}`, {
               responseType: "blob",
             })
             .then((response) => {
@@ -358,7 +358,7 @@ const PetProfiles: React.FC = () => {
   );
 };
 
-const PetProfilePage = () => {
+const PetProfilePage = (props: { userId: string }) => {
   const [activeTab, setActiveTab] = useState("view");
 
   const [petFormData, setPetFormData] = useState({
@@ -475,7 +475,7 @@ const PetProfilePage = () => {
           </Tab>
         </Tab.List>
         <Tab.Panels className="p-4 bg-white border border-t-0 rounded-b-md">
-          <Tab.Panel>{activeTab === "view" && <PetProfiles />}</Tab.Panel>
+          <Tab.Panel>{activeTab === "view" && <PetProfiles userId={props.userId} />}</Tab.Panel>
           <Tab.Panel>
             {activeTab === "add" && (
               <div className="mb-4 flex flex-col justify-between">
