@@ -14,12 +14,22 @@ import os
 import subprocess
 
 from pathlib import Path
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
+from botocore.config import Config as AWSConfig
+
+load_dotenv(find_dotenv(".eb_env", True, False))
 
 os.environ.setdefault("FORGOT_PASSWORD_HOST", "http://localhost:3000")
 
-load_dotenv()
+S3_CONFIG = AWSConfig(
+    region_name="us-east-1",
+    retries={"max_attempts": 10, "mode": "standard"},
+    signature_version="v4",
+)
 
+AWS_BUCKET_NAME = os.environ.get("AWS_BUCKET_NAME", "")
+
+ASSETS_PATH = "local-assets"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -216,8 +226,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Set to False if perhaps you have a local mailserver running
 EMAIL_HOST = "smtp.gmail.com"  # Replace with your email host for gmail -> 'smtp.gmail.com'
-EMAIL_HOST_USER = os.environ["EMAIL_APP_USERNAME"]
-EMAIL_HOST_PASSWORD = os.environ["EMAIL_APP_PASSWORD"]
+EMAIL_HOST_USER = os.environ.get("EMAIL_APP_USERNAME")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_APP_PASSWORD")
 
 GIT_COMMIT_SHORT_HASH = (
     subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()

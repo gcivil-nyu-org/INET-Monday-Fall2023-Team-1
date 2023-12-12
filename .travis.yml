@@ -13,10 +13,8 @@ jobs:
       - export GIT_COMMIT_HASH=$(git rev-parse HEAD)
       - echo $GIT_COMMIT_HASH
       - echo $GIT_COMMIT_SHORT_HASH
-
-    before_script:
-      - python manage.py makemigrations --settings=furbaby.settings
-      - python manage.py migrate --settings=furbaby.settings
+      - export AWS_SECRET_ACCESS_KEY="$AWS_ACCESS_SECRET_KEY"
+      - export AWS_BUCKET_NAME="elasticbeanstalk-us-east-1-994011800090"
 
     script:
       - printenv > ./furbaby/.env
@@ -25,10 +23,16 @@ jobs:
       - git commit -m "add latest .env file"
       - black --check .
       - pylint **/*.py --exit-zero
-      - coverage run --source=api manage.py test
+      - coverage run --source=api manage.py test --keepdb
+      - coverage report
 
     after_script:
-      - coveralls
+      - export CI_NAME=travis-ci
+      - export CI_BUILD_NUMBER=$TRAVIS_BUILD_ID
+      - export CI_BUILD_URL=$TRAVIS_BUILD_WEB_URL
+      - export CI_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+      - export CI_PULL_REQUEST=$TRAVIS_PULL_REQUEST
+      - curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz && ./coveralls
 
     deploy:
       - provider: elasticbeanstalk
@@ -38,7 +42,7 @@ jobs:
         region: "us-east-1"
         app: "project-team-1-furbaby"
         env: "staging"
-        bucket: "elasticbeanstalk-us-east-1-994011800090"
+        bucket: $AWS_BUCKET_NAME
         on:
           branch: develop
 
@@ -48,7 +52,7 @@ jobs:
         region: "us-east-1"
         app: "project-team-1-furbaby"
         env: "production"
-        bucket: "elasticbeanstalk-us-east-1-994011800090"
+        bucket: $AWS_BUCKET_NAME
         skip_cleanup: true
         on:
           branch: master
