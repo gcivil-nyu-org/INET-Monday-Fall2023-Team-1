@@ -144,7 +144,7 @@ const Home = (props: React.PropsWithChildren<HomeProps>) => {
     } else if (pathname === ROUTES.PROTECTED_ROUTES.LOCATIONS) {
       return <Locations />;
     } else if (pathname === ROUTES.PROTECTED_ROUTES.PET_PROFILES) {
-      return <PetProfiles />;
+      return <PetProfiles userid={props.authContext.authenticationState.sessionInformation.id}/>;
     } else if (pathname === ROUTES.PROTECTED_ROUTES.JOBS) {
       return <JobPage />;
     }
